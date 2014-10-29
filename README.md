@@ -6,7 +6,7 @@ This is the Risk implementation, with specific folders for different segments of
  * `network` - Network communication functionality
  * `ai` - Artificial intelligence implementations are here
  * `ui` - The user interface proxy classes (to communicate with the web interface)
- * `www` - The web interface itself
+ * `web` - The web interface itself
 
 ##Compilation
 
