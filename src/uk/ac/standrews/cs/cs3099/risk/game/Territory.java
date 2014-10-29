@@ -11,7 +11,7 @@ public class Territory {
 
     private int id;
     private Continent continent;
-    private HashSet<Territory> links;
+    private Set<Territory> links;
 
     private int armies;
 

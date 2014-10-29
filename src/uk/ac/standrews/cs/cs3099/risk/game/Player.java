@@ -53,7 +53,7 @@ public class Player {
 
     public boolean canMoveArmies(Territory src, Territory dst, int amount)
     {
-        return src.getArmies() > amount - 1 && src.isLinkedTo(dst) &&
+        return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
                ownedterritories.contains(src) && ownedterritories.contains(dst);
     }
 
