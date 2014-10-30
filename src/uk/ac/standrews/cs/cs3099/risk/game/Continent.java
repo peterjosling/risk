@@ -39,4 +39,10 @@ public class Continent {
     {
         territories.add(t);
     }
+    
+    public void getTerritories()
+    {
+        return territories;
+    }
+    }
 }
