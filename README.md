@@ -1,5 +1,7 @@
 #Risk
 
+[![Build Status](https://magnum.travis-ci.com/peterjosling/risk.svg?token=nEtiwcz9kpeowqnZRHXC&branch=peterjosling/travis)](https://magnum.travis-ci.com/peterjosling/risk)
+
 This is the Risk implementation, with specific folders for different segments of the game:
  * `game` - The core game itself, relationships between pieces, cryptography, etc.
  * `tests` - Tests for the entire implementation
