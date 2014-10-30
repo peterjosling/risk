@@ -44,5 +44,4 @@ public class Continent {
     {
         return territories;
     }
-    }
 }
