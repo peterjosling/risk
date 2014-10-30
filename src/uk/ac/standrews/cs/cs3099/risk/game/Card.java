@@ -9,7 +9,8 @@ public class Card {
     public enum CardType {
         INFANTRY,
         CAVALRY,
-        ARTILLERY
+        ARTILLERY,
+        WILD
     }
 
     // Will need cryptographic extensions at a later date
