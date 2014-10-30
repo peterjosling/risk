@@ -11,7 +11,7 @@ public class Continent {
 
     private int id;
     private int continentvalue;
-    private HashSet<Territory> territories;
+    private Set<Territory> territories;
 
 
     public Continent(int id)
@@ -38,5 +38,10 @@ public class Continent {
     public void addTerritory(Territory t)
     {
         territories.add(t);
+    }
+    
+    public Set<Territory> getTerritories()
+    {
+        return territories;
     }
 }
