@@ -1,11 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import java.util.Random;
+
 /**
  * Die Class
  * Represents one die with 6 faces.
  */
 public class Die {
 
+	Random rand = new Random();
+	
 	private int faceValue;
 	
 	/**
@@ -20,8 +24,7 @@ public class Die {
 	 * @return die roll
 	 */
 	public int roll(){
-		faceValue = (int)(Math.random() * 6) + 1;
-		
+		faceValue = rand.nextInt(6) + 1;
 		return faceValue;
 	}
 }
