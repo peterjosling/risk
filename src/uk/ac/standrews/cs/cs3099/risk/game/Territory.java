@@ -50,4 +50,9 @@ public class Territory {
         return links.contains(t);
     }
 
+    public Set<Territory> getLinkedTerritories()
+    {
+        return links;
+    }
+    
 }
