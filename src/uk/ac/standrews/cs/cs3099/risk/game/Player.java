@@ -15,8 +15,8 @@ public class Player {
     private String name;
 
     // Game state properties
-    private List<Card> usedcards;
-    private List<Card> hiddencards;
+    private List<Card> usedCards;
+    private List<Card> hiddenCards;
 
     private int totalarmies;
     private List<Territory> ownedterritories;
@@ -35,8 +35,8 @@ public class Player {
         this.id = id;
         this.name = name;
 
-        usedcards = new ArrayList<Card>();
-        hiddencards = new ArrayList<Card>();
+        usedCards = new ArrayList<Card>();
+        hiddenCards = new ArrayList<Card>();
 
         totalarmies = 0;
         ownedterritories = new ArrayList<Territory>();
@@ -59,13 +59,13 @@ public class Player {
 
     public void addCard(Card c)
     {
-        hiddencards.add(c);
+        hiddenCards.add(c);
     }
 
     public void playCard(Card c)
     {
-        hiddencards.remove(c);
-        usedcards.add(c);
+        hiddenCards.remove(c);
+        usedCards.add(c);
     }
 
 }
