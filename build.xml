@@ -2,6 +2,7 @@
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="bin"/>
+  <property name="temp" location="temp"/>
   <property name="dist"  location="dist"/>
   <property name="test"  location="src"/>
 
@@ -20,7 +21,7 @@
 
   <target name="compile" depends="init" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
+    <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
       <classpath refid="class.path" />
     </javac>
   </target>
@@ -35,6 +36,7 @@
                  value="uk.ac.standrews.cs.cs3099.risk.game.Main" />
     </manifest>
     <jar jarfile="${dist}/lib/Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF"/>
+    <delete dir="${temp}"/>
   </target>
 
   <target name="clean"
@@ -42,10 +44,12 @@
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <delete dir="${temp}"/>
   </target>
 
   <target name="test" depends="compile">
-    <junit printsummary="yes" haltonfailure="yes">
+      <mkdir dir="${temp}"/>
+      <junit printsummary="yes" haltonfailure="yes">
 
       <classpath>
         <pathelement location="${class.path}"/>
@@ -57,12 +61,13 @@
       <formatter type="plain"/>
       <formatter type="xml"/>
 
-      <batchtest fork="true">
+      <batchtest fork="true" todir="${temp}">
         <fileset dir="${test}">
           <include name="**/*Test*.java"/>
         </fileset>
       </batchtest>
 
     </junit>
+    <delete dir="${temp}"/>
   </target>
 </project>
