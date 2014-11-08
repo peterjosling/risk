@@ -54,5 +54,4 @@ public class Territory {
     {
         return links;
     }
-    
 }
