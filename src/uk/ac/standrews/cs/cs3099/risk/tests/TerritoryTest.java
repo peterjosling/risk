@@ -41,7 +41,7 @@ public class TerritoryTest {
         assertEquals(3, territory1.getArmies());
         assertEquals(1, territory2.getArmies());
         territory1.setArmies(territory1.getArmies()-1);
-        territory1.setArmies(territory2.getArmies()+4);
+        territory2.setArmies(territory2.getArmies()+4);
         assertEquals(2, territory1.getArmies());
         assertEquals(5, territory2.getArmies());
     }
