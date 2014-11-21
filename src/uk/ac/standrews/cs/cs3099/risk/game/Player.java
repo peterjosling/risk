@@ -14,22 +14,16 @@ public abstract class Player {
     private String name;
 
     // Game state properties
-    private List<Card> usedcards;
-    private List<Card> hiddencards;
+    private List<Card> usedCards = new ArrayList<Card>();
+    private List<Card> hiddenCards = new ArrayList<Card>();
 
-    private int totalarmies;
-    private List<Territory> ownedterritories;
+    private int totalArmies = 0;
+    private List<Territory> ownedTerritories = new ArrayList<Territory>();
 
     public Player(int id, String name)
     {
         this.id = id;
         this.name = name;
-
-        usedcards = new ArrayList<Card>();
-        hiddencards = new ArrayList<Card>();
-
-        totalarmies = 0;
-        ownedterritories = new ArrayList<Territory>();
     }
 
     public boolean canPlaceArmies(Territory t)
