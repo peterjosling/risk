@@ -1,14 +1,13 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.net.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Player Class
  * Abstractions of what every player should have (including local)
  */
-public class Player {
+public abstract class Player {
 
     // Unique per-player values
     private int id;
@@ -21,16 +20,7 @@ public class Player {
     private int totalarmies;
     private List<Territory> ownedterritories;
 
-    // Network properties
-    private InetAddress address;
-    private short port;
-    private Socket connection;
-
-    //private PublicKey pubkey;
-    //private PrivateKey privkey;
-
-
-    public Player(int id, InetAddress address, short port, String name)
+    public Player(int id, String name)
     {
         this.id = id;
         this.name = name;
@@ -40,10 +30,6 @@ public class Player {
 
         totalarmies = 0;
         ownedterritories = new ArrayList<Territory>();
-
-        this.address = address;
-        this.port = port;
-        // Set up connection to other player here?
     }
 
     public boolean canPlaceArmies(Territory t)
@@ -68,4 +54,6 @@ public class Player {
         usedcards.add(c);
     }
 
+	public abstract Move getMove();
+	public abstract void notifyMove(Move move);
 }
