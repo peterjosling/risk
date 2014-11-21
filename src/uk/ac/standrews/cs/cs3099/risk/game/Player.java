@@ -28,24 +28,24 @@ public abstract class Player {
 
     public boolean canPlaceArmies(Territory t)
     {
-        return ownedterritories.contains(t);
+        return ownedTerritories.contains(t);
     }
 
     public boolean canMoveArmies(Territory src, Territory dst, int amount)
     {
         return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
-               ownedterritories.contains(src) && ownedterritories.contains(dst);
+               ownedTerritories.contains(src) && ownedTerritories.contains(dst);
     }
 
     public void addCard(Card c)
     {
-        hiddencards.add(c);
+        hiddenCards.add(c);
     }
 
     public void playCard(Card c)
     {
-        hiddencards.remove(c);
-        usedcards.add(c);
+        hiddenCards.remove(c);
+        usedCards.add(c);
     }
 
 	public abstract Move getMove();
