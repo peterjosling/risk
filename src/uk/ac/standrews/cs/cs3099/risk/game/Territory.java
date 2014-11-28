@@ -9,45 +9,60 @@ import java.util.HashSet;
  */
 public class Territory {
 
-    private int id;
-    private Continent continent;
-    private Set<Territory> links;
+	private int id;
+	private Continent continent;
+	private Set<Territory> links;
 
-    private int armies;
+	private int armies;
 
 
-    public Territory(int id, Continent continent)
-    {
-        this.id = id;
-        this.continent = continent;
-        this.links = new HashSet<Territory>();
+	public Territory(int id, Continent continent) {
+		this.id = id;
+		this.continent = continent;
+		this.links = new HashSet<Territory>();
 
-        this.armies = 0;
-    }
+		this.armies = 0;
+	}
 
-    public int getId()
-    {
-        return id;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public int getArmies()
-    {
-        return armies;
-    }
+	public int getArmies() {
+		return armies;
+	}
 
-    public void setArmies(int armies)
-    {
-        this.armies = armies;
-    }
+	public void setArmies(int armies) {
+		this.armies = armies;
+	}
 
-    public void addLink(Territory t)
-    {
-        links.add(t);
-    }
+	public void addLink(Territory t) {
+		links.add(t);
+	}
 
-    public boolean isLinkedTo(Territory t)
-    {
-        return links.contains(t);
-    }
+	public boolean isLinkedTo(Territory t) {
+		return links.contains(t);
+	}
 
+	public Set<Territory> getLinkedTerritories() {
+		return links;
+	}
+
+	public boolean addArmies(int numberOfArmies) {
+		if (numberOfArmies < 0) {
+			return false;
+		} else {
+			armies = armies + numberOfArmies;
+			return true;
+		}
+	}
+
+	public boolean removeArmies(int numberOfArmies) {
+		if (numberOfArmies < 0 || numberOfArmies >= armies) {
+			return false;
+		} else {
+			armies = armies - numberOfArmies;
+			return true;
+		}
+	}
 }
