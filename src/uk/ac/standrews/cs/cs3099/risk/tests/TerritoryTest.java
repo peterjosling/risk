@@ -15,8 +15,7 @@ public class TerritoryTest {
     Territory territory4;
 
     @Before
-    public void setup()
-    {
+    public void setup() {
         continent1 = new Continent(1);
         territory1 = new Territory(1, continent1);
         territory2 = new Territory(2, continent1);
@@ -25,29 +24,33 @@ public class TerritoryTest {
     }
 
     @Test
-    public void getIdTest()
-    {
+    public void getIdTest() {
         assertEquals(1, territory1.getId());
         assertEquals(2, territory2.getId());
         assertFalse(territory2.getId() == 1);
     }
 
     @Test
-    public void addRemoveArmiesTest()
-    {
+    public void addRemoveArmiesTest() {
         territory1.setArmies(3);
         territory2.setArmies(1);
 
         assertEquals(3, territory1.getArmies());
         assertEquals(1, territory2.getArmies());
-        territory1.setArmies(territory1.getArmies()-1);
-        territory2.setArmies(territory2.getArmies()+4);
-        assertEquals(2, territory1.getArmies());
+        assertTrue(territory1.addArmies(2));
+        assertTrue(territory2.addArmies(6));
+        assertEquals(5, territory1.getArmies());
+        assertEquals(7, territory2.getArmies());
+        assertFalse(territory1.addArmies(-3));
+        assertTrue(territory2.removeArmies(2));
         assertEquals(5, territory2.getArmies());
+        assertFalse(territory2.removeArmies(5));
+        assertFalse(territory2.removeArmies(6));
+        assertFalse(territory2.removeArmies(-1));
     }
 
     @Test
-    public void linkingTest(){
+    public void linkingTest() {
         territory1.addLink(territory2);
         territory1.addLink(territory3);
         territory1.addLink(territory4);

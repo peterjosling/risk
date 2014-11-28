@@ -54,4 +54,23 @@ public class Territory {
     {
         return links;
     }
+
+    public boolean addArmies(int numberOfArmies){
+        if(numberOfArmies<0){
+            return false;
+        }else{
+            armies = armies+numberOfArmies;
+            return true;
+        }
+    }
+
+    public boolean removeArmies(int numberOfArmies){
+        if(numberOfArmies<0 || numberOfArmies>=armies){
+            return false;
+        }else{
+            armies = armies-numberOfArmies;
+            return true;
+        }
+    }
+
 }
