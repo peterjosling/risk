@@ -10,12 +10,12 @@ public class GameState {
 
     private HashSet<Player> players;
     private Map map;
+    private Object deck;
 
 
     public GameState()
     {
-        // This is the core right here - careful thought needs to be put
-        // into this so I'll leave it for discussion
+        deck = new Object();
     }
 
     public void loadMap(String json) throws MapParseException
