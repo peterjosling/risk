@@ -10,8 +10,8 @@ public class Deck {
 
 	private ArrayList cards;
 
-	public Deck(String order){ //do decks have a set size when created???
-		cards = new ArrayList<Card>();
+	public Deck(String order, int size){ //do decks have a set size when created???
+		cards = new ArrayList<Card>(size);
 	}
 
 	/**
