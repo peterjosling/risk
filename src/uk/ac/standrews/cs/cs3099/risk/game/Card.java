@@ -15,14 +15,14 @@ public class Card {
 
     // Will need cryptographic extensions at a later date
     private int id;
-    private int territoryid;
+    private int territoryId;
     private CardType type;
 
 
-    public Card(int id, int territoryid, CardType type)
+    public Card(int id, int territoryId, CardType type)
     {
         this.id = id;
-        this.territoryid = territoryid;
+        this.territoryId = territoryId;
         this.type = type;
     }
 
@@ -33,7 +33,7 @@ public class Card {
 
     public int getTerritoryId()
     {
-        return territoryid;
+        return territoryId;
     }
 
     public CardType getCardType()

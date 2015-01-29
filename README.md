@@ -12,10 +12,14 @@ This is the Risk implementation, with specific folders for different segments of
 
 ##Compilation
 
-Just run `comp.sh`, compiled java source files will be placed in bin
+Just run `ant`, compiled java source files will be placed in bin and a jar created
+
+##Tests
+
+Run `ant test`. Additionally, `run.sh` will automatically execute tests and refuse to execute the main application should the tests fail
 
 ##Usage
 
-Simply execute `run.sh`. Tests are executed first and if they fail the main application will not run.
+Simply execute `run.sh`. See note above regarding tests.
 
 :warning:  ***Make sure your tests pass!***

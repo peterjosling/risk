@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class Continent {
 
     private int id;
-    private int continentvalue;
+    private int continentValue;
     private Set<Territory> territories;
 
 
@@ -27,19 +27,19 @@ public class Continent {
 
     public int getContinentValue()
     {
-        return continentvalue;
+        return continentValue;
     }
 
-    public void setContinentValue(int continentvalue)
+    public void setContinentValue(int continentValue)
     {
-        this.continentvalue = continentvalue;
+        this.continentValue = continentValue;
     }
 
     public void addTerritory(Territory t)
     {
         territories.add(t);
     }
-    
+
     public Set<Territory> getTerritories()
     {
         return territories;
