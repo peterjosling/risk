@@ -8,12 +8,14 @@ public abstract class AbstractGame {
 	private int armiesPerPlayer;
 	private List players = new ArrayList();
 
-	public AbstractGame(int armiesPerPlayer) {
+	public AbstractGame(int armiesPerPlayer)
+	{
 		this.armiesPerPlayer = armiesPerPlayer;
 		this.gameState = new GameState();
 	}
 
-	public void addPlayer(Player player) {
+	public void addPlayer(Player player)
+	{
 		players.add(player);
 	}
 }

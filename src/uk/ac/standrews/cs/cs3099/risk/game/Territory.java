@@ -12,11 +12,13 @@ public class Territory {
 	private int id;
 	private Continent continent;
 	private Set<Territory> links;
+	private Player owner = null;
 
 	private int armies;
 
 
-	public Territory(int id, Continent continent) {
+	public Territory(int id, Continent continent)
+	{
 		this.id = id;
 		this.continent = continent;
 		this.links = new HashSet<Territory>();
@@ -24,31 +26,38 @@ public class Territory {
 		this.armies = 0;
 	}
 
-	public int getId() {
+	public int getId()
+	{
 		return id;
 	}
 
-	public int getArmies() {
+	public int getArmies()
+	{
 		return armies;
 	}
 
-	public void setArmies(int armies) {
+	public void setArmies(int armies)
+	{
 		this.armies = armies;
 	}
 
-	public void addLink(Territory t) {
+	public void addLink(Territory t)
+	{
 		links.add(t);
 	}
 
-	public boolean isLinkedTo(Territory t) {
+	public boolean isLinkedTo(Territory t)
+	{
 		return links.contains(t);
 	}
 
-	public Set<Territory> getLinkedTerritories() {
+	public Set<Territory> getLinkedTerritories()
+	{
 		return links;
 	}
 
-	public boolean addArmies(int numberOfArmies) {
+	public boolean addArmies(int numberOfArmies)
+	{
 		if (numberOfArmies < 0) {
 			return false;
 		} else {
@@ -57,12 +66,28 @@ public class Territory {
 		}
 	}
 
-	public boolean removeArmies(int numberOfArmies) {
+	public boolean removeArmies(int numberOfArmies)
+	{
 		if (numberOfArmies < 0 || numberOfArmies >= armies) {
 			return false;
 		} else {
 			armies = armies - numberOfArmies;
 			return true;
 		}
+	}
+
+	public Player getOwner()
+	{
+		return owner;
+	}
+
+	public boolean isClaimed()
+	{
+		return owner != null;
+	}
+
+	public void claim(Player player)
+	{
+		owner = player;
 	}
 }
