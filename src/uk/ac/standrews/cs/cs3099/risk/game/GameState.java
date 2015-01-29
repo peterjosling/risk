@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.util.Set;
 import java.util.HashSet;
 
 /**
