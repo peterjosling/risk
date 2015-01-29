@@ -6,10 +6,10 @@ package uk.ac.standrews.cs.cs3099.risk.game;
  */
 public class Main {
 
-    public static void main(String[] args)
-    {
-        Logger.print("Risk - Initial Commit");
-        System.exit(0);
-    }
+	public static void main(String[] args)
+	{
+		Logger.print("Risk - Initial Commit");
+		System.exit(0);
+	}
 
 }
