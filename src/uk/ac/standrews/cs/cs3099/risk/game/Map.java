@@ -29,7 +29,7 @@ public class Map {
         return territories;
     }
 
-    private Territory findTerritoryById(int id)
+    public Territory findTerritoryById(int id)
     {
         Territory result = null;
 
