@@ -18,7 +18,6 @@ public abstract class Player {
     private List<Card> hiddenCards = new ArrayList<Card>();
 
     private int totalArmies = 0;
-    private List<Territory> ownedTerritories = new ArrayList<Territory>();
 
     public Player(int id, String name)
     {
@@ -28,13 +27,13 @@ public abstract class Player {
 
     public boolean canPlaceArmies(Territory t)
     {
-        return ownedTerritories.contains(t);
+        return t.getOwner() == this;
     }
 
     public boolean canMoveArmies(Territory src, Territory dst, int amount)
     {
         return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
-               ownedTerritories.contains(src) && ownedTerritories.contains(dst);
+               ownsTerritory(src) && ownsTerritory(dst);
     }
 
     public void addCard(Card c)
@@ -46,6 +45,11 @@ public abstract class Player {
     {
         hiddenCards.remove(c);
         usedCards.add(c);
+    }
+
+    public boolean ownsTerritory(Territory t)
+    {
+        return t.getOwner() == this;
     }
 
 	public abstract Move getMove();
