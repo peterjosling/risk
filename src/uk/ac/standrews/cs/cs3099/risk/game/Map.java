@@ -29,7 +29,7 @@ public class Map {
         return territories;
     }
 
-    private Territory findTerritoryById(int id) throws MapParseException
+    private Territory findTerritoryById(int id)
     {
         Territory result = null;
 
@@ -39,9 +39,6 @@ public class Map {
                 break;
             }
         }
-
-        if (result == null)
-            throw new MapParseException("Invalid territory link specified (bad id)");
 
         return result;
     }
