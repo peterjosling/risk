@@ -68,6 +68,5 @@
       </batchtest>
 
     </junit>
-    <delete dir="${temp}"/>
   </target>
 </project>
