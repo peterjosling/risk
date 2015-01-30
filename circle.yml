@@ -1,4 +1,4 @@
-general:
-  artifacts:
-    - "temp"
+test:
+  post:
+    - cp temp/*.xml $CIRCLE_TEST_REPORTS
 
