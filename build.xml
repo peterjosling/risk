@@ -36,7 +36,6 @@
                  value="uk.ac.standrews.cs.cs3099.risk.game.Main" />
     </manifest>
     <jar jarfile="${dist}/lib/Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF"/>
-    <delete dir="${temp}"/>
   </target>
 
   <target name="clean"
