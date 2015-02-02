@@ -14,9 +14,15 @@ public class Main {
 
         Map m = new Map();
         Random r = new Random();
+        Player p = new LocalPlayer(0);
 
         for (int i = 0; i < 25; i++)
             Logger.print(m.getRandomName(r));
+
+        Logger.print("Risk - And some player names:");
+
+        for (int i = 0; i < 25; i++)
+            Logger.print(p.genName());
 
         System.exit(0);
     }
