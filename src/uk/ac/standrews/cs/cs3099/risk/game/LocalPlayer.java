@@ -1,25 +1,25 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 public class LocalPlayer extends Player {
-	public LocalPlayer(int id)
+    public LocalPlayer(int id)
     {
-		super(id);
+        super(id);
     }
 
-	public LocalPlayer(int id, String name)
-	{
-		super(id, name);
-	}
+    public LocalPlayer(int id, String name)
+    {
+        super(id, name);
+    }
 
-	@Override
-	public Move getMove()
-	{
-		return null;
-	}
+    @Override
+    public Move getMove()
+    {
+        return null;
+    }
 
-	@Override
-	public void notifyMove(Move move)
-	{
+    @Override
+    public void notifyMove(Move move)
+    {
 
-	}
+    }
 }
