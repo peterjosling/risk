@@ -64,7 +64,7 @@ public class Map {
         return territories;
     }
 
-    private Territory findTerritoryById(int id)
+    public Territory findTerritoryById(int id)
     {
         for (Territory t : territories)
             if (t.getId() == id)
@@ -142,7 +142,7 @@ public class Map {
         territories = new ArrayList<Territory>();
 
         try {
-            for (Entry e : jo.entrySet()) {
+            for (Entry<String, JsonElement> e : jo.entrySet()) {
                 String key = e.getKey();
                 JsonElement value = e.getValue();
 
@@ -178,7 +178,6 @@ public class Map {
                         break;
                     default:
                         throw new MapParseException("Unexpected key in map data: " + key);
-                        break;
                 }
             }
         } catch (Exception e) {

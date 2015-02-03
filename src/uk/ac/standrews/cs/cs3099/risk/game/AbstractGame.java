@@ -6,7 +6,7 @@ import java.util.List;
 public abstract class AbstractGame {
 	private GameState gameState;
 	private int armiesPerPlayer;
-	private List players = new ArrayList();
+	private List<Player> players = new ArrayList<Player>();
 
 	public AbstractGame(int armiesPerPlayer)
 	{
