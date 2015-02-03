@@ -9,12 +9,12 @@ public class NetworkPlayer extends Player {
 	private int port;
 	private Socket socket;
 
-    public NetworkPlayer(int id, String ip, int port)
-    {
-        super(id);
-        this.ip = ip;
-        this.port = port;
-    }
+	public NetworkPlayer(int id, String ip, int port)
+	{
+		super(id);
+		this.ip = ip;
+		this.port = port;
+	}
 
 	public NetworkPlayer(int id, String name, String ip, int port)
 	{
