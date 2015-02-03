@@ -2,6 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Random;
 import com.google.gson.*;
@@ -130,6 +131,7 @@ public class Map {
         JsonElement je;
         JsonObject jo;
         boolean[] parsed = new boolean[8]; // 8 == number of expected elements in map JSON data
+        List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_name", "country_card", "wildcards"));
 
         try {
             je = jp.parse(json);
@@ -145,36 +147,28 @@ public class Map {
             for (Entry<String, JsonElement> e : jo.entrySet()) {
                 String key = e.getKey();
                 JsonElement value = e.getValue();
+                int index = lookup.indexOf(key);
 
-                switch (key) {
-                    case "data":
-                        parsed[0] = checkParsed(parsed[0], "data");
+                parsed[index] = checkParsed(parsed[index], key);
 
+                switch (index) {
+                    case 0:
                         if (!value.getAsString().equals("map"))
                             throw new MapParseException("Datatype is not a map");
                         break;
-                    case "continents":
-                        parsed[1] = checkParsed(parsed[1], "contients");
-
-
+                    case 1:
                         break;
-                    case "connections":
-                        parsed[2] = checkParsed(parsed[2], "connections");
+                    case 2:
                         break;
-                    case "continent_values":
-                        parsed[3] = checkParsed(parsed[3], "continent_values");
+                    case 3:
                         break;
-                    case "continent_names":
-                        parsed[4] = checkParsed(parsed[4], "continent_names");
+                    case 4:
                         break;
-                    case "country_name":
-                        parsed[5] = checkParsed(parsed[5], "country_name");
+                    case 5:
                         break;
-                    case "country_card":
-                        parsed[6] = checkParsed(parsed[6], "country_card");
+                    case 6:
                         break;
-                    case "wildcards":
-                        parsed[7] = checkParsed(parsed[7], "wildcards");
+                    case 7:
                         break;
                     default:
                         throw new MapParseException("Unexpected key in map data: " + key);
