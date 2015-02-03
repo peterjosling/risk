@@ -6,7 +6,7 @@ public class LocalPlayer extends Player {
 		super(id);
 	}
 
-	public LocalPlayer(int id, String name) {
+	public LocalPlayer(int id, String name)
 	{
 		super(id, name);
 	}

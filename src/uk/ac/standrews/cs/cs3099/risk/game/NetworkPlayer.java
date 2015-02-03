@@ -16,7 +16,7 @@ public class NetworkPlayer extends Player {
         this.port = port;
     }
 
-	public NetworkPlayer(int id, String name, String ip, int port) {
+	public NetworkPlayer(int id, String name, String ip, int port)
 	{
 		super(id, name);
 		this.ip = ip;
