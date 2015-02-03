@@ -8,6 +8,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -15,11 +16,13 @@ public class DeckTest {
 
 	Deck deck1;
 	Deck deck2;
+	Deck deck3;
 
 	@Before
 	public void setup() {
 		deck1 = new Deck(44);
 		deck2 = new Deck(60);
+		deck3 = new Deck(44);
 	}
 
 	@Test
@@ -63,6 +66,18 @@ public class DeckTest {
 		assertEquals(43, cards.size());
 	}
 
+	@Test
+	public void shuffleTest(){
+		ArrayList<Card> cards = deck1.getDeck();
+		ArrayList<Card> cardsCopy = new ArrayList<Card>();
+		for(Card card : cards) {
+			cardsCopy.add(card);
+		}
+		assertEquals(cards, cardsCopy);
+		assertNotSame(cards, cardsCopy);
+		deck1.shuffle(cards, 12345678);
+		assertFalse(cards.equals(cardsCopy));
 
+	}
 
 }

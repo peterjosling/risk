@@ -2,6 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
@@ -78,7 +79,7 @@ public class Deck {
 		Random ranGenerator = new Random();
 		ranGenerator.setSeed(seed);
 		for (int i = 0; i < cards.size(); i++) {
-			int j = ranGenerator.nextInt() % cards.size();
+			int j = (ranGenerator.nextInt(Integer.MAX_VALUE) % cards.size());
 			Collections.swap(cards, i, j);
 		}
 	}
