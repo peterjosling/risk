@@ -4,7 +4,7 @@ public class LocalPlayer extends Player {
 	public LocalPlayer(int id)
     {
 		super(id);
-	}
+    }
 
 	public LocalPlayer(int id, String name)
 	{
