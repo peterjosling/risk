@@ -19,6 +19,7 @@ public class Main {
         for (int i = 0; i < 25; i++)
             Logger.print(m.getRandomName(r));
 
+        Logger.print("------------------------------------------------------------------------------");
         Logger.print("Risk - And some player names:");
 
         for (int i = 0; i < 25; i++)
