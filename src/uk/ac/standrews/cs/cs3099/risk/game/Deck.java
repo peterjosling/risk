@@ -3,6 +3,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * The deck which cards are drawn from.
@@ -68,12 +69,18 @@ public class Deck {
 	}
 
 	/**
-	 * Shuffle the cards list using the collections shuffle method until shuffle algorithm is agreed upon.
+	 * Shuffle the cards list currently using java.util.Random until random number generator decided.
 	 *
 	 * @param cards - the list to be shuffled
+	 * @param seed - seed for random number generator
 	 */
-	public void shuffle(ArrayList cards) {
-		Collections.shuffle(cards);
+	public void shuffle(ArrayList<Card> cards, long seed) {
+		Random ranGenerator = new Random();
+		ranGenerator.setSeed(seed);
+		for (int i = 0; i < cards.size(); i++) {
+			int j = ranGenerator.nextInt() % cards.size();
+			Collections.swap(cards, i, j);
+		}
 	}
 
 }

@@ -3,7 +3,10 @@ package uk.ac.standrews.cs.cs3099.risk.tests;
 import org.junit.*;
 import uk.ac.standrews.cs.cs3099.risk.game.Card;
 import uk.ac.standrews.cs.cs3099.risk.game.Deck;
+import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -17,11 +20,6 @@ public class DeckTest {
 	public void setup() {
 		deck1 = new Deck(44);
 		deck2 = new Deck(60);
-	}
-
-	@Test
-	public void sampleTest() {
-		assertFalse(false); // Asserts if b is not equal (!(b is equal))
 	}
 
 	@Test
@@ -46,5 +44,25 @@ public class DeckTest {
 		assertEquals(Card.CardType.ARTILLERY, cards2.get(40).getCardType());
 		assertEquals(Card.CardType.ARTILLERY, cards2.get(59).getCardType());
 	}
+
+	@Test
+	public void dealCardTest(){
+		InetAddress address;
+		Player p1 = null;
+		try {
+			address = InetAddress.getLocalHost();
+			p1 = new Player(1, address, (short) 1,"testPlayer");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		ArrayList<Card> cards = deck1.getDeck();
+		assertTrue(cards.get(0).getId() == 0);
+		assertEquals(44, cards.size());
+		deck1.dealCard(p1);
+		assertTrue(cards.get(0).getId() == 1);
+		assertEquals(43, cards.size());
+	}
+
+
 
 }
