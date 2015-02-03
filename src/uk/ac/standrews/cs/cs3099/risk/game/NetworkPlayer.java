@@ -9,29 +9,34 @@ public class NetworkPlayer extends Player {
 	private int port;
 	private Socket socket;
 
-    public NetworkPlayer(int id, String ip, int port) {
+    public NetworkPlayer(int id, String ip, int port)
+    {
         super(id);
         this.ip = ip;
         this.port = port;
     }
 
 	public NetworkPlayer(int id, String name, String ip, int port) {
+	{
 		super(id, name);
 		this.ip = ip;
 		this.port = port;
 	}
 
-	public void connect() throws IOException {
+	public void connect() throws IOException
+	{
 		socket = new Socket(InetAddress.getByName(ip), port);
 	}
 
 	@Override
-	public Move getMove() {
+	public Move getMove()
+	{
 		return null;
 	}
 
 	@Override
-	public void notifyMove(Move move) {
+	public void notifyMove(Move move)
+	{
 
 	}
 }

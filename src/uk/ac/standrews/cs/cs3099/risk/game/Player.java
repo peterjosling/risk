@@ -19,7 +19,6 @@ public abstract class Player {
     private List<Card> hiddenCards = new ArrayList<Card>();
 
     private int totalArmies = 0;
-    private List<Territory> ownedTerritories = new ArrayList<Territory>();
 
     private final String[][] names = {{"Adam", "Alan", "Andrew", "Antony", "Arnald", "Arthur", "Aubrey", "Baldwin", "Barnard", "Bartholomew", "Benedict",
                                        "Charles", "Christopher", "David", "Denys", "Edmond", "Edmund", "Edward", "Elias", "Esmour", "Ethelbert", "Eustace",
@@ -79,16 +78,16 @@ public abstract class Player {
         return name;
     }
 
-    public boolean canPlaceArmies(Territory t)
-    {
-        return ownedTerritories.contains(t);
-    }
+	public boolean canPlaceArmies(Territory t)
+	{
+		return t.getOwner() == this;
+	}
 
-    public boolean canMoveArmies(Territory src, Territory dst, int amount)
-    {
-        return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
-               ownedTerritories.contains(src) && ownedTerritories.contains(dst);
-    }
+	public boolean canMoveArmies(Territory src, Territory dst, int amount)
+	{
+		return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
+				ownsTerritory(src) && ownsTerritory(dst);
+	}
 
     public void addCard(Card c)
     {
@@ -100,6 +99,11 @@ public abstract class Player {
         hiddenCards.remove(c);
         usedCards.add(c);
     }
+
+	public boolean ownsTerritory(Territory t)
+	{
+		return t.getOwner() == this;
+	}
 
 	public abstract Move getMove();
 	public abstract void notifyMove(Move move);
