@@ -3,6 +3,7 @@ package uk.ac.standrews.cs.cs3099.risk.tests;
 import org.junit.*;
 import uk.ac.standrews.cs.cs3099.risk.game.Card;
 import uk.ac.standrews.cs.cs3099.risk.game.Deck;
+import uk.ac.standrews.cs.cs3099.risk.game.LocalPlayer;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.net.InetAddress;
@@ -56,7 +57,7 @@ public class DeckTest {
 		Player p1 = null;
 		try {
 			address = InetAddress.getLocalHost();
-			p1 = new Player(1, address, (short) 1, "testPlayer");
+			p1 = new LocalPlayer(1, "testPlayer");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
