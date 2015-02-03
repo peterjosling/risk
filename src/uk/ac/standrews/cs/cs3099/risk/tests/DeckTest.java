@@ -8,7 +8,6 @@ import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -19,14 +18,16 @@ public class DeckTest {
 	Deck deck3;
 
 	@Before
-	public void setup() {
+	public void setup()
+	{
 		deck1 = new Deck(44);
 		deck2 = new Deck(60);
 		deck3 = new Deck(44);
 	}
 
 	@Test
-	public void deckContentsTest() {
+	public void deckContentsTest()
+	{
 		ArrayList<Card> cards = deck1.getDeck();
 		assertEquals(44, cards.size());
 		assertEquals(Card.CardType.INFANTRY, cards.get(0).getCardType());
@@ -49,12 +50,13 @@ public class DeckTest {
 	}
 
 	@Test
-	public void dealCardTest(){
+	public void dealCardTest()
+	{
 		InetAddress address;
 		Player p1 = null;
 		try {
 			address = InetAddress.getLocalHost();
-			p1 = new Player(1, address, (short) 1,"testPlayer");
+			p1 = new Player(1, address, (short) 1, "testPlayer");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -67,17 +69,17 @@ public class DeckTest {
 	}
 
 	@Test
-	public void shuffleTest(){
+	public void shuffleTest()
+	{
 		ArrayList<Card> cards = deck1.getDeck();
 		ArrayList<Card> cardsCopy = new ArrayList<Card>();
-		for(Card card : cards) {
+		for (Card card : cards) {
 			cardsCopy.add(card);
 		}
 		assertEquals(cards, cardsCopy);
 		assertNotSame(cards, cardsCopy);
 		deck1.shuffle(cards, 12345678);
 		assertFalse(cards.equals(cardsCopy));
-
 	}
 
 }

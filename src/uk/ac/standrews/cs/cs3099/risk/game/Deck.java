@@ -1,8 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
@@ -13,12 +11,14 @@ public class Deck {
 
 	private ArrayList<Card> cards;
 
-	public Deck(int size) {
+	public Deck(int size)
+	{
 		cards = new ArrayList<Card>(size);
 		populateDeck(size);
 	}
 
-	public ArrayList<Card> getDeck(){
+	public ArrayList<Card> getDeck()
+	{
 		return cards;
 	}
 
@@ -29,7 +29,8 @@ public class Deck {
 	 * @param territoryId - cards territory id
 	 * @param type        - the cards type i.e. INFANTRY, CAVALRY, ARTILLERY, WILD
 	 */
-	public void addCardToDeck(int id, int territoryId, Card.CardType type) {
+	public void addCardToDeck(int id, int territoryId, Card.CardType type)
+	{
 		cards.add(new Card(id, territoryId, type));
 	}
 
@@ -37,23 +38,25 @@ public class Deck {
 	 * Fills deck with an equal number of Infantry, Cavalry and Artillery cards with a given deck size.
 	 * Any remaining space will be made up of wild cards, so this can mean there are between 0-2 wild cards
 	 * in a game.
+	 *
 	 * @param size
 	 */
-	public void populateDeck(int size){
+	public void populateDeck(int size)
+	{
 		Card.CardType cardType = Card.CardType.INFANTRY;
 		Card.CardType cardTypes[] = Card.CardType.values();
-		int numberOfEachCard = size/3;
+		int numberOfEachCard = size / 3;
 		int cardIndex = 0;
 		int territoryID = 0;
-		for(int cardNumber = 0; cardNumber<size; cardNumber++) {
-			if(cardNumber%numberOfEachCard==0) { //Changes cardType
+		for (int cardNumber = 0; cardNumber < size; cardNumber++) {
+			if (cardNumber % numberOfEachCard == 0) { //Changes cardType
 				cardType = cardTypes[cardIndex];
 				cardIndex++;
 			}
 			addCardToDeck(cardNumber, territoryID, cardType);
-			if(cardType== Card.CardType.WILD){
+			if (cardType == Card.CardType.WILD) {
 				territoryID = -1;
-			}else territoryID++;
+			} else territoryID++;
 		}
 	}
 
@@ -63,7 +66,8 @@ public class Deck {
 	 *
 	 * @param player - the player the card will be dealt to
 	 */
-	public void dealCard(Player player) {
+	public void dealCard(Player player)
+	{
 		Card topCard = cards.get(0);
 		player.addCard(topCard);
 		cards.remove(0);
@@ -73,9 +77,10 @@ public class Deck {
 	 * Shuffle the cards list currently using java.util.Random until random number generator decided.
 	 *
 	 * @param cards - the list to be shuffled
-	 * @param seed - seed for random number generator
+	 * @param seed  - seed for random number generator
 	 */
-	public void shuffle(ArrayList<Card> cards, long seed) {
+	public void shuffle(ArrayList<Card> cards, long seed)
+	{
 		Random ranGenerator = new Random();
 		ranGenerator.setSeed(seed);
 		for (int i = 0; i < cards.size(); i++) {
