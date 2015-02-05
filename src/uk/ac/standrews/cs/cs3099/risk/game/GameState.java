@@ -7,12 +7,15 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 public class GameState {
 
 	private Map map;
-	private Object deck;
+	private Deck deck;
 
+	private final int DECK_SIZE = 44;
+	private final int TEMP_SEED = 123456;
 
 	public GameState()
 	{
-		deck = new Object();
+		deck = new Deck(DECK_SIZE);
+		deck.shuffle(TEMP_SEED);
 	}
 
 	public void loadMap(String json) throws MapParseException
