@@ -10,15 +10,7 @@ public class Die {
 
 	Random rand = new Random();
 	
-	private int faceValue;
-	
-	/**
-	 * Die Constructor initialises the face value to 1.
-	 */
-	public Die()
-	{
-		faceValue = 1;
-	}
+	private int faceValue = 1;
 	
 	/**
 	 * Simple implementation of die roll
