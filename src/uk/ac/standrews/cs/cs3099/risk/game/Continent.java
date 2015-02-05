@@ -9,39 +9,39 @@ import java.util.HashSet;
  */
 public class Continent {
 
-    private int id;
-    private int continentvalue;
-    private Set<Territory> territories;
+	private int id;
+	private int continentValue;
+	private Set<Territory> territories;
 
 
-    public Continent(int id)
-    {
-        this.id = id;
-        territories = new HashSet<Territory>();
-    }
+	public Continent(int id)
+	{
+		this.id = id;
+		territories = new HashSet<Territory>();
+	}
 
-    public int getId()
-    {
-        return id;
-    }
+	public int getId()
+	{
+		return id;
+	}
 
-    public int getContinentValue()
-    {
-        return continentvalue;
-    }
+	public int getContinentValue()
+	{
+		return continentValue;
+	}
 
-    public void setContinentValue(int continentvalue)
-    {
-        this.continentvalue = continentvalue;
-    }
+	public void setContinentValue(int continentValue)
+	{
+		this.continentValue = continentValue;
+	}
 
-    public void addTerritory(Territory t)
-    {
-        territories.add(t);
-    }
-    
-    public Set<Territory> getTerritories()
-    {
-        return territories;
-    }
+	public void addTerritory(Territory t)
+	{
+		territories.add(t);
+	}
+
+	public Set<Territory> getTerritories()
+	{
+		return territories;
+	}
 }
