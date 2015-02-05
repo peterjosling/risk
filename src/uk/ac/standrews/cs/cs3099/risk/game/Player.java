@@ -29,12 +29,7 @@ public abstract class Player {
 	{
 		return id;
 	}
-
-	public boolean canPlaceArmies(Territory t)
-	{
-		return t.getOwner() == this;
-	}
-
+	
 	public boolean canMoveArmies(Territory src, Territory dst, int amount)
 	{
 		return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
@@ -54,7 +49,7 @@ public abstract class Player {
 
 	public boolean ownsTerritory(Territory t)
 	{
-		return t.getOwner() == this;
+		return t.getOwner() == id;
 	}
 
 	public abstract Move getMove(MoveType type);
