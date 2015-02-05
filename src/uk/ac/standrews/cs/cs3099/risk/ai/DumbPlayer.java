@@ -29,6 +29,7 @@ public class DumbPlayer extends Player {
 	{
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = state.getUnclaimedTerritories();
-		return new AssignArmyMove(freeTerritories[0].getId(), ++ack_id);
+		Territory territory = freeTerritories[0];
+		return new AssignArmyMove(getId(), ++ack_id, territory.getId());
 	}
 }
