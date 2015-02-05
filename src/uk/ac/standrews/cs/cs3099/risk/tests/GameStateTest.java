@@ -14,4 +14,11 @@ public class GameStateTest {
 
         // Nothing to test yet
     }
+    
+    @Test
+    public void checkGameCompletion(){
+    	
+    	// Cannot test yet
+    	
+    }
 }
