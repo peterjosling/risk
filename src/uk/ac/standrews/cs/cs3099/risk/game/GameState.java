@@ -87,4 +87,48 @@ public class GameState {
 		return true;
 
 	}
+	
+	public boolean isMoveValid(Move move)
+	{
+		
+		MoveType type = move.getType();
+		
+		switch (type) {
+		case ATTACK:
+			
+			break;
+		case FORTIFY:
+			
+			break;
+		case TRADE_IN_CARDS:
+			
+			break;
+		case DEPLOY:
+			
+			break;
+		case WITHDRAW_CARD:
+			
+			break;
+		case ASSIGN_ARMY:
+			AssignArmyMove assignMove = (AssignArmyMove) move;  
+			
+			int territoryId = assignMove.getTerritoryId();
+			
+			Territory territory = map.findTerritoryById(territoryId);
+			
+			if(territory.isClaimed()){
+				return false;
+			}
+				
+			break;
+			
+		default:
+
+			break;
+		}
+		
+		
+		
+		return true;
+	}
 }
