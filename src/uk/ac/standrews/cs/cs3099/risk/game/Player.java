@@ -25,6 +25,11 @@ public abstract class Player {
 		this.name = name;
 	}
 
+	public int getId()
+	{
+		return id;
+	}
+
 	public boolean canPlaceArmies(Territory t)
 	{
 		return t.getOwner() == this;
