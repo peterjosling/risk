@@ -75,11 +75,9 @@ public class Deck {
 
 	/**
 	 * Shuffle the cards list currently using java.util.Random until random number generator decided.
-	 *
-	 * @param cards - the list to be shuffled
 	 * @param seed  - seed for random number generator
 	 */
-	public void shuffle(ArrayList<Card> cards, long seed)
+	public void shuffle(long seed)
 	{
 		Random ranGenerator = new Random();
 		ranGenerator.setSeed(seed);

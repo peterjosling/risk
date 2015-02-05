@@ -79,7 +79,7 @@ public class DeckTest {
 		}
 		assertEquals(cards, cardsCopy);
 		assertNotSame(cards, cardsCopy);
-		deck1.shuffle(cards, 12345678);
+		deck1.shuffle(12345678);
 		assertFalse(cards.equals(cardsCopy));
 	}
 
