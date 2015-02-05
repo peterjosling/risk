@@ -70,7 +70,7 @@ public class GameState {
 
 		return territories.toArray(new Territory[0]);
 	}
-
+	
 	public void playMove(Move move, int playerID){
 		MoveType moveType = move.getType();
 		if(moveType==MoveType.ASSIGN_ARMY){
@@ -96,5 +96,21 @@ public class GameState {
 
 	}
 
+	public boolean isGameComplete()
+	{
+		
+		int player = -1;
+		
+		for (Territory territory : map.getTerritories()) {
+			if (player == -1){
+				player = territory.getOwner();
+			} else if (territory.getOwner() != player) {
+				return false;
+			}
+		}
+		
+		return true;
+
+	}
 }
 
