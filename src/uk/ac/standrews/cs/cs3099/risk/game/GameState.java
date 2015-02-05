@@ -90,7 +90,7 @@ public class GameState {
 		else if(moveType==MoveType.TRADE_IN_CARDS){
 
 		}
-		else if(moveType==MoveType.WITHDRAW_CARD){
+		else if(moveType==MoveType.DRAW_CARD){
 
 		}
 

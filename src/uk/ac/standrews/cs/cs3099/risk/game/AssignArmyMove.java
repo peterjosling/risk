@@ -3,9 +3,9 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 public class AssignArmyMove extends Move {
 	private int territoryId;
 
-	public AssignArmyMove(int territoryId, int ack_id)
+	public AssignArmyMove(int playerId, int ack_id, int territoryId)
 	{
-		super(ack_id);
+		super(playerId, ack_id);
 		this.territoryId = territoryId;
 	}
 
