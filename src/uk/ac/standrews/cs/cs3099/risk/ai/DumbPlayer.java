@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
 import uk.ac.standrews.cs.cs3099.risk.game.Move;
+import uk.ac.standrews.cs.cs3099.risk.game.MoveType;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 public class DumbPlayer extends Player {
@@ -9,7 +10,7 @@ public class DumbPlayer extends Player {
 		super(id, name);
 	}
 
-	public Move getMove()
+	public Move getMove(MoveType type)
 	{
 		return null;
 	}

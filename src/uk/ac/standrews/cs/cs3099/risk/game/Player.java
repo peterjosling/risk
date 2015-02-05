@@ -52,7 +52,7 @@ public abstract class Player {
 		return t.getOwner() == this;
 	}
 
-	public abstract Move getMove();
+	public abstract Move getMove(MoveType type);
 
 	public abstract void notifyMove(Move move);
 }
