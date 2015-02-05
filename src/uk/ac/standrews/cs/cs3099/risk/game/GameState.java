@@ -80,27 +80,29 @@ public class GameState {
 
 	public void playMove(Move move, int playerID){
 		MoveType moveType = move.getType();
-		if(moveType==MoveType.ASSIGN_ARMY){
-			Territory territory = map.findTerritoryById(((AssignArmyMove) move).getTerritoryId());
-			territory.addArmies(1);
-			territory.claim(playerID);
+		switch (moveType) {
+			case ASSIGN_ARMY:
+				Territory territory = map.findTerritoryById(((AssignArmyMove) move).getTerritoryId());
+				territory.addArmies(1);
+				territory.claim(playerID);
+				break;
+			case FORTIFY:
+				break;
+			case ATTACK:
+				break;
+			case DEPLOY:
+				DeployMove.Deployment[] deployments = ((DeployMove)move).getDeployments();
+				for(DeployMove.Deployment deployment : deployments){
+					int id = deployment.getTerritoryId();
+					int armies = deployment.getArmies();
+					addArmiesForTerritory(id, armies);
+				}
+				break;
+			case TRADE_IN_CARDS:
+				break;
+			case DRAW_CARD:
+				break;
 		}
-		else if(moveType==MoveType.FORTIFY){
-
-		}
-		else if(moveType==MoveType.ATTACK){
-
-		}
-		else if(moveType==MoveType.DEPLOY){
-
-		}
-		else if(moveType==MoveType.TRADE_IN_CARDS){
-
-		}
-		else if(moveType==MoveType.DRAW_CARD){
-
-		}
-
 	}
 
 	public boolean isGameComplete()
