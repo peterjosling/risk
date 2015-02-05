@@ -11,7 +11,6 @@ import uk.ac.standrews.cs.cs3099.risk.game.Logger;
 public class DiceRollTest {
 	
 	private Logger logger = new Logger();
-	private Die die1 = new Die();
 	private DiceRoll diceRoll = new DiceRoll();
 
 	/**
@@ -21,8 +20,6 @@ public class DiceRollTest {
 	public void rollTwoDie() 
 	{
 			int rollResult[] = diceRoll.rollDie(2);
-			System.out.println(rollResult[0]);
-			System.out.println(rollResult[1]);
 
 			assertEquals(rollResult.length, 2);
 			
@@ -38,7 +35,6 @@ public class DiceRollTest {
 	public void rollOneDie() 
 	{
 			int rollResult[] = diceRoll.rollDie(1);
-			System.out.println(rollResult[0]);
 
 			assertEquals(rollResult.length, 1);
 			
