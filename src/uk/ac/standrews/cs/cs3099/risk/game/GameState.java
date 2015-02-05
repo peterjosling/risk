@@ -70,4 +70,21 @@ public class GameState {
 
 		return territories.toArray(new Territory[0]);
 	}
+
+	public boolean isGameComplete()
+	{
+		
+		Player player = null;
+		
+		for (Territory territory : map.getTerritories()) {
+			if (player == null){
+				player = territory.getOwner();
+			} else if (territory.getOwner() != player) {
+				return false;
+			}
+		}
+		
+		return true;
+
+	}
 }
