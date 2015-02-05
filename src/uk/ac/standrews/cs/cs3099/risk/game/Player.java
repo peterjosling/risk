@@ -78,9 +78,9 @@ public abstract class Player {
 		return name;
 	}
 
-	public boolean canPlaceArmies(Territory t)
+	public int getId()
 	{
-		return t.getOwner() == this;
+		return id;
 	}
 
 	public boolean canMoveArmies(Territory src, Territory dst, int amount)
@@ -102,9 +102,9 @@ public abstract class Player {
 
 	public boolean ownsTerritory(Territory t)
 	{
-		return t.getOwner() == this;
+		return t.getOwner() == id;
 	}
 
-	public abstract Move getMove();
+	public abstract Move getMove(MoveType type);
 	public abstract void notifyMove(Move move);
 }
