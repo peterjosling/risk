@@ -120,6 +120,20 @@ public class GameState {
 		
 		switch (type) {
 		case ATTACK:
+			AttackMove attackMove = (AttackMove) move;
+			int playerId = attackMove.getPlayerId();
+			
+			Territory sourceTerritory = map.findTerritoryById(attackMove.getSource());
+			if(sourceTerritory.getOwner() != playerId) return false;
+			
+			Territory destTerritory = map.findTerritoryById(attackMove.getDest());
+			if(destTerritory.getOwner() == playerId) return false;
+			
+			if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
+			
+			if ((sourceTerritory.getArmies() != attackMove.getArmies())
+					&& (sourceTerritory.getArmies() > 1))
+				return false;
 			
 			break;
 		case FORTIFY:
@@ -131,7 +145,7 @@ public class GameState {
 		case DEPLOY:
 			
 			break;
-		case WITHDRAW_CARD:
+		case DRAW_CARD:
 			
 			break;
 		case ASSIGN_ARMY:
