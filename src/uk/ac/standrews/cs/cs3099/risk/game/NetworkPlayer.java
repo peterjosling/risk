@@ -22,7 +22,7 @@ public class NetworkPlayer extends Player {
 	}
 
 	@Override
-	public Move getMove()
+	public Move getMove(MoveType type)
 	{
 		return null;
 	}

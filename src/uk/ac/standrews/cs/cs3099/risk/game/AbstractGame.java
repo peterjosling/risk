@@ -6,7 +6,8 @@ import java.util.List;
 public abstract class AbstractGame {
 	private GameState gameState;
 	private int armiesPerPlayer;
-	private List players = new ArrayList();
+	private List<Player> players = new ArrayList<Player>();
+	private int currentTurn = 0;
 
 	public AbstractGame(int armiesPerPlayer)
 	{
@@ -17,5 +18,57 @@ public abstract class AbstractGame {
 	public void addPlayer(Player player)
 	{
 		players.add(player);
+	}
+
+	/**
+	 * Requests one army assignment from each player in order, until all armies have been assigned.
+	 */
+	public void assignTerritories()
+	{
+		int totalArmies = armiesPerPlayer * players.size();
+
+		for (int i = 0; i < totalArmies; i++) {
+			Player player = getCurrentTurnPlayer();
+			Move move = player.getMove(MoveType.ASSIGN_ARMY);
+
+			if (move.getType() != MoveType.ASSIGN_ARMY) {
+				terminate();
+				return;
+			}
+
+			// gameState.checkMove(move, playerId);
+			// gameState.playMove(move, playerId);
+		}
+	}
+
+	/**
+	 * @return the {@link Player} instance whose turn it currently is.
+	 */
+	public Player getCurrentTurnPlayer()
+	{
+		return players.get(currentTurn);
+	}
+
+	/**
+	 * Advance the turn to the next player.
+	 * @return The {@link Player} instance whose turn it is after advancing.
+	 */
+	public Player nextTurn()
+	{
+		currentTurn++;
+
+		if (currentTurn >= players.size()) {
+			currentTurn = 0;
+		}
+
+		return getCurrentTurnPlayer();
+	}
+
+	/**
+	 * Terminate the current game due to an error/cheating.
+	 */
+	public void terminate()
+	{
+
 	}
 }
