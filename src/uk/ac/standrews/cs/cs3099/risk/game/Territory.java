@@ -12,7 +12,7 @@ public class Territory {
 	private int id;
 	private Continent continent;
 	private Set<Territory> links;
-	private Player owner = null;
+	private int owner = -1;
 
 	private int armies;
 
@@ -76,18 +76,18 @@ public class Territory {
 		}
 	}
 
-	public Player getOwner()
+	public int getOwner()
 	{
 		return owner;
 	}
 
 	public boolean isClaimed()
 	{
-		return owner != null;
+		return owner != -1;
 	}
 
-	public void claim(Player player)
+	public void claim(int playerID)
 	{
-		owner = player;
+		owner = playerID;
 	}
 }

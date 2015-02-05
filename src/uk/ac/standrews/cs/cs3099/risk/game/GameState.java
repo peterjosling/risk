@@ -50,24 +50,51 @@ public class GameState {
 	 */
 	public Territory[] getUnclaimedTerritories()
 	{
-		return getTerritoriesForPlayer(null);
+		return getTerritoriesForPlayer(-1);
 	}
 
 	/**
 	 * Get all territories currently owned by a player.
-	 * @param player The player to find territories for.
+	 * @param playerID ID of the player to find territories for.
 	 * @return Array of {@link Territory}.
 	 */
-	public Territory[] getTerritoriesForPlayer(Player player)
+	public Territory[] getTerritoriesForPlayer(int playerID)
 	{
 		ArrayList<Territory> territories = new ArrayList<Territory>();
 
 		for (Territory territory : map.getTerritories()) {
-			if (territory.getOwner() == player) {
+			if (territory.getOwner() == playerID) {
 				territories.add(territory);
 			}
 		}
 
 		return territories.toArray(new Territory[0]);
 	}
+
+	public void playMove(Move move, int playerID){
+		MoveType moveType = move.getType();
+		if(moveType==MoveType.ASSIGN_ARMY){
+			Territory territory = map.findTerritoryById(((AssignArmyMove) move).getTerritoryId());
+			territory.addArmies(1);
+			territory.claim(playerID);
+		}
+		else if(moveType==MoveType.FORTIFY){
+
+		}
+		else if(moveType==MoveType.ATTACK){
+
+		}
+		else if(moveType==MoveType.DEPLOY){
+
+		}
+		else if(moveType==MoveType.TRADE_IN_CARDS){
+
+		}
+		else if(moveType==MoveType.WITHDRAW_CARD){
+
+		}
+
+	}
+
 }
+
