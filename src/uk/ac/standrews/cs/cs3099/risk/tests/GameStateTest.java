@@ -21,4 +21,17 @@ public class GameStateTest {
     	// Cannot test yet
     	
     }
+    
+    @Test
+    public void validateAssignArmy(){
+    	
+    	GameState g = new GameState();
+    	
+    	AssignArmyMove move;
+    	
+    	// Need initialisation of map to test
+    	
+    }
+    
+    
 }
