@@ -15,7 +15,8 @@ public class Die {
 	/**
 	 * Die Constructor initialises the face value to 1.
 	 */
-	public Die(){
+	public Die()
+	{
 		faceValue = 1;
 	}
 	
@@ -23,7 +24,8 @@ public class Die {
 	 * Simple implementation of die roll
 	 * @return die roll
 	 */
-	public int roll(){
+	public int roll()
+	{
 		faceValue = rand.nextInt(6) + 1;
 		return faceValue;
 	}

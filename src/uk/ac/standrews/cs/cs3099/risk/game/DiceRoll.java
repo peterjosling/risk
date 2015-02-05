@@ -6,11 +6,15 @@ package uk.ac.standrews.cs.cs3099.risk.game;
  */
 public class DiceRoll {
 	
-	private Die die1;
-	private Die die2;
-	private Die die3;
+	public Die die = new Die();
 	
-	public DiceRoll(){
-		
+	public int[] rollDie(int numOfRolls)
+	{
+		int[] diceRolls = new int[numOfRolls];
+
+		for(int n = 0; n < numOfRolls; n++){
+			diceRolls[n] = die.roll();
+		}
+		return diceRolls;
 	}
 }
