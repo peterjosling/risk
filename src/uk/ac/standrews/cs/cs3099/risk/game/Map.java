@@ -2,10 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map.Entry;
 import java.util.Random;
-import com.google.gson.*;
 
 /**
  * Map Class
@@ -49,10 +46,15 @@ public class Map {
 		return territoryNames[0][r.nextInt(territoryNames[0].length - 1)] + end;
 	}
 
+	public Map(MapParser m)
+	{
+		continents = m.getContinents();
+		territories = m.getTerritories();
+	}
+
 	public Map()
 	{
-		// This class will probably parse map data, so those member
-		// variables don't need to be passed into the constructor
+		// Just to have country generation
 	}
 
 	public List<Continent> getContinents()
@@ -72,164 +74,5 @@ public class Map {
 				return t;
 
 		return null;
-	}
-
-	/*{
-		"data":"map",
-		"continents": {
-			"CONTINENT_ID1":["COUNTRY_ID1", "COUNTRY_ID2"],
-			"CONTINENT_ID2":["COUNTRY_ID3", "COUNTRY_ID4"],
-		},
-		"connections": [
-			["COUNTRY_IDN","COUNTRY_IDM"],
-			["COUNTRY_IDO","COUNTRY_IDP"]
-		],
-		"continent_values": {
-			"CONTINENT_ID1":1
-			"CONTINENT_ID2":2
-		},
-		"continent_names": {
-			"0":"Best continent",
-			"2":"EU Travesty"
-		},
-		"country_name": {
-			"0":"Amerilard",
-			"1":"Sound Ameripoor"
-		},
-		"country_card": {
-			"0":0,
-			"1":2
-		},
-		"wildcards":2
-	}*/
-
-
-	// TEMPORARY MEASURE, just to demo the map parse logic before a JSON parser is actually used
-	private class KeyValue {
-		public int key;
-		public int value;
-		public int[] value_arr;
-	}
-
-	private class ParsedJson {
-		public List<KeyValue> continents;
-		public List<KeyValue> connections;
-		public List<KeyValue> continent_values;
-	}
-
-	private boolean checkParsed(boolean parsed, String key) throws MapParseException
-	{
-		if (parsed)
-			throw new MapParseException("Already parsed " + key);
-
-		return true;
-	}
-
-	public void parseMapData(String json) throws MapParseException
-	{
-		JsonParser jp = new JsonParser();
-		JsonElement je;
-		JsonObject jo;
-		boolean[] parsed = new boolean[8]; // 8 == number of expected elements in map JSON data
-		List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_name", "country_card", "wildcards"));
-
-		try {
-			je = jp.parse(json);
-			jo = je.getAsJsonObject();
-		} catch (Exception e) {
-			throw new MapParseException("Malformed JSON supplied");
-		}
-
-		continents = new ArrayList<Continent>();
-		territories = new ArrayList<Territory>();
-
-		try {
-			for (Entry<String, JsonElement> e : jo.entrySet()) {
-				String key = e.getKey();
-				JsonElement value = e.getValue();
-				int index = lookup.indexOf(key);
-
-				parsed[index] = checkParsed(parsed[index], key);
-
-				switch (index) {
-					case 0:
-						if (!value.getAsString().equals("map"))
-							throw new MapParseException("Datatype is not a map");
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
-					case 3:
-						break;
-					case 4:
-						break;
-					case 5:
-						break;
-					case 6:
-						break;
-					case 7:
-						break;
-					default:
-						throw new MapParseException("Unexpected key in map data: " + key);
-				}
-			}
-		} catch (Exception e) {
-			throw new MapParseException("Invalid map JSON supplied");
-		}
-	}
-
-	public void parseMapData(int json) throws MapParseException
-	{
-		// Will need to parse the json here, probably into KeyValue pairs
-		// See "Risk Data.docx"
-		ParsedJson parsedjson = new ParsedJson();
-
-		continents = new ArrayList<Continent>();
-		territories = new ArrayList<Territory>();
-
-		// Add all continents and associated territories
-		for (KeyValue pair : parsedjson.continents) {
-			Continent c = new Continent(pair.key);
-
-			// Add the continent to the global list
-			continents.add(c);
-
-			for (Integer id : pair.value_arr) {
-				Territory t = new Territory(id, c);
-
-				// Add the territory to the continent and to the global list
-				c.addTerritory(t);
-				territories.add(t);
-			}
-		}
-
-		// Loop through the connections and populate the links for each territory
-		for (KeyValue pair : parsedjson.connections) {
-			// Make quicker using Map<Integer, Territory> ?
-			// Currently O(2n * m), not good
-			Territory t1 = findTerritoryById(pair.key), t2 = findTerritoryById(pair.value);
-
-			// Add the links bidirectionally
-			t1.addLink(t2);
-			t2.addLink(t1);
-		}
-
-		for (KeyValue pair : parsedjson.continent_values) {
-			Continent c = null;
-
-			// Find the continent by id and set its corresponding value
-			for (Continent c2 : continents) {
-				if (c2.getId() == pair.key) {
-					c = c2;
-					break;
-				}
-			}
-
-			if (c == null)
-				throw new MapParseException("Continent not previously found (invalid id)");
-
-			c.setContinentValue(pair.value);
-		}
 	}
 }

@@ -20,11 +20,9 @@ public class GameState {
 		deck.shuffle(TEMP_SEED);
 	}
 
-	public void loadMap(String json) throws MapParseException
+	public void loadMap(MapParser m) throws MapParseException
 	{
-		map = new Map();
-
-		map.parseMapData(json);
+		map = new Map(m);
 	}
 
 	public void removeArmiesForTerritory(int id, int armies)
@@ -70,7 +68,7 @@ public class GameState {
 
 		return territories.toArray(new Territory[0]);
 	}
-	
+
 	public void playMove(Move move, int playerID){
 		MoveType moveType = move.getType();
 		if(moveType==MoveType.ASSIGN_ARMY){
@@ -98,9 +96,9 @@ public class GameState {
 
 	public boolean isGameComplete()
 	{
-		
+
 		int player = -1;
-		
+
 		for (Territory territory : map.getTerritories()) {
 			if (player == -1){
 				player = territory.getOwner();
@@ -108,7 +106,7 @@ public class GameState {
 				return false;
 			}
 		}
-		
+
 		return true;
 
 	}

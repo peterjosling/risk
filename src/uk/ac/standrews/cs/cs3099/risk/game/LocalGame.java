@@ -3,7 +3,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import uk.ac.standrews.cs.cs3099.risk.ai.DumbPlayer;
 
 public class LocalGame extends AbstractGame {
-	public LocalGame(int playerCount, int armiesPerPlayer)
+	public LocalGame(String jsonMap, int playerCount, int armiesPerPlayer) throws MapParseException
 	{
 		super(armiesPerPlayer);
 
@@ -12,5 +12,7 @@ public class LocalGame extends AbstractGame {
 
 			addPlayer(player);
 		}
+
+		this.loadMap(jsonMap);
 	}
 }
