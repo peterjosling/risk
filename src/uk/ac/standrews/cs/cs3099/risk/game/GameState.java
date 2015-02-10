@@ -87,6 +87,10 @@ public class GameState {
 				territory.claim(playerID);
 				break;
 			case FORTIFY:
+				int destination = ((FortifyMove) move).getDest();
+				int source = ((FortifyMove) move).getSource();
+				int numberOfArmies = ((FortifyMove) move).getArmies();
+				moveArmies(source, destination, numberOfArmies);
 				break;
 			case ATTACK:
 				break;
