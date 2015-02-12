@@ -15,14 +15,19 @@ public class GameState {
 
 	private int[] deployableArmies;
 	private int tradeInCount = 0;
+	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
 
 
-	private final int[] TRADEINVALUES = new int[6];
+	private int[] playersArmies;
+	private int numberOfPlayers;
+	private final int[] TRADE_IN_VALUES = new int[6];
+
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
-	public GameState()
+	public GameState(int numberOfPlayers)
 	{
+		numberOfPlayers = this.numberOfPlayers;
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
@@ -34,12 +39,16 @@ public class GameState {
 	}
 
 	public void initTradeInValues(){
-		TRADEINVALUES[0] = 4;
-		TRADEINVALUES[1] = 6;
-		TRADEINVALUES[2] = 8;
-		TRADEINVALUES[3] = 10;
-		TRADEINVALUES[4] = 12;
-		TRADEINVALUES[5] = 15;
+		TRADE_IN_VALUES[0] = 4;
+		TRADE_IN_VALUES[1] = 6;
+		TRADE_IN_VALUES[2] = 8;
+		TRADE_IN_VALUES[3] = 10;
+		TRADE_IN_VALUES[4] = 12;
+		TRADE_IN_VALUES[5] = 15;
+	}
+
+	public int getNumberOfPlayers() {
+		return numberOfPlayers;
 	}
 
 	public void removeArmiesForTerritory(int id, int armies)
@@ -117,11 +126,23 @@ public class GameState {
 				break;
 			case TRADE_IN_CARDS:
 				Card[] cards = ((TradeCardsMove)move).getCards();
+				Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
 				int armies = calculateArmiesFromTradeIn();
-				//add number of armies to armies to deploy array
+				for(Card card:cards){
+					for(Territory playerTerritory: playersTerritories){
+						if(card.getTerritoryId()==playerTerritory.getId()){
+							armies+=2; //this will need to be added to specific territory in future
+							break;
+						}
+					}
+					playerCards[playerID].remove(card);
+				}
+				playersArmies[playerID]++;
 				tradeInCount++;
 				break;
 			case DRAW_CARD:
+				Card drawnCard = deck.dealCard();
+				playerCards[playerID].add(drawnCard);
 				break;
 		}
 	}
@@ -129,7 +150,7 @@ public class GameState {
 
 	public int calculateArmiesFromTradeIn(){
 		if(tradeInCount<=5){
-			return TRADEINVALUES[tradeInCount];
+			return TRADE_IN_VALUES[tradeInCount];
 		}else {
 			return ((tradeInCount-5)*5)+15; //5 additional armies to the previous set
 		}
