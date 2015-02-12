@@ -2,6 +2,8 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
 
+import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
+
 /**
  * GameState Class
  * Stores the entire game and controls board movement
@@ -10,6 +12,8 @@ public class GameState {
 
 	private Map map;
 	private Deck deck;
+	
+	private int[] playersArmies;
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -98,7 +102,6 @@ public class GameState {
 
 	public boolean isGameComplete()
 	{
-		
 		int player = -1;
 		
 		for (Territory territory : map.getTerritories()) {
@@ -108,9 +111,145 @@ public class GameState {
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	public int calculateDeployTroops(int playerId)
+	{
+		int deployableTroops = 0;
+		
+		// TERRITORIES		
+		int territoryCount = getTerritoriesForPlayer(playerId).length;
+		
+		if(territoryCount < 12){
+			deployableTroops += 3;
+		} else {
+			deployableTroops += (territoryCount/3);
+		}
+		
+		// CONTINENTS
+		int continentTroops = 0;
+		for(Continent continent : map.getContinents()){
+			int continentOwned = 1;
+			for(Territory territory : continent.getTerritories()){
+				if (territory.getOwner() != playerId){
+					continentOwned = -1;
+					break;
+				}
+			}
+			if (continentOwned == 1)
+				continentTroops += continent.getContinentValue();
+		}
+		deployableTroops += continentTroops;
+		
+		return deployableTroops;
+	}
+	
+	public boolean areOwnedTerritoriesConnected(int playerId, Territory source, Territory dest)
+	{
+		if(source.isLinkedTo(dest)) return true;
+		
+		for(Territory linkedTerritory : source.getLinkedTerritories()){
+			if(linkedTerritory.getOwner() == playerId){
+				return areOwnedTerritoriesConnected(playerId, linkedTerritory, dest);
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isMoveValid(Move move)
+	{
+		System.out.println("Move not found");		
+		return false;
+	}
+	
+	public boolean isMoveValid(AttackMove move)
+	{
+		
+		int playerId = move.getPlayerId();
+		
+		Territory sourceTerritory = map.findTerritoryById(move.getSource());
+		if(sourceTerritory.getOwner() != playerId) return false;
+		
+		Territory destTerritory = map.findTerritoryById(move.getDest());
+		if(destTerritory.getOwner() == playerId) return false;
+		
+		if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
+		
+		if ((sourceTerritory.getArmies() <= move.getArmies())
+				|| (sourceTerritory.getArmies() < 2) || (move.getArmies() > 3))
+			return false;
 		
 		return true;
-
 	}
+	
+	public boolean isMoveValid(FortifyMove move)
+	{
+		int playerId = move.getPlayerId();
+		
+		Territory fortifySource = map.findTerritoryById(move.getSource());
+		if(fortifySource.getOwner() != playerId) return false;
+
+		Territory fortifyDest = map.findTerritoryById(move.getDest());
+		if(fortifyDest.getOwner() != playerId) return false;
+		
+		if(fortifySource.getArmies() > 1){
+			if((move.getArmies()) < fortifySource.getArmies()) return false;
+		} else {
+			return false;
+		}
+		
+		if(!areOwnedTerritoriesConnected(playerId, fortifySource, fortifyDest)) return false;
+		
+		return true;
+	}
+	
+	public boolean isMoveValid(TradeCardsMove move)
+	{
+		return true;
+	}
+	
+	public boolean isMoveValid(DeployMove move)
+	{
+		int playerId = move.getPlayerId();
+
+		int deployingTroops = 0;
+		
+		for (Deployment deployment : move.getDeployments()){
+			
+			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
+			if(deployTerritory.getOwner() != playerId) return false;
+			
+			deployingTroops += deployTerritory.getArmies();				
+
+		}
+		
+		if(deployingTroops != playersArmies[playerId]) return false;
+		
+		return true;
+	}
+	
+//	public boolean isMoveValid(DrawCardMove move)
+//	{
+//		return true;
+//	}
+	
+	public boolean isMoveValid(AssignArmyMove move)
+	{
+		AssignArmyMove assignMove = (AssignArmyMove) move;  
+		
+		int territoryId = assignMove.getTerritoryId();
+		
+		Territory territory = map.findTerritoryById(territoryId);
+		
+		if(territory.isClaimed()){
+			return false;
+		}
+		
+		return true;
+	}
+
+	
 }
 

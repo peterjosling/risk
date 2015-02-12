@@ -17,8 +17,55 @@ public class GameStateTest {
     
     @Test
     public void checkGameCompletion(){
+        GameState g = new GameState();    	
     	
     	// Cannot test yet
     	
     }
+    
+    @Test
+    public void validateAssignArmy(){
+    	
+    	GameState g = new GameState();
+    	
+    	AssignArmyMove move;
+    	
+    	// Need initialisation of map to test
+    	
+    }
+    
+    @Test
+    public void validateFortify(){
+    	
+    	GameState g = new GameState();
+    	
+    	FortifyMove move;
+    	
+    	// Need initialisation of map to test
+    	
+    }
+    
+    @Test
+    public void validateDeploy(){
+    	
+    	GameState g = new GameState();
+    	
+    	DeployMove move;
+    	
+    	// Need initialisation of map to test
+    	
+    }
+    
+    @Test
+    public void validateAttack(){
+    	
+    	GameState g = new GameState();
+    	
+    	AttackMove move;
+    	
+    	// Need initialisation of map to test
+    	
+    }
+    
+    
 }
