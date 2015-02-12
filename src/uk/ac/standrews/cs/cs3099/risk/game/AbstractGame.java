@@ -12,7 +12,7 @@ public abstract class AbstractGame {
 	public AbstractGame(int armiesPerPlayer)
 	{
 		this.armiesPerPlayer = armiesPerPlayer;
-		this.gameState = new GameState();
+		this.gameState = new GameState(0);
 	}
 
 	public void addPlayer(Player player)

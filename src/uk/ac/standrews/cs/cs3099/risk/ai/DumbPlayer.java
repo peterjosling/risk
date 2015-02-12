@@ -4,7 +4,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
 
 public class DumbPlayer extends Player {
-	private GameState state = new GameState();
+	private GameState state = new GameState(0);
 	private int ack_id = 0;
 
 	public DumbPlayer(int id, String name)
