@@ -42,7 +42,17 @@ public class MapParser {
 
 	public MapParser(String jsonMap) throws MapParseException
 	{
-		parseMapData(jsonMap);
+		boolean b = false;
+
+		try {
+			parseMapData(jsonMap);
+		} catch (MapParseException e) {
+			b = true;
+			Logger.print(e.getMessage());
+		}
+
+		if (b)
+			throw new MapParseException("ok");
 	}
 
 	// I like allocating things that won't be used
@@ -162,6 +172,9 @@ public class MapParser {
 			throw new MapParseException("Malformed JSON supplied");
 		}
 
+		if (jo.entrySet().size() == 0)
+			throw new MapParseException("Empty JSON supplied");
+
 		try {
 			for (Entry<String, JsonElement> jee : jo.entrySet()) {
 				String key = jee.getKey();
@@ -214,9 +227,15 @@ public class MapParser {
 						throw new MapParseException("Unexpected key in map data: " + key);
 				}
 			}
+		} catch (MapParseException e) {
+			throw new MapParseException(e.getMessage());
 		} catch (Exception e) {
 			throw new MapParseException("Invalid map JSON supplied");
 		}
+
+		for (int i = 0; i < processed.length; i++)
+			if (!processed[i])
+				throw new MapParseException("Map field missing: " + lookup.get(i));
 
 		addMapData(parsed);
 	}

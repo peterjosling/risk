@@ -6,10 +6,11 @@ function listtests() {
 
 java -cp bin:lib/* org.junit.runner.JUnitCore `listtests`
 
-echo "------------------------------------------------------------------------------"
 
 if [[ $? -ne 0 ]];then
-    echo "\nTESTS FAILED, not running Risk"
+	echo "------------------------------------------------------------------------------"
+    echo "TESTS FAILED, not running Risk"
+else
+	echo "------------------------------------------------------------------------------"
+	java -cp bin:lib/* uk.ac.standrews.cs.cs3099.risk.game.Main $*
 fi
-
-java -cp bin:lib/* uk.ac.standrews.cs.cs3099.risk.game.Main $*
