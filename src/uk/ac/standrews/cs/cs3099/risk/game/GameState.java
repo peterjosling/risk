@@ -14,7 +14,10 @@ public class GameState {
 	private Deck deck;
 
 	private int[] deployableArmies;
+	private int tradeInCount = 0;
 
+
+	private final int[] TRADEINVALUES = new int[6];
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
@@ -22,11 +25,21 @@ public class GameState {
 	{
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
+		initTradeInValues();
 	}
 
 	public void loadMap(MapParser m) throws MapParseException
 	{
 		map = new Map(m);
+	}
+
+	public void initTradeInValues(){
+		TRADEINVALUES[0] = 4;
+		TRADEINVALUES[1] = 6;
+		TRADEINVALUES[2] = 8;
+		TRADEINVALUES[3] = 10;
+		TRADEINVALUES[4] = 12;
+		TRADEINVALUES[5] = 15;
 	}
 
 	public void removeArmiesForTerritory(int id, int armies)
@@ -103,9 +116,22 @@ public class GameState {
 				}
 				break;
 			case TRADE_IN_CARDS:
+				Card[] cards = ((TradeCardsMove)move).getCards();
+				int armies = calculateArmiesFromTradeIn();
+				//add number of armies to armies to deploy array
+				tradeInCount++;
 				break;
 			case DRAW_CARD:
 				break;
+		}
+	}
+
+
+	public int calculateArmiesFromTradeIn(){
+		if(tradeInCount<=5){
+			return TRADEINVALUES[tradeInCount];
+		}else {
+			return ((tradeInCount-5)*5)+15; //5 additional armies to the previous set
 		}
 	}
 
