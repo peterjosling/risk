@@ -10,14 +10,14 @@ public class GameStateTest {
 
     @Test
     public void gettersAndSetters() {
-        GameState g = new GameState();
+        GameState g = new GameState(0);
 
         // Nothing to test yet
     }
     
     @Test
     public void checkGameCompletion(){
-        GameState g = new GameState();    	
+        GameState g = new GameState(0);
     	
     	// Cannot test yet
     	
@@ -26,7 +26,7 @@ public class GameStateTest {
     @Test
     public void validateAssignArmy(){
     	
-    	GameState g = new GameState();
+    	GameState g = new GameState(0);
     	
     	AssignArmyMove move;
     	
@@ -37,7 +37,7 @@ public class GameStateTest {
     @Test
     public void validateFortify(){
     	
-    	GameState g = new GameState();
+    	GameState g = new GameState(0);
     	
     	FortifyMove move;
     	
@@ -48,7 +48,7 @@ public class GameStateTest {
     @Test
     public void validateDeploy(){
     	
-    	GameState g = new GameState();
+    	GameState g = new GameState(0);
     	
     	DeployMove move;
     	
@@ -59,7 +59,7 @@ public class GameStateTest {
     @Test
     public void validateAttack(){
     	
-    	GameState g = new GameState();
+    	GameState g = new GameState(0);
     	
     	AttackMove move;
     	
