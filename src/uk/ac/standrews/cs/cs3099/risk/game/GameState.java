@@ -120,7 +120,7 @@ public class GameState {
 		int deployableTroops = 0;
 		int playerId = player.getId();
 		
-		// territories
+		// TERRITORIES
 		int territoryCount = 0;
 		for (Territory territory : map.getTerritories()) {
 			if (territory.getOwner() == playerId){
@@ -134,7 +134,7 @@ public class GameState {
 			deployableTroops += (territoryCount/3);
 		}
 		
-		// continents
+		// CONTINENTS
 		int continentTroops = 0;
 		for(Continent continent : map.getContinents()){
 			int continentOwned = 1;
@@ -158,11 +158,11 @@ public class GameState {
 	{
 		
 		MoveType type = move.getType();
+		int playerId = move.getPlayerId();
 		
 		switch (type) {
 		case ATTACK:
 			AttackMove attackMove = (AttackMove) move;
-			int playerId = attackMove.getPlayerId();
 			
 			Territory sourceTerritory = map.findTerritoryById(attackMove.getSource());
 			if(sourceTerritory.getOwner() != playerId) return false;
@@ -172,12 +172,29 @@ public class GameState {
 			
 			if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
 			
+			// INCORRECT?
 			if ((sourceTerritory.getArmies() != attackMove.getArmies())
 					&& (sourceTerritory.getArmies() > 1))
 				return false;
 			
 			break;
 		case FORTIFY:
+			FortifyMove fortifyMove = (FortifyMove) move;
+			
+			Territory source1Territory = map.findTerritoryById(fortifyMove.getSource());
+			if(source1Territory.getOwner() != playerId) return false;
+
+			Territory dest1Territory = map.findTerritoryById(fortifyMove.getDest());
+			if(dest1Territory.getOwner() != playerId) return false;
+			
+			if(source1Territory.getArmies() > 1){
+				if((fortifyMove.getArmies()) < source1Territory.getArmies()) return false;
+			} else {
+				return false;
+			}
+			
+			// Check source and destination are connected ?!?!
+			
 			
 			break;
 		case TRADE_IN_CARDS:
@@ -191,6 +208,8 @@ public class GameState {
 			
 			break;
 		case DRAW_CARD:
+			
+			// ??
 			
 			break;
 		case ASSIGN_ARMY:
