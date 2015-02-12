@@ -10,6 +10,7 @@ import java.util.Random;
 public class Deck {
 
 	private ArrayList<Card> cards;
+	private int topCardIndex =0;
 
 	public Deck(int size)
 	{
@@ -68,9 +69,9 @@ public class Deck {
 	 */
 	public void dealCard(Player player)
 	{
-		Card topCard = cards.get(0);
+		Card topCard = cards.get(topCardIndex);
 		player.addCard(topCard);
-		cards.remove(0);
+		topCardIndex++;
 	}
 
 	/**
