@@ -53,19 +53,19 @@ public class DeckTest {
 	@Test
 	public void dealCardTest()
 	{
-		InetAddress address;
-		Player p1 = null;
-		try {
-			address = InetAddress.getLocalHost();
-			p1 = new LocalPlayer(1, "testPlayer");
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+//		InetAddress address;
+//		Player p1 = null;
+//		try {
+//			address = InetAddress.getLocalHost();
+//			p1 = new LocalPlayer(1, "testPlayer");
+//		} catch (UnknownHostException e) {
+//			e.printStackTrace();
+//		}
 		ArrayList<Card> cards = deck1.getDeck();
 		assertTrue(cards.get(0).getId() == 0);
 		assertEquals(44, cards.size());
 		assertEquals(0, deck1.getTopCardIndex());
-		deck1.dealCard(p1);
+		deck1.dealCard();
 		assertEquals(1, deck1.getTopCardIndex());
 		assertTrue(cards.get(deck1.getTopCardIndex()).getId() == 1);
 	}

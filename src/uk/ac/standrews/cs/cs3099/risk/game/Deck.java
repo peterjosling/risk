@@ -68,14 +68,12 @@ public class Deck {
 	/**
 	 * Deals the card on the top of the deck i.e. the card at the front of the array list of
 	 * cards to the specified player.
-	 *
-	 * @param player - the player the card will be dealt to
 	 */
-	public void dealCard(Player player)
+	public Card dealCard()
 	{
 		Card topCard = cards.get(topCardIndex);
-		player.addCard(topCard);
 		topCardIndex++;
+		return topCard;
 	}
 
 	/**
