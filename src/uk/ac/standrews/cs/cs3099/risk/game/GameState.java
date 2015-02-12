@@ -114,10 +114,9 @@ public class GameState {
 		return true;
 	}
 	
-	public int calculateDeployTroops(Player player)
+	public int calculateDeployTroops(int playerId)
 	{
 		int deployableTroops = 0;
-		int playerId = player.getId();
 		
 		// TERRITORIES		
 		int territoryCount = getTerritoriesForPlayer(playerId).length;
@@ -161,91 +160,96 @@ public class GameState {
 	
 	public boolean isMoveValid(Move move)
 	{
+		System.out.println("Move not found");		
+		return false;
+	}
+	
+	public boolean isMoveValid(AttackMove move)
+	{
 		
-		MoveType type = move.getType();
 		int playerId = move.getPlayerId();
 		
-		switch (type) {
-		case ATTACK:
-			AttackMove attackMove = (AttackMove) move;
-			
-			Territory sourceTerritory = map.findTerritoryById(attackMove.getSource());
-			if(sourceTerritory.getOwner() != playerId) return false;
-			
-			Territory destTerritory = map.findTerritoryById(attackMove.getDest());
-			if(destTerritory.getOwner() == playerId) return false;
-			
-			if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
-			
-			if ((sourceTerritory.getArmies() <= attackMove.getArmies())
-					|| (sourceTerritory.getArmies() < 2) || (attackMove.getArmies() > 3))
-				return false;
-			
-			break;
-		case FORTIFY:
-			FortifyMove fortifyMove = (FortifyMove) move;
-			
-			Territory fortifySource = map.findTerritoryById(fortifyMove.getSource());
-			if(fortifySource.getOwner() != playerId) return false;
+		Territory sourceTerritory = map.findTerritoryById(move.getSource());
+		if(sourceTerritory.getOwner() != playerId) return false;
+		
+		Territory destTerritory = map.findTerritoryById(move.getDest());
+		if(destTerritory.getOwner() == playerId) return false;
+		
+		if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
+		
+		if ((sourceTerritory.getArmies() <= move.getArmies())
+				|| (sourceTerritory.getArmies() < 2) || (move.getArmies() > 3))
+			return false;
+		
+		return true;
+	}
+	
+	public boolean isMoveValid(FortifyMove move)
+	{
+		int playerId = move.getPlayerId();
+		
+		Territory fortifySource = map.findTerritoryById(move.getSource());
+		if(fortifySource.getOwner() != playerId) return false;
 
-			Territory fortifyDest = map.findTerritoryById(fortifyMove.getDest());
-			if(fortifyDest.getOwner() != playerId) return false;
-			
-			if(fortifySource.getArmies() > 1){
-				if((fortifyMove.getArmies()) < fortifySource.getArmies()) return false;
-			} else {
-				return false;
-			}
-			
-			if(!areOwnedTerritoriesConnected(playerId, fortifySource, fortifyDest)) return false;
-			
-			break;
-		case TRADE_IN_CARDS:
-			
-			// ??
-			
-			break;
-		case DEPLOY:
-			DeployMove deployMove = (DeployMove) move;
-			
-			int deployingTroops = 0;
-						
-			for (Deployment deployment : deployMove.getDeployments()){
-				
-				Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
-				if(deployTerritory.getOwner() != playerId) return false;
-				
-				deployingTroops += deployTerritory.getArmies();				
+		Territory fortifyDest = map.findTerritoryById(move.getDest());
+		if(fortifyDest.getOwner() != playerId) return false;
+		
+		if(fortifySource.getArmies() > 1){
+			if((move.getArmies()) < fortifySource.getArmies()) return false;
+		} else {
+			return false;
+		}
+		
+		if(!areOwnedTerritoriesConnected(playerId, fortifySource, fortifyDest)) return false;
+		
+		return true;
+	}
+	
+	public boolean isMoveValid(TradeCardsMove move)
+	{
+		return true;
+	}
+	
+	public boolean isMoveValid(DeployMove move)
+	{
+		int playerId = move.getPlayerId();
 
-			}
+		int deployingTroops = 0;
+		
+		for (Deployment deployment : move.getDeployments()){
 			
-			if(deployingTroops != playersArmies[playerId]) return false;
+			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
+			if(deployTerritory.getOwner() != playerId) return false;
 			
-			break;
-		case DRAW_CARD:
-			
-			// ??
-			
-			break;
-		case ASSIGN_ARMY:
-			AssignArmyMove assignMove = (AssignArmyMove) move;  
-			
-			int territoryId = assignMove.getTerritoryId();
-			
-			Territory territory = map.findTerritoryById(territoryId);
-			
-			if(territory.isClaimed()){
-				return false;
-			}
-				
-			break;
-			
-		default:
-			System.out.println("Type not found.");
-			break;
+			deployingTroops += deployTerritory.getArmies();				
+
+		}
+		
+		if(deployingTroops != playersArmies[playerId]) return false;
+		
+		return true;
+	}
+	
+//	public boolean isMoveValid(DrawCardMove move)
+//	{
+//		return true;
+//	}
+	
+	public boolean isMoveValid(AssignArmyMove move)
+	{
+		AssignArmyMove assignMove = (AssignArmyMove) move;  
+		
+		int territoryId = assignMove.getTerritoryId();
+		
+		Territory territory = map.findTerritoryById(territoryId);
+		
+		if(territory.isClaimed()){
+			return false;
 		}
 		
 		return true;
 	}
+
+	
 }
 
