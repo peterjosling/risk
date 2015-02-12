@@ -98,53 +98,53 @@ public class GameState {
 		return playersDeployableArmies[playerID];
 	}
 
-	public void playMove(Move move, int playerID){
-		MoveType moveType = move.getType();
-		switch (moveType) {
-			case ASSIGN_ARMY:
-				Territory territory = map.findTerritoryById(((AssignArmyMove) move).getTerritoryId());
-				territory.addArmies(1);
-				territory.claim(playerID);
-				break;
-			case FORTIFY:
-				int destination = ((FortifyMove) move).getDest();
-				int source = ((FortifyMove) move).getSource();
-				int numberOfArmies = ((FortifyMove) move).getArmies();
-				moveArmies(source, destination, numberOfArmies);
-				break;
-			case ATTACK:
-				break;
-			case DEPLOY:
-				DeployMove.Deployment[] deployments = ((DeployMove)move).getDeployments();
-				for(DeployMove.Deployment deployment : deployments){
-					int id = deployment.getTerritoryId();
-					int armies = deployment.getArmies();
-					addArmiesForTerritory(id, armies);
-				}
-				break;
-			case TRADE_IN_CARDS:
-				Card[] cards = ((TradeCardsMove)move).getCards();
-				Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
-				int armies = calculateArmiesFromTradeIn();
-				for(Card card:cards){
-					for(Territory playerTerritory: playersTerritories){
-						if(card.getTerritoryId()==playerTerritory.getId()){
-							armies+=2; //this will need to be added to specific territory in future
-							break;
-						}
-					}
-					playerCards[playerID].remove(card);
-				}
-				playersDeployableArmies[playerID]++;
-				tradeInCount++;
-				break;
-			case DRAW_CARD:
-				Card drawnCard = deck.dealCard();
-				playerCards[playerID].add(drawnCard);
-				break;
+	public void playMove(AssignArmyMove move, int playerID){
+		Territory territory = map.findTerritoryById(move.getTerritoryId());
+		territory.addArmies(1);
+		territory.claim(playerID);
+	}
+
+	public void playMove(FortifyMove move){
+		int destination = move.getDest();
+		int source = move.getSource();
+		int numberOfArmies = move.getArmies();
+		moveArmies(source, destination, numberOfArmies);
+	}
+
+	public void playMove(DeployMove move){
+		DeployMove.Deployment[] deployments = move.getDeployments();
+		for(DeployMove.Deployment deployment : deployments){
+			int id = deployment.getTerritoryId();
+			int armies = deployment.getArmies();
+			addArmiesForTerritory(id, armies);
 		}
 	}
 
+	public void playMove(AttackMove move){
+
+	}
+
+	public void playMove(TradeCardsMove move, int playerID){
+		Card[] cards = move.getCards();
+		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
+		int armies = calculateArmiesFromTradeIn();
+		for(Card card:cards){
+			for(Territory playerTerritory: playersTerritories){
+				if(card.getTerritoryId()==playerTerritory.getId()){
+					armies+=2; //this will need to be added to specific territory in future
+					break;
+				}
+			}
+			playerCards[playerID].remove(card);
+		}
+		playersDeployableArmies[playerID] += armies;
+		tradeInCount++;
+	}
+
+//	public void playMove(DrawCardMove move, int playerID){
+//		Card drawnCard = deck.dealCard();
+//		playerCards[playerID].add(drawnCard);
+//	}
 
 	public int calculateArmiesFromTradeIn(){
 		if(tradeInCount<=5){
@@ -171,7 +171,7 @@ public class GameState {
 	public int calculateDeployTroops(int playerId)
 	{
 		int deployableTroops = 0;
-
+		
 		// TERRITORIES
 		int territoryCount = getTerritoriesForPlayer(playerId).length;
 
