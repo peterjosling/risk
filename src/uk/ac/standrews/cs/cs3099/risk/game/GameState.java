@@ -102,7 +102,6 @@ public class GameState {
 
 	public boolean isGameComplete()
 	{
-		
 		int player = -1;
 		
 		for (Territory territory : map.getTerritories()) {
@@ -112,9 +111,7 @@ public class GameState {
 				return false;
 			}
 		}
-		
 		return true;
-
 	}
 	
 	public int calculateDeployTroops(Player player)
@@ -122,14 +119,8 @@ public class GameState {
 		int deployableTroops = 0;
 		int playerId = player.getId();
 		
-		// TERRITORIES
-		int territoryCount = 0;
-		// Use getTerritoriesForPlayer() ??
-		for (Territory territory : map.getTerritories()) {
-			if (territory.getOwner() == playerId){
-				territoryCount ++;
-			} 
-		}
+		// TERRITORIES		
+		int territoryCount = getTerritoriesForPlayer(playerId).length;
 		
 		if(territoryCount < 12){
 			deployableTroops += 3;
@@ -142,13 +133,13 @@ public class GameState {
 		for(Continent continent : map.getContinents()){
 			int continentOwned = 1;
 			for(Territory territory : continent.getTerritories()){
-				if(territory.getOwner() != playerId){
+				if (territory.getOwner() != playerId){
 					continentOwned = -1;
+					break;
 				}
 			}
-			if(continentOwned == 1){
+			if (continentOwned == 1)
 				continentTroops += continent.getContinentValue();
-			}
 		}
 		deployableTroops += continentTroops;
 		
@@ -161,7 +152,7 @@ public class GameState {
 		
 		for(Territory linkedTerritory : source.getLinkedTerritories()){
 			if(linkedTerritory.getOwner() == playerId){
-				areOwnedTerritoriesConnected(playerId, linkedTerritory, dest);
+				return areOwnedTerritoriesConnected(playerId, linkedTerritory, dest);
 			}
 		}
 		
