@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
 import uk.ac.standrews.cs.cs3099.risk.game.*;
+import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
 
 public class DumbPlayer extends Player {
 	private GameState state = new GameState();
@@ -15,6 +16,8 @@ public class DumbPlayer extends Player {
 	{
 		if (type == MoveType.ASSIGN_ARMY) {
 			return getArmyAssignmentMove();
+		} else if (type == MoveType.DEPLOY){
+			return getDeployMove();			
 		}
 
 		return null;
@@ -22,9 +25,19 @@ public class DumbPlayer extends Player {
 
 	public void notifyMove(Move move)
 	{
-		// No-op. Dumb player ignores move input.
+		state.playMove(move, getId());
 	}
 
+	private DeployMove getDeployMove() 
+	{
+		// Deploys all troops to first owned territory.
+		Territory deployTerritory = state.getTerritoriesForPlayer(getId())[0];
+		Deployment[] deployments = new Deployment[1];
+		deployments[0] = new Deployment(deployTerritory.getId(), state.getDeployableArmies(getId()));
+		
+		return new DeployMove(getId(), ++ack_id, deployments);
+	}
+	
 	private AssignArmyMove getArmyAssignmentMove()
 	{
 		// Pick the first free territory to claim.
