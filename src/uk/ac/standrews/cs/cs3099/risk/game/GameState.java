@@ -10,6 +10,8 @@ public class GameState {
 
 	private Map map;
 	private Deck deck;
+	
+	private int[] playersArmies;
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -113,6 +115,45 @@ public class GameState {
 
 	}
 	
+	public int calculateDeployTroops(Player player)
+	{
+		int deployableTroops = 0;
+		int playerId = player.getId();
+		
+		// territories
+		int territoryCount = 0;
+		for (Territory territory : map.getTerritories()) {
+			if (territory.getOwner() == playerId){
+				territoryCount ++;
+			} 
+		}
+		
+		if(territoryCount < 12){
+			deployableTroops += 3;
+		} else {
+			deployableTroops += (territoryCount/3);
+		}
+		
+		// continents
+		int continentTroops = 0;
+		for(Continent continent : map.getContinents()){
+			int continentOwned = 1;
+			for(Territory territory : continent.getTerritories()){
+				if(territory.getOwner() != playerId){
+					continentOwned = -1;
+				}
+			}
+			if(continentOwned == 1){
+				continentTroops += continent.getContinentValue();
+			}
+		}
+		deployableTroops += continentTroops;
+		
+		// cards??
+		
+		return deployableTroops;
+	}
+	
 	public boolean isMoveValid(Move move)
 	{
 		
@@ -143,6 +184,10 @@ public class GameState {
 			
 			break;
 		case DEPLOY:
+			DeployMove deployMove = (DeployMove) move;  
+			
+			// check armies
+			// check own all territories within Deployments[]
 			
 			break;
 		case DRAW_CARD:
@@ -162,11 +207,9 @@ public class GameState {
 			break;
 			
 		default:
-
+			System.out.println("Type not found.");
 			break;
 		}
-		
-		
 		
 		return true;
 	}
