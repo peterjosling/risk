@@ -154,6 +154,19 @@ public class GameState {
 		return deployableTroops;
 	}
 	
+	public boolean areOwnedTerritoriesConnected(int playerId, Territory source, Territory dest)
+	{
+		if(source.isLinkedTo(dest)) return true;
+		
+		for(Territory linkedTerritory : source.getLinkedTerritories()){
+			if(linkedTerritory.getOwner() == playerId){
+				areOwnedTerritoriesConnected(playerId, linkedTerritory, dest);
+			}
+		}
+		
+		return false;
+	}
+	
 	public boolean isMoveValid(Move move)
 	{
 		
@@ -181,23 +194,24 @@ public class GameState {
 		case FORTIFY:
 			FortifyMove fortifyMove = (FortifyMove) move;
 			
-			Territory source1Territory = map.findTerritoryById(fortifyMove.getSource());
-			if(source1Territory.getOwner() != playerId) return false;
+			Territory fortifySource = map.findTerritoryById(fortifyMove.getSource());
+			if(fortifySource.getOwner() != playerId) return false;
 
-			Territory dest1Territory = map.findTerritoryById(fortifyMove.getDest());
-			if(dest1Territory.getOwner() != playerId) return false;
+			Territory fortifyDest = map.findTerritoryById(fortifyMove.getDest());
+			if(fortifyDest.getOwner() != playerId) return false;
 			
-			if(source1Territory.getArmies() > 1){
-				if((fortifyMove.getArmies()) < source1Territory.getArmies()) return false;
+			if(fortifySource.getArmies() > 1){
+				if((fortifyMove.getArmies()) < fortifySource.getArmies()) return false;
 			} else {
 				return false;
 			}
 			
-			// Check source and destination are connected ?!?!
-			
+			if(!areOwnedTerritoriesConnected(playerId, fortifySource, fortifyDest)) return false;
 			
 			break;
 		case TRADE_IN_CARDS:
+			
+			// ??
 			
 			break;
 		case DEPLOY:
