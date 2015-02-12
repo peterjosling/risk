@@ -64,9 +64,10 @@ public class DeckTest {
 		ArrayList<Card> cards = deck1.getDeck();
 		assertTrue(cards.get(0).getId() == 0);
 		assertEquals(44, cards.size());
+		assertEquals(0, deck1.getTopCardIndex());
 		deck1.dealCard(p1);
-		assertTrue(cards.get(0).getId() == 1);
-		assertEquals(43, cards.size());
+		assertEquals(1, deck1.getTopCardIndex());
+		assertTrue(cards.get(deck1.getTopCardIndex()).getId() == 1);
 	}
 
 	@Test

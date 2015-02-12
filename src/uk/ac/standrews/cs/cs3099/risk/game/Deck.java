@@ -23,6 +23,10 @@ public class Deck {
 		return cards;
 	}
 
+	public int getTopCardIndex() {
+		return topCardIndex;
+	}
+
 	/**
 	 * Adds a card to the cards list with the given parameters
 	 *
