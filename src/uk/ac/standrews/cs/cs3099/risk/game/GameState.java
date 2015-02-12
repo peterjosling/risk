@@ -2,6 +2,8 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
 
+import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
+
 /**
  * GameState Class
  * Stores the entire game and controls board movement
@@ -122,6 +124,7 @@ public class GameState {
 		
 		// TERRITORIES
 		int territoryCount = 0;
+		// Use getTerritoriesForPlayer() ??
 		for (Territory territory : map.getTerritories()) {
 			if (territory.getOwner() == playerId){
 				territoryCount ++;
@@ -148,8 +151,6 @@ public class GameState {
 			}
 		}
 		deployableTroops += continentTroops;
-		
-		// cards??
 		
 		return deployableTroops;
 	}
@@ -185,9 +186,8 @@ public class GameState {
 			
 			if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
 			
-			// INCORRECT?
-			if ((sourceTerritory.getArmies() != attackMove.getArmies())
-					&& (sourceTerritory.getArmies() > 1))
+			if ((sourceTerritory.getArmies() <= attackMove.getArmies())
+					|| (sourceTerritory.getArmies() < 2) || (attackMove.getArmies() > 3))
 				return false;
 			
 			break;
@@ -215,10 +215,20 @@ public class GameState {
 			
 			break;
 		case DEPLOY:
-			DeployMove deployMove = (DeployMove) move;  
+			DeployMove deployMove = (DeployMove) move;
 			
-			// check armies
-			// check own all territories within Deployments[]
+			int deployingTroops = 0;
+						
+			for (Deployment deployment : deployMove.getDeployments()){
+				
+				Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
+				if(deployTerritory.getOwner() != playerId) return false;
+				
+				deployingTroops += deployTerritory.getArmies();				
+
+			}
+			
+			if(deployingTroops != playersArmies[playerId]) return false;
 			
 			break;
 		case DRAW_CARD:
