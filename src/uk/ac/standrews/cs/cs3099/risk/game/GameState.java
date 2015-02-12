@@ -13,12 +13,10 @@ public class GameState {
 	private Map map;
 	private Deck deck;
 
-	private int[] deployableArmies;
+	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
 	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
 
-
-	private int[] playersArmies;
 	private int numberOfPlayers;
 	private final int[] TRADE_IN_VALUES = new int[6];
 
@@ -97,7 +95,7 @@ public class GameState {
 
 	public int getDeployableArmies(int playerID)
 	{
-		return deployableArmies[playerID];
+		return playersDeployableArmies[playerID];
 	}
 
 	public void playMove(Move move, int playerID){
@@ -137,7 +135,7 @@ public class GameState {
 					}
 					playerCards[playerID].remove(card);
 				}
-				playersArmies[playerID]++;
+				playersDeployableArmies[playerID]++;
 				tradeInCount++;
 				break;
 			case DRAW_CARD:
@@ -281,8 +279,8 @@ public class GameState {
 			deployingTroops += deployTerritory.getArmies();
 
 		}
-
-		if(deployingTroops != getDeployableArmies(playerId)) return false;
+		
+		if(deployingTroops != playersDeployableArmies[playerId]) return false;
 
 		return true;
 	}
