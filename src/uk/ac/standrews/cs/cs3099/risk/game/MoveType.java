@@ -6,5 +6,6 @@ public enum MoveType {
 	TRADE_IN_CARDS,
 	DEPLOY,
 	DRAW_CARD,
-	ASSIGN_ARMY
+	ASSIGN_ARMY,
+	DEFEND
 }

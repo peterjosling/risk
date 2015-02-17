@@ -20,9 +20,14 @@ public class DeployMove extends Move {
 		return MoveType.DEPLOY;
 	}
 
-	public class Deployment {
+	public static class Deployment {
 		private int territoryId;
 		private int armies;
+		
+		public Deployment(int id, int armies){
+			this.territoryId = id;
+			this.armies = armies;
+		}
 
 		public int getTerritoryId() {
 			return territoryId;

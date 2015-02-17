@@ -12,8 +12,13 @@ public class GameState {
 
 	private Map map;
 	private Deck deck;
+<<<<<<< HEAD
 
 	private int[] playersArmies;
+=======
+
+	private int[] deployableArmies;
+>>>>>>> origin/master
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -72,7 +77,16 @@ public class GameState {
 
 		return territories.toArray(new Territory[0]);
 	}
+<<<<<<< HEAD
 
+=======
+
+	public int getDeployableArmies(int playerID)
+	{
+		return deployableArmies[playerID];
+	}
+
+>>>>>>> origin/master
 	public void playMove(Move move, int playerID){
 		MoveType moveType = move.getType();
 		if(moveType==MoveType.ASSIGN_ARMY){
@@ -223,7 +237,7 @@ public class GameState {
 
 		}
 
-		if(deployingTroops != playersArmies[playerId]) return false;
+		if(deployingTroops != getDeployableArmies(playerId)) return false;
 
 		return true;
 	}
@@ -233,11 +247,24 @@ public class GameState {
 //		return true;
 //	}
 
+	public boolean isMoveValid(DefendMove move)
+	{
+		int playerId = move.getPlayerId();
+
+		Territory defendTerritory = map.findTerritoryById(move.getTerritory());
+		if(defendTerritory.getOwner() != playerId) return false;
+
+		if ((defendTerritory.getArmies() < move.getArmies())
+				|| (move.getArmies() > 2))
+			return false;
+
+		return true;
+	}
+
 	public boolean isMoveValid(AssignArmyMove move)
 	{
-		AssignArmyMove assignMove = (AssignArmyMove) move;
 
-		int territoryId = assignMove.getTerritoryId();
+		int territoryId = move.getTerritoryId();
 
 		Territory territory = map.findTerritoryById(territoryId);
 
