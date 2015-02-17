@@ -98,7 +98,7 @@ public class MapParser {
 			if (!value2.isJsonArray())
 				throw new MapParseException("Sub-entry for key " + je.getKey() + " is not a JSON array");
 
-			JsonArray ja = value.getAsJsonArray();
+			JsonArray ja = value2.getAsJsonArray();
 			for (JsonElement jew : ja) {
 				try {
 					int valasint = jew.getAsInt();
@@ -116,7 +116,7 @@ public class MapParser {
 		}
 	}
 
-	private void parseKeyVal(JsonElement value, List value_arr, boolean isString) throws MapParseException
+	private void parseKeyVal(JsonElement value, List<KeyValue> value_arr, boolean isString) throws MapParseException
 	{
 		if (!value.isJsonObject())
 			throw new MapParseException("Sub-key is not a JSON object");
@@ -156,6 +156,56 @@ public class MapParser {
 		}
 	}
 
+	private KeyValue findKeyValuePair(List<KeyValue> list, int id) throws MapParseException
+	{
+		for (KeyValue pair : list)
+			if (pair.key == id)
+				return pair;
+
+		KeyValue ret = new KeyValue();
+		ret.key = id;
+		list.add(ret);
+
+		return ret;
+	}
+
+	private void parseArrPair(JsonElement value, List<KeyValue> value_arr) throws MapParseException
+	{
+		if (!value.isJsonArray())
+			throw new MapParseException("Sub-key is not a JSON object");
+
+		JsonArray joo = value.getAsJsonArray();
+		for (JsonElement je : joo) {
+			int src, dst;
+			JsonArray value2;
+
+			try {
+				value2 = je.getAsJsonArray();
+			} catch (Exception e)  {
+				throw new MapParseException("Sub-entry in array is not a JSON array");
+			}
+
+			if (value2.size() != 2)
+				throw new MapParseException("Found an array pair of incorrect length");
+
+			try {
+				src = value2.get(0).getAsInt();
+				dst = value2.get(1).getAsInt();
+
+				if (src < 0)
+					throw new MapParseException("Sub-entry src key cannot be less than 0");
+
+				if (dst < 0)
+					throw new MapParseException("Sub-entry dst key cannot be less than 0");
+			} catch (Exception e) {
+				throw new MapParseException("Array pair entry is not an integer");
+			}
+
+			KeyValue k = findKeyValuePair(value_arr, src);
+			k.value_arr.add(dst);
+		}
+	}
+
 	private void parseMapData(String json) throws MapParseException
 	{
 		JsonParser jp = new JsonParser();
@@ -181,6 +231,11 @@ public class MapParser {
 				JsonElement value = jee.getValue();
 				int index = lookup.indexOf(key);
 
+				if (index < 0) {
+					Logger.print("Found unexpected field in map type: " + key);
+					continue;
+				}
+
 				if (processed[index])
 					throw new MapParseException("Already processed " + key);
 
@@ -199,7 +254,7 @@ public class MapParser {
 						parseKeyValArr(value, parsed.continents);
 						break;
 					case 2: // connections key
-						parseKeyValArr(value, parsed.connections);
+						parseArrPair(value, parsed.connections);
 						break;
 					case 3: // continent_values key
 						parseKeyVal(value, parsed.continent_values, false);
@@ -230,7 +285,7 @@ public class MapParser {
 		} catch (MapParseException e) {
 			throw new MapParseException(e.getMessage());
 		} catch (Exception e) {
-			throw new MapParseException("Invalid map JSON supplied");
+			throw new MapParseException("Invalid map JSON supplied (" + e.getMessage() + ")");
 		}
 
 		for (int i = 0; i < processed.length; i++)
