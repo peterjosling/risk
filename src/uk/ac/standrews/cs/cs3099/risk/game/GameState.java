@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
 
@@ -16,16 +17,17 @@ public class GameState {
 	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
 	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
-
-	private int numberOfPlayers;
+	private boolean inAttackPhase = false;
+	private ArrayList<Move> attackPhaseMoves = new ArrayList<Move>();
+	private List<Player> players;
 	private final int[] TRADE_IN_VALUES = new int[6];
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
-	public GameState(int numberOfPlayers)
+	public GameState(List<Player> players)
 	{
-		numberOfPlayers = this.numberOfPlayers;
+		players = this.players;
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
@@ -46,7 +48,7 @@ public class GameState {
 	}
 
 	public int getNumberOfPlayers() {
-		return numberOfPlayers;
+		return players.size();
 	}
 
 	public void removeArmiesForTerritory(int id, int armies)
@@ -121,7 +123,9 @@ public class GameState {
 	}
 
 	public void playMove(AttackMove move){
-
+		inAttackPhase = true;
+		while(!(attackPhaseMoves.size()==(3+getNumberOfPlayers()*2)));
+		//pass randomNumbers to die
 	}
 
 	public void playMove(TradeCardsMove move, int playerID){
