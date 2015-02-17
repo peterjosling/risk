@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
-import com.sun.tools.javac.util.List;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
 
