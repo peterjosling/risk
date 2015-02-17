@@ -13,7 +13,7 @@ public class GameState {
 	private Map map;
 	private Deck deck;
 	
-	private int[] playersArmies;
+	private int[] deployableArmies;
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -73,6 +73,11 @@ public class GameState {
 		}
 
 		return territories.toArray(new Territory[0]);
+	}
+	
+	public int getDeployableArmies(int playerID)
+	{
+		return deployableArmies[playerID];
 	}
 	
 	public void playMove(Move move, int playerID){
@@ -225,8 +230,8 @@ public class GameState {
 
 		}
 		
-		if(deployingTroops != playersArmies[playerId]) return false;
-		
+		if(deployingTroops != getDeployableArmies(playerId)) return false;
+				
 		return true;
 	}
 	
