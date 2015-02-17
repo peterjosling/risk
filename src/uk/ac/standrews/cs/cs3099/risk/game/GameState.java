@@ -240,11 +240,24 @@ public class GameState {
 //		return true;
 //	}
 	
+	public boolean isMoveValid(DefendMove move)
+	{
+		int playerId = move.getPlayerId();
+
+		Territory defendTerritory = map.findTerritoryById(move.getTerritory());
+		if(defendTerritory.getOwner() != playerId) return false;
+		
+		if ((defendTerritory.getArmies() < move.getArmies())
+				|| (move.getArmies() > 2))
+			return false;
+		
+		return true;
+	}
+	
 	public boolean isMoveValid(AssignArmyMove move)
 	{
-		AssignArmyMove assignMove = (AssignArmyMove) move;  
 		
-		int territoryId = assignMove.getTerritoryId();
+		int territoryId = move.getTerritoryId();
 		
 		Territory territory = map.findTerritoryById(territoryId);
 		
