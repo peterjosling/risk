@@ -125,7 +125,34 @@ public class GameState {
 	public void playMove(AttackMove move){
 		inAttackPhase = true;
 		while(!(attackPhaseMoves.size()==(3+getNumberOfPlayers()*2)));
-		//pass randomNumbers to die
+		ArrayList<String> rollHashes = new ArrayList<String>();
+		ArrayList<String> rollNumbers = new ArrayList<String>();
+		int dieFaces = 0;
+		int numberOfAttackingDice = 0;
+		int numberOfDefendingDice = 0;
+		boolean attackRoll = true;
+		for(int hashIndex=1; hashIndex<attackPhaseMoves.size(); hashIndex++){
+			Move phaseMove = attackPhaseMoves.get(hashIndex);
+			if(phaseMove.getType() == MoveType.ROLL && attackRoll == true){
+				dieFaces = ((RollMove)phaseMove).getNumberOfFaces();
+				numberOfAttackingDice = ((RollMove)phaseMove).getNumberOfDice();
+				attackRoll = false;
+			}else if(phaseMove.getType() == MoveType.ROLL && attackRoll == false){
+				dieFaces = ((RollMove)phaseMove).getNumberOfFaces();
+				numberOfDefendingDice = ((RollMove)phaseMove).getNumberOfDice();
+			}
+			if(phaseMove.getType() == MoveType.ROLL_HASH){
+				String hash = ((RollHashMove)phaseMove).getHash();
+				rollHashes.add(hash);
+			}
+			if(phaseMove.getType() == MoveType.ROLL_NUMBER){
+				String rollNumberHash = ((RollNumberMove)phaseMove).getRollNumberHex();
+				rollNumbers.add(rollNumberHash);
+			}
+		}
+		Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
+		int[] resultingRolls = die.rollDice();
+		//calculate result
 	}
 
 	public void playMove(TradeCardsMove move, int playerID){
