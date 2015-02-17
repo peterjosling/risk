@@ -1,11 +1,16 @@
 #!/bin/sh
 
-java -cp bin:lib/* org.junit.runner.JUnitCore uk.ac.standrews.cs.cs3099.risk.tests.MainTest
+function listtests() {
+    ls fullsrc/tests/* | sed 's/fullsrc\/tests\//uk\.ac\.standrews\.cs\.cs3099\.risk\.tests\./g' | sed 's/Test.*\.java/Test/g'
+}
 
-echo "------------------------------------------------------------------------------"
+java -cp bin:lib/* org.junit.runner.JUnitCore `listtests`
+
 
 if [[ $? -ne 0 ]];then
-    echo "\nTESTS FAILED, not running Risk"
+	echo "------------------------------------------------------------------------------"
+    echo "TESTS FAILED, not running Risk"
+else
+	echo "------------------------------------------------------------------------------"
+	java -cp bin:lib/* uk.ac.standrews.cs.cs3099.risk.game.Main $*
 fi
-
-java -cp bin:lib/* uk.ac.standrews.cs.cs3099.risk.game.Main $*
