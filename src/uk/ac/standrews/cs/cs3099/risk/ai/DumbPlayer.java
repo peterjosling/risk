@@ -1,10 +1,13 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
+import com.sun.tools.javac.util.List;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
 
+import java.util.ArrayList;
+
 public class DumbPlayer extends Player {
-	private GameState state = new GameState(0);
+	private GameState state = new GameState(new ArrayList<Player>());
 	private int ack_id = 0;
 
 	public DumbPlayer(int id, String name)
