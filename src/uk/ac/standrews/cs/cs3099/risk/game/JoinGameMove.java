@@ -4,7 +4,8 @@ public class JoinGameMove extends Move {
 	private float[] supported_versions;
 	private String[] supported_features;
 	
-	public JoinGameMove(int ackId) {
+	public JoinGameMove(int ackId) 
+	{
 		super(-1, ackId);
 	}
 	
@@ -27,8 +28,9 @@ public class JoinGameMove extends Move {
 	}
 
 	@Override
-	public MoveType getType() {
-		return null;
+	public MoveType getType() 
+	{
+		return MoveType.JOIN_GAME;
 	}
 
 }

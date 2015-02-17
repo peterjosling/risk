@@ -27,9 +27,9 @@ public class AcceptJoinGameMove extends Move {
 	}
 
 	@Override
-	public MoveType getType() {
-		// TODO Auto-generated method stub
-		return null;
+	public MoveType getType() 
+	{
+		return MoveType.ACCEPT_JOIN_GAME;
 	}
 
 }
