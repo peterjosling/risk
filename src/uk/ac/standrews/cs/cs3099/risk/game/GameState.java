@@ -212,6 +212,7 @@ public class GameState {
 	
 	public boolean isMoveValid(TradeCardsMove move)
 	{
+		// Check if own cards trading in.
 		return true;
 	}
 	
@@ -235,10 +236,10 @@ public class GameState {
 		return true;
 	}
 	
-//	public boolean isMoveValid(DrawCardMove move)
-//	{
-//		return true;
-//	}
+	public boolean isMoveValid(DrawCardMove move)
+	{
+		return true;
+	}
 	
 	public boolean isMoveValid(DefendMove move)
 	{
