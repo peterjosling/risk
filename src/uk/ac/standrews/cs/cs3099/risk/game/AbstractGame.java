@@ -20,6 +20,12 @@ public abstract class AbstractGame {
 		players.add(player);
 	}
 
+	public void loadMap(String jsonMap) throws MapParseException
+	{
+		MapParser m = new MapParser(jsonMap);
+		gameState.loadMap(m);
+	}
+
 	/**
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */

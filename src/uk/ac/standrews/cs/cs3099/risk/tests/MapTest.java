@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import uk.ac.standrews.cs.cs3099.risk.game.*;
+import com.google.gson.*;
 
 
 public class MapTest {
