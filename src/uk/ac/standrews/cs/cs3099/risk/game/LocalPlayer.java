@@ -1,5 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
 public class LocalPlayer extends Player {
 	public LocalPlayer(int id)
 	{
@@ -12,13 +15,13 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Move getMove(MoveType type)
+	public Command getMove(CommandType type)
 	{
 		return null;
 	}
 
 	@Override
-	public void notifyMove(Move move)
+	public void notifyMove(Command move)
 	{
 
 	}

@@ -2,7 +2,16 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
 
-import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
+import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DefendCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DrawCardCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.PlayCardsCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 
 /**
  * GameState Class
@@ -78,26 +87,26 @@ public class GameState {
 		return deployableArmies[playerID];
 	}
 
-	public void playMove(Move move, int playerID){
-		MoveType moveType = move.getType();
-		if(moveType==MoveType.ASSIGN_ARMY){
-			Territory territory = map.findTerritoryById(((AssignArmyMove) move).getTerritoryId());
+	public void playMove(Command move, int playerID){
+		CommandType moveType = move.getType();
+		if(moveType==CommandType.ASSIGN_ARMY){
+			Territory territory = map.findTerritoryById(((AssignArmyCommand) move).getTerritoryId());
 			territory.addArmies(1);
 			territory.claim(playerID);
 		}
-		else if(moveType==MoveType.FORTIFY){
+		else if(moveType==CommandType.FORTIFY){
 
 		}
-		else if(moveType==MoveType.ATTACK){
+		else if(moveType==CommandType.ATTACK){
 
 		}
-		else if(moveType==MoveType.DEPLOY){
+		else if(moveType==CommandType.DEPLOY){
 
 		}
-		else if(moveType==MoveType.TRADE_IN_CARDS){
+		else if(moveType==CommandType.TRADE_IN_CARDS){
 
 		}
-		else if(moveType==MoveType.DRAW_CARD){
+		else if(moveType==CommandType.DRAW_CARD){
 
 		}
 
@@ -161,13 +170,13 @@ public class GameState {
 		return false;
 	}
 
-	public boolean isMoveValid(Move move)
+	public boolean isMoveValid(Command move)
 	{
 		System.out.println("Move not found");
 		return false;
 	}
 
-	public boolean isMoveValid(AttackMove move)
+	public boolean isMoveValid(AttackCommand move)
 	{
 
 		int playerId = move.getPlayerId();
@@ -187,7 +196,7 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(FortifyMove move)
+	public boolean isMoveValid(FortifyCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -208,13 +217,13 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(TradeCardsMove move)
+	public boolean isMoveValid(PlayCardsCommand move)
 	{
 		// Check if own cards trading in.
 		return true;
 	}
 
-	public boolean isMoveValid(DeployMove move)
+	public boolean isMoveValid(DeployCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -234,12 +243,12 @@ public class GameState {
 		return true;
 	}
 	
-	public boolean isMoveValid(DrawCardMove move)
+	public boolean isMoveValid(DrawCardCommand move)
 	{
 		return true;
 	}
 	
-	public boolean isMoveValid(DefendMove move)
+	public boolean isMoveValid(DefendCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -253,7 +262,7 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(AssignArmyMove move)
+	public boolean isMoveValid(AssignArmyCommand move)
 	{
 
 		int territoryId = move.getTerritoryId();

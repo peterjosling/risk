@@ -1,18 +1,14 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class FortifyMove extends Move {
+
+public class AttackCommand extends Command {
 	private int source;
 	private int dest;
 	private int armies;
 
-	public FortifyMove(int playerId, int ackId)
+	public AttackCommand(int playerId, int ackId, int source, int dest, int armies)
 	{
 		super(playerId, ackId);
-	}
-
-	public FortifyMove(int playerId, int ackId, int source, int dest, int armies)
-	{
-		this(playerId, ackId);
 		this.source = source;
 		this.dest = dest;
 		this.armies = armies;
@@ -43,8 +39,8 @@ public class FortifyMove extends Move {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.FORTIFY;
+		return CommandType.ATTACK;
 	}
 }

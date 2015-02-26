@@ -3,6 +3,9 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
 public abstract class AbstractGame {
 	private GameState gameState;
 	private int armiesPerPlayer;
@@ -35,9 +38,9 @@ public abstract class AbstractGame {
 
 		for (int i = 0; i < totalArmies; i++) {
 			Player player = getCurrentTurnPlayer();
-			Move move = player.getMove(MoveType.ASSIGN_ARMY);
+			Command move = player.getMove(CommandType.ASSIGN_ARMY);
 
-			if (move.getType() != MoveType.ASSIGN_ARMY) {
+			if (move.getType() != CommandType.ASSIGN_ARMY) {
 				terminate();
 				return;
 			}
