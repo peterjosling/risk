@@ -101,6 +101,48 @@ public class GameState {
 		return playersDeployableArmies[playerID];
 	}
 
+	public void playMove(Move move, int playerId){
+		switch(move.getType()){
+			case ASSIGN_ARMY:
+				playMove((AssignArmyMove)move, playerId);
+			case ATTACK:
+				playMove((AttackMove)move, playerId);
+			case FORTIFY:
+				playMove((FortifyMove)move, playerId);
+			case TRADE_IN_CARDS:
+				playMove((TradeCardsMove)move, playerId);
+			case DEPLOY:
+				playMove((DeployMove)move, playerId);
+			case DRAW_CARD:
+				playMove((DrawCardMove)move, playerId);
+			case DEFEND:
+				playMove((DefendMove)move, playerId);
+			case JOIN_GAME:
+				playMove((JoinGameMove)move, playerId);
+			case ACCEPT_JOIN_GAME:
+				playMove((AcceptJoinGameMove)move, playerId);
+			case REJECT_JOIN_GAME:
+				playMove((RejectJoinGameMove)move, playerId);
+			case ACKNOWLEDGEMENT:
+				playMove((AcknowledgementMove)move, playerId);
+			case TIMEOUT:
+				playMove((TimeoutMove)move, playerId);
+			case ATTACK_CAPTURE:
+				playMove((AttackCaptureMove)move, playerId);
+			case LEAVE_GAME:
+				playMove((LeaveGameMove)move, playerId);
+			case PLAY_CARDS:
+				playMove((PlayCardsMove)move, playerId);
+			case ROLL_NUMBER:
+				playMove((RollNumberMove)move, playerId);
+			case ROLL:
+				playMove((RollMove)move, playerId);
+			case ROLL_HASH:
+				playMove((RollHashMove)move, playerId);
+
+		}
+	}
+
 	public void playMove(AssignArmyMove move, int playerID){
 		Territory territory = map.findTerritoryById(move.getTerritoryId());
 		territory.addArmies(1);
