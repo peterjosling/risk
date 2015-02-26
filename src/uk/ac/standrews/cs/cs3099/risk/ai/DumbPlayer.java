@@ -27,7 +27,7 @@ public class DumbPlayer extends Player {
 
 	public void notifyMove(Move move)
 	{
-		//state.playMove(move, getId());
+		state.playMove(move, getId());
 	}
 
 	private DeployMove getDeployMove() 
