@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
@@ -131,8 +132,8 @@ public class GameState {
 		int numberOfAttackingDice = 0;
 		int numberOfDefendingDice = 0;
 		boolean attackRoll = true;
-		for(int hashIndex=1; hashIndex<attackPhaseMoves.size(); hashIndex++){
-			Move phaseMove = attackPhaseMoves.get(hashIndex);
+		for(int moveIndex=1; moveIndex<attackPhaseMoves.size(); moveIndex++){ //index from 1 to avoid defend move
+			Move phaseMove = attackPhaseMoves.get(moveIndex);
 			if(phaseMove.getType() == MoveType.ROLL && attackRoll == true){
 				dieFaces = ((RollMove)phaseMove).getNumberOfFaces();
 				numberOfAttackingDice = ((RollMove)phaseMove).getNumberOfDice();
@@ -152,7 +153,47 @@ public class GameState {
 		}
 		Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
 		int[] resultingRolls = die.rollDice();
-		//calculate result
+		int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
+		//apply result to board
+		removeArmiesForTerritory(move.getSource(), result[0]);
+		removeArmiesForTerritory(move.getDest(), result[1]);
+	}
+
+	/**
+	 * Calculates the number of armies lost by the attacker and defender using the dice rolls and
+	 * returns them in an array.
+	 * @param rolls
+	 * @param numberOfAttackingDice
+	 * @param numberOfDefendingDice
+	 * @return int array with attacking losses at index 0 and defending losses at index 1
+	 */
+	public int[] calculateResult(int[] rolls, int numberOfAttackingDice, int numberOfDefendingDice){
+		int[] attackingRolls = new int[numberOfAttackingDice];
+		int[] defendingRolls = new int[numberOfDefendingDice];
+		int aRoll = 0;
+		int dRoll = 0;
+		int[] losses = new int[2]; //attack lose, defend lose
+		for(int roll =0; roll<rolls.length; roll++){
+			while(aRoll<numberOfAttackingDice){
+				attackingRolls[aRoll] = rolls[roll];
+				aRoll++;
+			}
+			while(dRoll<numberOfDefendingDice){
+				defendingRolls[aRoll] = rolls[roll];
+				dRoll++;
+			}
+		}
+		Arrays.sort(attackingRolls);
+		Arrays.sort(defendingRolls);
+		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice); i>=0; i--){
+			if(attackingRolls[i] < defendingRolls[i]){
+				losses[0]++;;
+			}
+			if(attackingRolls[i] < defendingRolls[i]){
+				losses[1]++;
+			}
+		}
+		return losses;
 	}
 
 	public void playMove(TradeCardsMove move, int playerID){
