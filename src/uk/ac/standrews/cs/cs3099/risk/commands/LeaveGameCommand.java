@@ -1,15 +1,10 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class LeaveGameMove extends Move {
+public class LeaveGameCommand extends Command {
 	private int response;
 	private boolean receiveUpdates;
 
-	public LeaveGameMove(int playerId, int ackId) 
-	{
-		super(playerId, ackId);
-	}
-	
-	public LeaveGameMove(int playerId, int ackId, int response,
+	public LeaveGameCommand(int playerId, int ackId, int response,
 			boolean receiveUpdates) 
 	{
 		super(playerId, ackId);
@@ -28,9 +23,9 @@ public class LeaveGameMove extends Move {
 	}
 
 	@Override
-	public MoveType getType() 
+	public CommandType getType() 
 	{
-		return MoveType.LEAVE_GAME;
+		return CommandType.LEAVE_GAME;
 	}
 
 }

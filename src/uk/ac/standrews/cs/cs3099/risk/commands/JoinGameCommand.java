@@ -1,15 +1,10 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class JoinGameMove extends Move {
+public class JoinGameCommand extends Command {
 	private float[] supported_versions;
 	private String[] supported_features;
 	
-	public JoinGameMove(int ackId) 
-	{
-		super(-1, ackId);
-	}
-	
-	public JoinGameMove(int playerId, int ackId, float[] supported_versions,
+	public JoinGameCommand(int playerId, int ackId, float[] supported_versions,
 			String[] supported_features) 
 	{
 		super(-1, ackId);
@@ -28,9 +23,9 @@ public class JoinGameMove extends Move {
 	}
 
 	@Override
-	public MoveType getType() 
+	public CommandType getType() 
 	{
-		return MoveType.JOIN_GAME;
+		return CommandType.JOIN_GAME;
 	}
 
 }

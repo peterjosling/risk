@@ -1,6 +1,6 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public enum MoveType {
+public enum CommandType {
 	ATTACK,
 	FORTIFY,
 	TRADE_IN_CARDS,

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
 /**
  * Player Class
  * Abstractions of what every player should have (including local)
@@ -105,6 +108,6 @@ public abstract class Player {
 		return t.getOwner() == id;
 	}
 
-	public abstract Move getMove(MoveType type);
-	public abstract void notifyMove(Move move);
+	public abstract Command getMove(CommandType type);
+	public abstract void notifyMove(Command move);
 }
