@@ -1,5 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,6 @@ public abstract class AbstractGame {
 	public AbstractGame(int armiesPerPlayer)
 	{
 		this.armiesPerPlayer = armiesPerPlayer;
-		this.gameState = new GameState(new ArrayList<Player>());
 	}
 
 	public void addPlayer(Player player)
@@ -29,6 +29,13 @@ public abstract class AbstractGame {
 		gameState.loadMap(m);
 	}
 
+	public void createGameState(){
+		ArrayList<Integer> playerIds = new ArrayList<Integer>();
+		for(Player player: players){
+			playerIds.add(player.getId());
+		}
+		gameState = new GameState(playerIds);
+	}
 	/**
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */

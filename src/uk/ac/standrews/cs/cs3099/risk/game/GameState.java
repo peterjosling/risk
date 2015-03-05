@@ -32,15 +32,15 @@ public class GameState {
 	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
 	private boolean inAttackPhase = false;
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
-	private List<Player> players;
+	private ArrayList<Integer> playerIDs;
 	private final int[] TRADE_IN_VALUES = new int[6];
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
-	public GameState(List<Player> players)
+	public GameState(ArrayList<Integer> players)
 	{
-		players = this.players;
+		playerIDs = players;
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
@@ -61,7 +61,7 @@ public class GameState {
 	}
 
 	public int getNumberOfPlayers() {
-		return players.size();
+		return playerIDs.size();
 	}
 
 	public void removeArmiesForTerritory(int id, int armies)
@@ -128,14 +128,6 @@ public class GameState {
 				playMove((DrawCardCommand) command, playerId);
 			case DEFEND:
 				playMove((DefendCommand) command, playerId);
-			case JOIN_GAME:
-				playMove((JoinGameCommand) command, playerId);
-			case ACCEPT_JOIN_GAME:
-				playMove((AcceptJoinGameCommand) command, playerId);
-			case REJECT_JOIN_GAME:
-				playMove((RejectJoinGameCommand) command, playerId);
-			case ACKNOWLEDGEMENT:
-				playMove((AcknowledgementCommand) command, playerId);
 			case TIMEOUT:
 				playMove((TimeoutCommand) command, playerId);
 			case ATTACK_CAPTURE:
@@ -293,6 +285,18 @@ public class GameState {
 	public void playMove(DrawCardCommand move, int playerID){
 		Card drawnCard = deck.dealCard();
 		playerCards[playerID].add(drawnCard);
+	}
+
+	public void playMove(LeaveGameCommand command, int playerID){
+		for(Integer id:playerIDs){
+			playerIDs.remove(command.getPlayerId());
+		}
+	}
+
+	public void playMove(TimeoutCommand command, int PlayerId){
+		for(Integer id:playerIDs){
+			playerIDs.remove(command.getPlayerId());
+		}
 	}
 
 	public int calculateArmiesFromTradeIn(){
