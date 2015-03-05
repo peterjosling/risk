@@ -11,6 +11,7 @@ class Game extends Model {
 	public playerList : Collection<Player>;
 
 	constructor(options?) {
+		super(options);
 		this.playerList = new Collection<Player>();
 	}
 
