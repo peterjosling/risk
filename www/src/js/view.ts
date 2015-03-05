@@ -31,6 +31,12 @@ class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 		return this;
 	}
 
+	destroy() : void {
+		this.childViews.forEach(view => {
+			view.view.destroy();
+		});
+	}
+
 	static Template;
 }
 
