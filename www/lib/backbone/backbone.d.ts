@@ -73,8 +73,8 @@ declare module Backbone {
         unbind(eventName?: string, callback?: Function, context?: any): any;
 
         once(events: string, callback: Function, context?: any): any;
-        listenTo(object: any, events: string, callback: Function): any;
-        listenToOnce(object: any, events: string, callback: Function): any;
+        listenTo(object: any, events: string, callback: Function, context: any): any;
+        listenToOnce(object: any, events: string, callback: Function, context: any): any;
         stopListening(object?: any, events?: string, callback?: Function): any;
     }
 
