@@ -1,14 +1,14 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class TradeCardsMove extends Move {
+public class TradeCardsCommand extends Command {
 	private Card[] cards;
 
-	public TradeCardsMove(int playerId, int ackId)
+	public TradeCardsCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 
-	public TradeCardsMove(int playerId, int ackId, Card[] cards)
+	public TradeCardsCommand(int playerId, int ackId, Card[] cards)
 	{
 		this(playerId, ackId);
 		this.cards = cards;

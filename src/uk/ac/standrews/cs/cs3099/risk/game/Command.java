@@ -1,6 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public abstract class Move {
+public abstract class Command {
 	private int ackId;
 	private int playerId;
 
@@ -9,7 +9,7 @@ public abstract class Move {
 	 *
 	 * @param playerId ID of the player making this move.
 	 */
-	public Move(int playerId)
+	public Command(int playerId)
 	{
 		this(playerId, -1);
 	}
@@ -20,7 +20,7 @@ public abstract class Move {
 	 * @param playerId ID of the player making this move.
 	 * @param ackId Unique integer acknowledgement ID.
 	 */
-	public Move(int playerId, int ackId)
+	public Command(int playerId, int ackId)
 	{
 		this.playerId = playerId;
 		this.ackId = ackId;

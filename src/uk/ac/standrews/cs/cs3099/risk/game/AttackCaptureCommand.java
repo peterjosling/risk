@@ -1,14 +1,14 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class AttackCaptureMove extends Move {
+public class AttackCaptureCommand extends Command {
 	private int[] captureDetails = new int[3];
 
-	public AttackCaptureMove(int playerId, int ackId) 
+	public AttackCaptureCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 	
-	public AttackCaptureMove(int playerId, int ackId, int[] captureDetails) 
+	public AttackCaptureCommand(int playerId, int ackId, int[] captureDetails)
 	{
 		super(playerId, ackId);
 		this.captureDetails = captureDetails;

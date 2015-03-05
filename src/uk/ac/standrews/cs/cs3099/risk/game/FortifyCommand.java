@@ -1,16 +1,16 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class FortifyMove extends Move {
+public class FortifyCommand extends Command {
 	private int source;
 	private int dest;
 	private int armies;
 
-	public FortifyMove(int playerId, int ackId)
+	public FortifyCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 
-	public FortifyMove(int playerId, int ackId, int source, int dest, int armies)
+	public FortifyCommand(int playerId, int ackId, int source, int dest, int armies)
 	{
 		this(playerId, ackId);
 		this.source = source;

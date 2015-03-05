@@ -1,7 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
-import uk.ac.standrews.cs.cs3099.risk.game.*;
-import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
+import uk.ac.standrews.cs.cs3099.risk.game.Command;
+import uk.ac.standrews.cs.cs3099.risk.game.DeployCommand.Deployment;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,7 @@ public class DumbPlayer extends Player {
 		super(id, name);
 	}
 
-	public Move getMove(MoveType type)
+	public Command getMove(MoveType type)
 	{
 		if (type == MoveType.ASSIGN_ARMY) {
 			return getArmyAssignmentMove();
@@ -25,9 +25,9 @@ public class DumbPlayer extends Player {
 		return null;
 	}
 
-	public void notifyMove(Move move)
+	public void notifyMove(Command command)
 	{
-		state.playMove(move, getId());
+		state.playMove(command, getId());
 	}
 
 	private DeployMove getDeployMove() 

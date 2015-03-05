@@ -1,15 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class DefendMove extends Move{
+public class DefendCommand extends Command {
 	private int territory;
 	private int armies;
 	
-	public DefendMove(int playerId, int ackId)
+	public DefendCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 
-	public DefendMove(int playerId, int ackId, int territory, int armies)
+	public DefendCommand(int playerId, int ackId, int territory, int armies)
 	{
 		this(playerId, ackId);
 		this.territory = territory;

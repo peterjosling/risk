@@ -1,14 +1,14 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class RejectJoinGameMove extends Move {
+public class RejectJoinGameCommand extends Command {
 	private String errorMessage;
 
-	public RejectJoinGameMove(int playerId, int ackId) 
+	public RejectJoinGameCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 	
-	public RejectJoinGameMove(int playerId, int ackId, String errorMessage)
+	public RejectJoinGameCommand(int playerId, int ackId, String errorMessage)
 	{
 		super(playerId, ackId);
 		this.errorMessage = errorMessage;

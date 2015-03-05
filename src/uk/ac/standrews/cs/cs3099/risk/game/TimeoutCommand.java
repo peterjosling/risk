@@ -1,15 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 
-public class TimeoutMove extends Move {
+public class TimeoutCommand extends Command {
 	private int timeoutId;
 
-	public TimeoutMove(int playerId, int ackId) 
+	public TimeoutCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 
-	public TimeoutMove(int playerId, int ackId, int timeoutId) 
+	public TimeoutCommand(int playerId, int ackId, int timeoutId)
 	{
 		super(playerId, ackId);
 		this.timeoutId = timeoutId;

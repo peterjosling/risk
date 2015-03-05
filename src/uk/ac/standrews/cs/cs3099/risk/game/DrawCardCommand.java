@@ -1,8 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class DrawCardMove extends Move {
+public class DrawCardCommand extends Command {
 	
-	public DrawCardMove(int playerId, int ackId)
+	public DrawCardCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}

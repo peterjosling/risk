@@ -12,9 +12,9 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Move getMove(MoveType type)
+	public Command getMove(MoveType type)
 	{
-		Move move;
+		Command command;
 		int id = this.getId();
 		int ackId = 1;
 		int sourceTerritory;
@@ -27,17 +27,17 @@ public class LocalPlayer extends Player {
 				sourceTerritory = 1;
 				destinationTerritory = 2;
 				armies = 1;
-				move = new FortifyMove(id, ackId, sourceTerritory, destinationTerritory, armies);
+				command = new FortifyMove(id, ackId, sourceTerritory, destinationTerritory, armies);
 				break;
 			case ATTACK:
 				sourceTerritory = 1;
 				destinationTerritory = 2;
 				armies = 1;
-				move = new AttackMove(id, ackId, sourceTerritory, destinationTerritory, armies);
+				command = new AttackMove(id, ackId, sourceTerritory, destinationTerritory, armies);
 				break;
 			case ASSIGN_ARMY:
 				destinationTerritory = 1;
-				move = new AssignArmyMove(id, ackId, destinationTerritory);
+				command = new AssignArmyMove(id, ackId, destinationTerritory);
 				break;
 			case DRAW_CARD:
 				break;
@@ -48,7 +48,7 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public void notifyMove(Move move)
+	public void notifyMove(Command command)
 	{
 
 	}

@@ -1,9 +1,9 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class DeployMove extends Move {
+public class DeployCommand extends Command {
 	private Deployment[] deployments;
 
-	public DeployMove(int playerId, int ackId, Deployment[] deployments)
+	public DeployCommand(int playerId, int ackId, Deployment[] deployments)
 	{
 		super(playerId, ackId);
 		this.deployments = deployments;

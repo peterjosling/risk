@@ -1,11 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class AttackMove extends Move {
+public class AttackCommand extends Command {
 	private int source;
 	private int dest;
 	private int armies;
 
-	public AttackMove(int playerId, int ackId, int source, int dest, int armies)
+	public AttackCommand(int playerId, int ackId, int source, int dest, int armies)
 	{
 		super(playerId, ackId);
 		this.source = source;

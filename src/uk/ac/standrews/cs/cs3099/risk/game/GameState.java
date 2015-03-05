@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import uk.ac.standrews.cs.cs3099.risk.game.DeployMove.Deployment;
+import uk.ac.standrews.cs.cs3099.risk.game.DeployCommand.Deployment;
 
 /**
  * GameState Class
@@ -19,7 +19,7 @@ public class GameState {
 	private int tradeInCount = 0;
 	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
 	private boolean inAttackPhase = false;
-	private ArrayList<Move> attackPhaseMoves = new ArrayList<Move>();
+	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private List<Player> players;
 	private final int[] TRADE_IN_VALUES = new int[6];
 
@@ -101,95 +101,95 @@ public class GameState {
 		return playersDeployableArmies[playerID];
 	}
 
-	public void playMove(Move move, int playerId){
-		switch(move.getType()){
+	public void playMove(Command command, int playerId){
+		switch(command.getType()){
 			case ASSIGN_ARMY:
-				playMove((AssignArmyMove)move, playerId);
+				playMove((AssignArmyCommand) command, playerId);
 			case ATTACK:
-				playMove((AttackMove)move, playerId);
+				playMove((AttackCommand) command, playerId);
 			case FORTIFY:
-				playMove((FortifyMove)move, playerId);
+				playMove((FortifyCommand) command, playerId);
 			case TRADE_IN_CARDS:
-				playMove((TradeCardsMove)move, playerId);
+				playMove((TradeCardsCommand) command, playerId);
 			case DEPLOY:
-				playMove((DeployMove)move, playerId);
+				playMove((DeployCommand) command, playerId);
 			case DRAW_CARD:
-				playMove((DrawCardMove)move, playerId);
+				playMove((DrawCardCommand) command, playerId);
 			case DEFEND:
-				playMove((DefendMove)move, playerId);
+				playMove((DefendCommand) command, playerId);
 			case JOIN_GAME:
-				playMove((JoinGameMove)move, playerId);
+				playMove((JoinGameCommand) command, playerId);
 			case ACCEPT_JOIN_GAME:
-				playMove((AcceptJoinGameMove)move, playerId);
+				playMove((AcceptJoinGameCommand) command, playerId);
 			case REJECT_JOIN_GAME:
-				playMove((RejectJoinGameMove)move, playerId);
+				playMove((RejectJoinGameCommand) command, playerId);
 			case ACKNOWLEDGEMENT:
-				playMove((AcknowledgementMove)move, playerId);
+				playMove((AcknowledgementCommand) command, playerId);
 			case TIMEOUT:
-				playMove((TimeoutMove)move, playerId);
+				playMove((TimeoutCommand) command, playerId);
 			case ATTACK_CAPTURE:
-				playMove((AttackCaptureMove)move, playerId);
+				playMove((AttackCaptureCommand) command, playerId);
 			case LEAVE_GAME:
-				playMove((LeaveGameMove)move, playerId);
+				playMove((LeaveGameCommand) command, playerId);
 			case PLAY_CARDS:
-				playMove((PlayCardsMove)move, playerId);
+				playMove((PlayCardsCommand) command, playerId);
 			case ROLL_NUMBER:
-				playMove((RollNumberMove)move, playerId);
+				playMove((RollNumberCommand) command, playerId);
 			case ROLL:
-				playMove((RollMove)move, playerId);
+				playMove((RollCommand) command, playerId);
 			case ROLL_HASH:
-				playMove((RollHashMove)move, playerId);
+				playMove((RollHashCommand) command, playerId);
 
 		}
 	}
 
-	public void playMove(AssignArmyMove move, int playerID){
+	public void playMove(AssignArmyCommand move, int playerID){
 		Territory territory = map.findTerritoryById(move.getTerritoryId());
 		territory.addArmies(1);
 		territory.claim(playerID);
 	}
 
-	public void playMove(FortifyMove move){
+	public void playMove(FortifyCommand move){
 		int destination = move.getDest();
 		int source = move.getSource();
 		int numberOfArmies = move.getArmies();
 		moveArmies(source, destination, numberOfArmies);
 	}
 
-	public void playMove(DeployMove move){
-		DeployMove.Deployment[] deployments = move.getDeployments();
-		for(DeployMove.Deployment deployment : deployments){
+	public void playMove(DeployCommand move){
+		DeployCommand.Deployment[] deployments = move.getDeployments();
+		for(DeployCommand.Deployment deployment : deployments){
 			int id = deployment.getTerritoryId();
 			int armies = deployment.getArmies();
 			addArmiesForTerritory(id, armies);
 		}
 	}
 
-	public void playMove(AttackMove move){
+	public void playMove(AttackCommand move){
 		inAttackPhase = true;
-		while(!(attackPhaseMoves.size()==(3+getNumberOfPlayers()*2)));
+		while(!(attackPhaseCommands.size()==(3+getNumberOfPlayers()*2)));
 		ArrayList<String> rollHashes = new ArrayList<String>();
 		ArrayList<String> rollNumbers = new ArrayList<String>();
 		int dieFaces = 0;
 		int numberOfAttackingDice = 0;
 		int numberOfDefendingDice = 0;
 		boolean attackRoll = true;
-		for(int moveIndex=1; moveIndex<attackPhaseMoves.size(); moveIndex++){ //index from 1 to avoid defend move
-			Move phaseMove = attackPhaseMoves.get(moveIndex);
-			if(phaseMove.getType() == MoveType.ROLL && attackRoll == true){
-				dieFaces = ((RollMove)phaseMove).getNumberOfFaces();
-				numberOfAttackingDice = ((RollMove)phaseMove).getNumberOfDice();
+		for(int moveIndex=1; moveIndex< attackPhaseCommands.size(); moveIndex++){ //index from 1 to avoid defend move
+			Command phaseCommand = attackPhaseCommands.get(moveIndex);
+			if(phaseCommand.getType() == MoveType.ROLL && attackRoll == true){
+				dieFaces = ((RollCommand) phaseCommand).getNumberOfFaces();
+				numberOfAttackingDice = ((RollCommand) phaseCommand).getNumberOfDice();
 				attackRoll = false;
-			}else if(phaseMove.getType() == MoveType.ROLL && attackRoll == false){
-				dieFaces = ((RollMove)phaseMove).getNumberOfFaces();
-				numberOfDefendingDice = ((RollMove)phaseMove).getNumberOfDice();
+			}else if(phaseCommand.getType() == MoveType.ROLL && attackRoll == false){
+				dieFaces = ((RollCommand) phaseCommand).getNumberOfFaces();
+				numberOfDefendingDice = ((RollCommand) phaseCommand).getNumberOfDice();
 			}
-			if(phaseMove.getType() == MoveType.ROLL_HASH){
-				String hash = ((RollHashMove)phaseMove).getHash();
+			if(phaseCommand.getType() == MoveType.ROLL_HASH){
+				String hash = ((RollHashCommand) phaseCommand).getHash();
 				rollHashes.add(hash);
 			}
-			if(phaseMove.getType() == MoveType.ROLL_NUMBER){
-				String rollNumberHash = ((RollNumberMove)phaseMove).getRollNumberHex();
+			if(phaseCommand.getType() == MoveType.ROLL_NUMBER){
+				String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
 				rollNumbers.add(rollNumberHash);
 			}
 		}
@@ -238,23 +238,23 @@ public class GameState {
 		return losses;
 	}
 
-	public void playMove(DefendMove move, int playerID){
-		attackPhaseMoves.add(move);
+	public void playMove(DefendCommand move, int playerID){
+		attackPhaseCommands.add(move);
 	}
 
-	public void playMove(RollMove move, int playerID){
-		attackPhaseMoves.add(move);
+	public void playMove(RollCommand move, int playerID){
+		attackPhaseCommands.add(move);
 	}
 
-	public void playMove(RollHashMove move, int playerID){
-		attackPhaseMoves.add(move);
+	public void playMove(RollHashCommand move, int playerID){
+		attackPhaseCommands.add(move);
 	}
 
-	public void playMove(RollNumberMove move, int playerID){
-		attackPhaseMoves.add(move);
+	public void playMove(RollNumberCommand move, int playerID){
+		attackPhaseCommands.add(move);
 	}
 
-	public void playMove(AttackCaptureMove move){
+	public void playMove(AttackCaptureCommand move){
 		int[] captureDetails = move.getCaptureDetails();
 		int source = captureDetails[0];
 		int destination = captureDetails[1];
@@ -262,7 +262,7 @@ public class GameState {
 		moveArmies(source, destination, armies);
 	}
 
-	public void playMove(TradeCardsMove move, int playerID){
+	public void playMove(TradeCardsCommand move, int playerID){
 		Card[] cards = move.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
 		int armies = calculateArmiesFromTradeIn();
@@ -279,7 +279,7 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public void playMove(DrawCardMove move, int playerID){
+	public void playMove(DrawCardCommand move, int playerID){
 		Card drawnCard = deck.dealCard();
 		playerCards[playerID].add(drawnCard);
 	}
@@ -350,13 +350,13 @@ public class GameState {
 		return false;
 	}
 
-	public boolean isMoveValid(Move move)
+	public boolean isMoveValid(Command command)
 	{
-		System.out.println("Move not found");
+		System.out.println("Command not found");
 		return false;
 	}
 
-	public boolean isMoveValid(AttackMove move)
+	public boolean isMoveValid(AttackCommand move)
 	{
 
 		int playerId = move.getPlayerId();
@@ -376,7 +376,7 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(FortifyMove move)
+	public boolean isMoveValid(FortifyCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -397,13 +397,13 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(TradeCardsMove move)
+	public boolean isMoveValid(TradeCardsCommand move)
 	{
 		// Check if own cards trading in.
 		return true;
 	}
 
-	public boolean isMoveValid(DeployMove move)
+	public boolean isMoveValid(DeployCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -423,12 +423,12 @@ public class GameState {
 		return true;
 	}
 	
-	public boolean isMoveValid(DrawCardMove move)
+	public boolean isMoveValid(DrawCardCommand move)
 	{
 		return true;
 	}
 	
-	public boolean isMoveValid(DefendMove move)
+	public boolean isMoveValid(DefendCommand move)
 	{
 		int playerId = move.getPlayerId();
 
@@ -442,7 +442,7 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(AssignArmyMove move)
+	public boolean isMoveValid(AssignArmyCommand move)
 	{
 
 		int territoryId = move.getTerritoryId();

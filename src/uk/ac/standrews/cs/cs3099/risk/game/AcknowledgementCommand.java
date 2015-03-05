@@ -1,15 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 
-public class AcknowledgementMove extends Move {
+public class AcknowledgementCommand extends Command {
 	private int response;
 
-	public AcknowledgementMove(int playerId, int ackId) 
+	public AcknowledgementCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 	
-	public AcknowledgementMove(int playerId, int ackId, int response) 
+	public AcknowledgementCommand(int playerId, int ackId, int response)
 	{
 		super(playerId, ackId);
 		this.response = response;

@@ -1,14 +1,14 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class RollHashMove extends Move{
+public class RollHashCommand extends Command {
 
 	String hash;
 
-	public RollHashMove(int playerId, int ackId) {
+	public RollHashCommand(int playerId, int ackId) {
 		super(playerId, ackId);
 	}
 
-	public RollHashMove(int playerId, int ackId, String hash) {
+	public RollHashCommand(int playerId, int ackId, String hash) {
 		this(playerId, ackId);
 		this.hash = hash;
 	}

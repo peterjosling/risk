@@ -1,15 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-public class RollMove extends Move{
+public class RollCommand extends Command {
 
 	private int faces;
 	private int numberOfDice;
 
-	public RollMove(int playerId, int ackId) {
+	public RollCommand(int playerId, int ackId) {
 		super(playerId, ackId);
 	}
 
-	public RollMove(int playerId, int ackId, int Faces, int numberOfDice) {
+	public RollCommand(int playerId, int ackId, int Faces, int numberOfDice) {
 		this(playerId, ackId);
 		this.faces = faces;
 		this.numberOfDice = numberOfDice;
