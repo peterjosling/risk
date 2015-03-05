@@ -170,12 +170,67 @@ public class GameState {
 		return false;
 	}
 
-	public boolean isMoveValid(Command move)
+	public boolean isMoveValid(Command command)
 	{
-		System.out.println("Move not found");
-		return false;
+		switch(command.getType()){
+			case ASSIGN_ARMY:
+				isMoveValid((AssignArmyCommand) command);
+			case ATTACK:
+				isMoveValid((AttackCommand) command);
+			case FORTIFY:
+				isMoveValid((FortifyCommand) command);
+			case DEPLOY:
+				isMoveValid((DeployCommand) command);
+			case DRAW_CARD:
+				isMoveValid((DrawCardCommand) command);
+			case DEFEND:
+				isMoveValid((DefendCommand) command);
+//			case JOIN_GAME:
+//				playMove((JoinGameCommand) command, playerId);
+//			case ACCEPT_JOIN_GAME:
+//				playMove((AcceptJoinGameCommand) command, playerId);
+//			case REJECT_JOIN_GAME:
+//				playMove((RejectJoinGameCommand) command, playerId);
+//			case ACKNOWLEDGEMENT:
+//				playMove((AcknowledgementCommand) command, playerId);
+//			case TIMEOUT:
+//				playMove((TimeoutCommand) command, playerId);
+//			case ATTACK_CAPTURE:
+//				playMove((AttackCaptureCommand) command, playerId);
+//			case LEAVE_GAME:
+//				playMove((LeaveGameCommand) command, playerId);
+//			case PLAY_CARDS:
+//				playMove((PlayCardsCommand) command, playerId);
+//			case ROLL_NUMBER:
+//				playMove((RollNumberCommand) command, playerId);
+//			case ROLL:
+//				playMove((RollCommand) command, playerId);
+//			case ROLL_HASH:
+//				playMove((RollHashCommand) command, playerId);
+			default:
+				System.out.println("Command not found");
+		}
+		
+		return true;
+		
+		 		
 	}
 
+	public boolean isMoveValid(AssignArmyCommand move)
+	{
+
+		int territoryId = move.getTerritoryId();
+
+		Territory territory = map.findTerritoryById(territoryId);
+
+		if(territory.isClaimed()){
+			return false;
+		}
+
+		return true;
+	}
+
+	
 	public boolean isMoveValid(AttackCommand move)
 	{
 
@@ -235,7 +290,6 @@ public class GameState {
 			if(deployTerritory.getOwner() != playerId) return false;
 
 			deployingTroops += deployTerritory.getArmies();
-
 		}
 
 		if(deployingTroops != getDeployableArmies(playerId)) return false;
@@ -262,19 +316,6 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(AssignArmyCommand move)
-	{
-
-		int territoryId = move.getTerritoryId();
-
-		Territory territory = map.findTerritoryById(territoryId);
-
-		if(territory.isClaimed()){
-			return false;
-		}
-
-		return true;
-	}
 
 
 }
