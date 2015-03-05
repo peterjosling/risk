@@ -7,10 +7,12 @@ import org.junit.Test;
 import uk.ac.standrews.cs.cs3099.risk.game.Die;
 import uk.ac.standrews.cs.cs3099.risk.game.Logger;
 
+import java.util.ArrayList;
+
 public class DieTest {
 
 	private Logger logger = new Logger();
-	private Die die1 = new Die();
+	private Die die1 = new Die(new ArrayList<String>(), new ArrayList<String>(), 1, 1);
 
 	/**
 	 * Test to ensure that each roll is between 1 and 6.

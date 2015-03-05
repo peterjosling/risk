@@ -7,8 +7,10 @@ import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 
+import java.util.ArrayList;
+
 public class DumbPlayer extends Player {
-	private GameState state = new GameState();
+	private GameState state;
 	private int ack_id = 0;
 
 	public DumbPlayer(int id, String name)
