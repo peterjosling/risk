@@ -9,7 +9,7 @@ module.exports = {
 	module: {
 		loaders: [
 			{ test: /\.css$/, loader: 'style!css' },
-			{ test: /\.ts$/, loader: 'ts-loader?additionalFiles[]=../../lib/webpack/require.d.ts' },
+			{ test: /\.ts$/, loader: 'ts-loader?additionalFiles[]=../../lib/webpack/require.d.ts&additionalFiles[]=../../lib/es6-promise/es6-promise.d.ts' },
 			{ test: /\.hbs$/, loader: 'handlebars-loader' }
 		]
 	},
