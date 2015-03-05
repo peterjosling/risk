@@ -10,6 +10,7 @@ import java.util.Random;
 public class Deck {
 
 	private ArrayList<Card> cards;
+	private int topCardIndex =0;
 
 	public Deck(int size)
 	{
@@ -20,6 +21,10 @@ public class Deck {
 	public ArrayList<Card> getDeck()
 	{
 		return cards;
+	}
+
+	public int getTopCardIndex() {
+		return topCardIndex;
 	}
 
 	/**
@@ -63,14 +68,12 @@ public class Deck {
 	/**
 	 * Deals the card on the top of the deck i.e. the card at the front of the array list of
 	 * cards to the specified player.
-	 *
-	 * @param player - the player the card will be dealt to
 	 */
-	public void dealCard(Player player)
+	public Card dealCard()
 	{
-		Card topCard = cards.get(0);
-		player.addCard(topCard);
-		cards.remove(0);
+		Card topCard = cards.get(topCardIndex);
+		topCardIndex++;
+		return topCard;
 	}
 
 	/**
