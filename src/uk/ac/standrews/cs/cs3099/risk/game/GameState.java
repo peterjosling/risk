@@ -423,6 +423,7 @@ public class GameState {
 		}
 
 		return true;
+	}
 	
 	public boolean isMoveValid(AttackCommand move)
 	{
