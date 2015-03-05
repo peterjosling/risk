@@ -23,8 +23,8 @@ public class TradeCardsCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.TRADE_IN_CARDS;
+		return CommandType.TRADE_IN_CARDS;
 	}
 }

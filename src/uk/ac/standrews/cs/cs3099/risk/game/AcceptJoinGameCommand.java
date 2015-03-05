@@ -27,9 +27,9 @@ public class AcceptJoinGameCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.ACCEPT_JOIN_GAME;
+		return CommandType.ACCEPT_JOIN_GAME;
 	}
 
 }

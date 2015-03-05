@@ -20,9 +20,9 @@ public class AttackCaptureCommand extends Command {
 	}
 	
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.ATTACK_CAPTURE;
+		return CommandType.ATTACK_CAPTURE;
 	}
 
 }

@@ -28,9 +28,9 @@ public class LeaveGameCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.LEAVE_GAME;
+		return CommandType.LEAVE_GAME;
 	}
 
 }

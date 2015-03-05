@@ -38,8 +38,8 @@ public class AttackCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.ATTACK;
+		return CommandType.ATTACK;
 	}
 }

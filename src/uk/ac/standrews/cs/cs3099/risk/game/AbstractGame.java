@@ -35,9 +35,9 @@ public abstract class AbstractGame {
 
 		for (int i = 0; i < totalArmies; i++) {
 			Player player = getCurrentTurnPlayer();
-			Command command = player.getMove(MoveType.ASSIGN_ARMY);
+			Command command = player.getMove(CommandType.ASSIGN_ARMY);
 
-			if (command.getType() != MoveType.ASSIGN_ARMY) {
+			if (command.getType() != CommandType.ASSIGN_ARMY) {
 				terminate();
 				return;
 			}

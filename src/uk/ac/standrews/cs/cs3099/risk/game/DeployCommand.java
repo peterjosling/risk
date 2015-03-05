@@ -15,9 +15,9 @@ public class DeployCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.DEPLOY;
+		return CommandType.DEPLOY;
 	}
 
 	public static class Deployment {

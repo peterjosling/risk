@@ -21,9 +21,9 @@ public class TimeoutCommand extends Command {
 	}
 	
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.TIMEOUT;
+		return CommandType.TIMEOUT;
 	}
 
 }

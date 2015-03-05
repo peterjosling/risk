@@ -27,9 +27,9 @@ public class PlayCardsCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.PLAY_CARDS;
+		return CommandType.PLAY_CARDS;
 	}
 
 }

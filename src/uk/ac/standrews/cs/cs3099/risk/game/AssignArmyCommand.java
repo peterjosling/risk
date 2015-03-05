@@ -15,8 +15,8 @@ public class AssignArmyCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.ASSIGN_ARMY;
+		return CommandType.ASSIGN_ARMY;
 	}
 }

@@ -33,9 +33,9 @@ public class DefendCommand extends Command {
 	}
 	
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.DEFEND;
+		return CommandType.DEFEND;
 	}
 	
 }

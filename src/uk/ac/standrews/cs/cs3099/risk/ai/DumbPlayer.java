@@ -1,6 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
-import uk.ac.standrews.cs.cs3099.risk.game.Command;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 import uk.ac.standrews.cs.cs3099.risk.game.DeployCommand.Deployment;
 
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ public class DumbPlayer extends Player {
 		super(id, name);
 	}
 
-	public Command getMove(MoveType type)
+	public Command getMove(CommandType type)
 	{
-		if (type == MoveType.ASSIGN_ARMY) {
+		if (type == CommandType.ASSIGN_ARMY) {
 			return getArmyAssignmentMove();
-		} else if (type == MoveType.DEPLOY){
+		} else if (type == CommandType.DEPLOY){
 			return getDeployMove();			
 		}
 
@@ -30,21 +30,21 @@ public class DumbPlayer extends Player {
 		state.playMove(command, getId());
 	}
 
-	private DeployMove getDeployMove() 
+	private DeployCommand getDeployMove()
 	{
 		// Deploys all troops to first owned territory.
 		Territory deployTerritory = state.getTerritoriesForPlayer(getId())[0];
 		Deployment[] deployments = new Deployment[1];
 		deployments[0] = new Deployment(deployTerritory.getId(), state.getDeployableArmies(getId()));
 		
-		return new DeployMove(getId(), ++ack_id, deployments);
+		return new DeployCommand(getId(), ++ack_id, deployments);
 	}
 	
-	private AssignArmyMove getArmyAssignmentMove()
+	private AssignArmyCommand getArmyAssignmentMove()
 	{
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = state.getUnclaimedTerritories();
 		Territory territory = freeTerritories[0];
-		return new AssignArmyMove(getId(), ++ack_id, territory.getId());
+		return new AssignArmyCommand(getId(), ++ack_id, territory.getId());
 	}
 }

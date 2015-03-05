@@ -12,7 +12,7 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Command getMove(MoveType type)
+	public Command getMove(CommandType type)
 	{
 		Command command;
 		int id = this.getId();

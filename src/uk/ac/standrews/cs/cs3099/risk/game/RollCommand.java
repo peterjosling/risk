@@ -24,7 +24,7 @@ public class RollCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() {
-		return MoveType.ROLL;
+	public CommandType getType() {
+		return CommandType.ROLL;
 	}
 }

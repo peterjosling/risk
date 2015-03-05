@@ -29,7 +29,7 @@ public class NetworkPlayer extends Player {
 	}
 
 	@Override
-	public Command getMove(MoveType type)
+	public Command getMove(CommandType type)
 	{
 		return null;
 	}

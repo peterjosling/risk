@@ -14,8 +14,8 @@ public class RollHashCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() {
-		return MoveType.ROLL_HASH;
+	public CommandType getType() {
+		return CommandType.ROLL_HASH;
 	}
 
 	public String getHash() {

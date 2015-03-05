@@ -18,7 +18,7 @@ public class RollNumberCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType() {
-		return MoveType.ROLL_NUMBER;
+	public CommandType getType() {
+		return CommandType.ROLL_NUMBER;
 	}
 }

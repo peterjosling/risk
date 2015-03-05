@@ -176,19 +176,19 @@ public class GameState {
 		boolean attackRoll = true;
 		for(int moveIndex=1; moveIndex< attackPhaseCommands.size(); moveIndex++){ //index from 1 to avoid defend move
 			Command phaseCommand = attackPhaseCommands.get(moveIndex);
-			if(phaseCommand.getType() == MoveType.ROLL && attackRoll == true){
+			if(phaseCommand.getType() == CommandType.ROLL && attackRoll == true){
 				dieFaces = ((RollCommand) phaseCommand).getNumberOfFaces();
 				numberOfAttackingDice = ((RollCommand) phaseCommand).getNumberOfDice();
 				attackRoll = false;
-			}else if(phaseCommand.getType() == MoveType.ROLL && attackRoll == false){
+			}else if(phaseCommand.getType() == CommandType.ROLL && attackRoll == false){
 				dieFaces = ((RollCommand) phaseCommand).getNumberOfFaces();
 				numberOfDefendingDice = ((RollCommand) phaseCommand).getNumberOfDice();
 			}
-			if(phaseCommand.getType() == MoveType.ROLL_HASH){
+			if(phaseCommand.getType() == CommandType.ROLL_HASH){
 				String hash = ((RollHashCommand) phaseCommand).getHash();
 				rollHashes.add(hash);
 			}
-			if(phaseCommand.getType() == MoveType.ROLL_NUMBER){
+			if(phaseCommand.getType() == CommandType.ROLL_NUMBER){
 				String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
 				rollNumbers.add(rollNumberHash);
 			}

@@ -43,8 +43,8 @@ public class FortifyCommand extends Command {
 	}
 
 	@Override
-	public MoveType getType()
+	public CommandType getType()
 	{
-		return MoveType.FORTIFY;
+		return CommandType.FORTIFY;
 	}
 }

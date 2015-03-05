@@ -21,9 +21,9 @@ public class AcknowledgementCommand extends Command {
 	}
 	
 	@Override
-	public MoveType getType() 
+	public CommandType getType()
 	{
-		return MoveType.ACKNOWLEDGEMENT;
+		return CommandType.ACKNOWLEDGEMENT;
 	}
 
 }

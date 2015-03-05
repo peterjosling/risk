@@ -36,5 +36,5 @@ public abstract class Command {
 		return ackId;
 	}
 
-	public abstract MoveType getType();
+	public abstract CommandType getType();
 }
