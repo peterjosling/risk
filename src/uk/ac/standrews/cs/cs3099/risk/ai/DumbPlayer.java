@@ -10,7 +10,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 import java.util.ArrayList;
 
 public class DumbPlayer extends Player {
-	private GameState state = new GameState(new ArrayList<Player>());
+	private GameState state;
 	private int ack_id = 0;
 
 	public DumbPlayer(int id, String name)
