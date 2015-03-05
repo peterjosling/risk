@@ -1,6 +1,7 @@
 import Model = require('./model');
 import Collection = require('./collection');
 import Player = require('./player');
+import Messages = require('./messages');
 
 var HOST : string = 'ws://localhost';
 
@@ -13,8 +14,8 @@ class Game extends Model {
 		this.playerList = new Collection<Player>();
 	}
 
-	connect(host : string, port : number) : Promise<Message> {
-		return new Promise<Message>((resolve, reject) => {
+	connect(host : string, port : number) : Promise<Messages.Message> {
+		return new Promise<Messages.Message>((resolve, reject) => {
 			// Connect to Game server and attempt to join a game.
 			this.socket = new WebSocket(HOST);
 			this.socket.onmessage = this.messageReceived.bind(this);
@@ -28,12 +29,12 @@ class Game extends Model {
 				});
 			};
 
-			this.once('acceptJoinGame', (message : Message) => {
+			this.once('acceptJoinGame', (message : Messages.Message) => {
 				this.off('rejectJoinGame');
 				resolve(message);
 			});
 
-			this.once('rejectJoinGame', (message : Message) => {
+			this.once('rejectJoinGame', (message : Messages.Message) => {
 				this.off('acceptJoinGame');
 				reject(message);
 			});
@@ -41,45 +42,45 @@ class Game extends Model {
 	}
 
 	private messageReceived(event : MessageEvent) {
-		var message : Message = JSON.parse(event.data);
+		var message : Messages.Message = JSON.parse(event.data);
 
 		switch (message.command) {
 			case 'accept_join_game':
-				this.acceptJoinGameMessageReceived(<AcceptJoinGameMessage>message);
+				this.acceptJoinGameMessageReceived(<Messages.AcceptJoinGameMessage>message);
 				break;
 
 			case 'reject_join_game':
-				this.rejectJoinGameMessageReceived(<RejectJoinGameMessage>message);
+				this.rejectJoinGameMessageReceived(<Messages.RejectJoinGameMessage>message);
 				break;
 
 			case 'players_joined':
-				this.playersJoinedMessageReceived(<PlayersJoinedMessage>message);
+				this.playersJoinedMessageReceived(<Messages.PlayersJoinedMessage>message);
 				break;
 
 			case 'ping':
-				this.pingMessageReceived(<PingMessage>message);
+				this.pingMessageReceived(<Messages.PingMessage>message);
 				break;
 
 			case 'initialise_game':
-				this.initialiseGameMessageReceived(<InitialiseGameMessage>message);
+				this.initialiseGameMessageReceived(<Messages.InitialiseGameMessage>message);
 				break;
 		}
 	}
 
-	private sendMessage(json : Message) {
+	private sendMessage(json : Messages.Message) {
 		this.socket.send(JSON.stringify(json));
 	}
 
-	private acceptJoinGameMessageReceived(message : AcceptJoinGameMessage) {
+	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
 		this.trigger('acceptJoinGame', message);
 	}
 
-	private rejectJoinGameMessageReceived(message : RejectJoinGameMessage) {
+	private rejectJoinGameMessageReceived(message : Messages.RejectJoinGameMessage) {
 		this.trigger('rejectJoinGame', message);
 	}
 
-	private playersJoinedMessageReceived(message : PlayersJoinedMessage) {
-		message.payload.forEach((playerInfo : Array<number, string>) => {
+	private playersJoinedMessageReceived(message : Messages.PlayersJoinedMessage) {
+		message.payload.forEach((playerInfo) => {
 			this.playerList.add({
 				player_id: playerInfo[0],
 				name: playerInfo[1]
@@ -87,7 +88,7 @@ class Game extends Model {
 		}, this);
 	}
 
-	private pingMessageReceived(message : PingMessage) {
+	private pingMessageReceived(message : Messages.PingMessage) {
 		// Ignore pings from non-player hosts.
 		if (message.player_id === null) {
 			return;
@@ -97,14 +98,14 @@ class Game extends Model {
 		player.setIsActive(true);
 	}
 
-	private initialiseGameMessageReceived(message : InitialiseGameMessage) {
+	private initialiseGameMessageReceived(message : Messages.InitialiseGameMessage) {
 		this.set({
 			version: message.payload.version,
 			features: message.payload.supported_features
 		});
 	}
 
-	private rollResultMessageReceived(message : RollResultMessage) {
+	private rollResultMessageReceived(message : Messages.RollResultMessage) {
 
 	}
 }
