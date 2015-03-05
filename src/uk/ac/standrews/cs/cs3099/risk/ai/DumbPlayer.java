@@ -1,7 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
-import uk.ac.standrews.cs.cs3099.risk.game.DeployCommand.Deployment;
 
 import java.util.ArrayList;
 
@@ -25,12 +29,12 @@ public class DumbPlayer extends Player {
 		return null;
 	}
 
-	public void notifyMove(Command command)
+	public void notifyMove(Command move)
 	{
-		state.playMove(command, getId());
+		state.playMove(move, getId());
 	}
 
-	private DeployCommand getDeployMove()
+	private DeployCommand getDeployMove() 
 	{
 		// Deploys all troops to first owned territory.
 		Territory deployTerritory = state.getTerritoriesForPlayer(getId())[0];

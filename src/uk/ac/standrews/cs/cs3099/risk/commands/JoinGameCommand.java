@@ -1,16 +1,11 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class JoinGameCommand extends Command {
 	private float[] supported_versions;
 	private String[] supported_features;
 	
-	public JoinGameCommand(int ackId)
-	{
-		super(-1, ackId);
-	}
-	
 	public JoinGameCommand(int playerId, int ackId, float[] supported_versions,
-						   String[] supported_features)
+			String[] supported_features) 
 	{
 		super(-1, ackId);
 		this.supported_versions = supported_versions;
@@ -28,7 +23,7 @@ public class JoinGameCommand extends Command {
 	}
 
 	@Override
-	public CommandType getType()
+	public CommandType getType() 
 	{
 		return CommandType.JOIN_GAME;
 	}

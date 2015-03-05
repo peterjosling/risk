@@ -1,17 +1,12 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class DefendCommand extends Command {
+public class DefendCommand extends Command{
 	private int territory;
 	private int armies;
 	
-	public DefendCommand(int playerId, int ackId)
-	{
-		super(playerId, ackId);
-	}
-
 	public DefendCommand(int playerId, int ackId, int territory, int armies)
 	{
-		this(playerId, ackId);
+		super(playerId, ackId);
 		this.territory = territory;
 		this.armies = armies;
 	}

@@ -1,15 +1,10 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
 
 public class TimeoutCommand extends Command {
 	private int timeoutId;
 
-	public TimeoutCommand(int playerId, int ackId)
-	{
-		super(playerId, ackId);
-	}
-
-	public TimeoutCommand(int playerId, int ackId, int timeoutId)
+	public TimeoutCommand(int playerId, int ackId, int timeoutId) 
 	{
 		super(playerId, ackId);
 		this.timeoutId = timeoutId;
@@ -21,7 +16,7 @@ public class TimeoutCommand extends Command {
 	}
 	
 	@Override
-	public CommandType getType()
+	public CommandType getType() 
 	{
 		return CommandType.TIMEOUT;
 	}

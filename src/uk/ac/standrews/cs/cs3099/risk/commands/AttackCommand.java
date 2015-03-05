@@ -1,4 +1,5 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
+
 
 public class AttackCommand extends Command {
 	private int source;

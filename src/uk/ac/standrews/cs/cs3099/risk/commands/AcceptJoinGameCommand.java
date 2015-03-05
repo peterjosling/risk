@@ -1,13 +1,9 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
+
 
 public class AcceptJoinGameCommand extends Command {
 	private int acknowledgementTimeout;
 	private int moveTimeout;
-	
-	public AcceptJoinGameCommand(int playerId, int ackId)
-	{
-		super(playerId, ackId);
-	}
 	
 	public AcceptJoinGameCommand(int playerId, int ackId, int ackTimeout, int moveTimeout)
 	{
@@ -27,7 +23,7 @@ public class AcceptJoinGameCommand extends Command {
 	}
 
 	@Override
-	public CommandType getType()
+	public CommandType getType() 
 	{
 		return CommandType.ACCEPT_JOIN_GAME;
 	}

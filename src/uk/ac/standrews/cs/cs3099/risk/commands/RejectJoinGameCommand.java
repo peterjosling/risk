@@ -1,13 +1,8 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class RejectJoinGameCommand extends Command {
 	private String errorMessage;
 
-	public RejectJoinGameCommand(int playerId, int ackId)
-	{
-		super(playerId, ackId);
-	}
-	
 	public RejectJoinGameCommand(int playerId, int ackId, String errorMessage)
 	{
 		super(playerId, ackId);
@@ -20,7 +15,7 @@ public class RejectJoinGameCommand extends Command {
 	}
 
 	@Override
-	public CommandType getType()
+	public CommandType getType() 
 	{
 		return CommandType.REJECT_JOIN_GAME;
 	}

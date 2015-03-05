@@ -1,14 +1,16 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class TradeCardsCommand extends Command {
+import uk.ac.standrews.cs.cs3099.risk.game.Card;
+
+public class PlayCardsCommand extends Command {
 	private Card[] cards;
 
-	public TradeCardsCommand(int playerId, int ackId)
+	public PlayCardsCommand(int playerId, int ackId)
 	{
 		super(playerId, ackId);
 	}
 
-	public TradeCardsCommand(int playerId, int ackId, Card[] cards)
+	public PlayCardsCommand(int playerId, int ackId, Card[] cards)
 	{
 		this(playerId, ackId);
 		this.cards = cards;

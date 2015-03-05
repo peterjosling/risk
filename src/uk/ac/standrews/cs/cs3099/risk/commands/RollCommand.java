@@ -1,6 +1,8 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
-public class RollCommand extends Command {
+import uk.ac.standrews.cs.cs3099.risk.game.*;
+
+public class RollCommand extends Command{
 
 	private int faces;
 	private int numberOfDice;

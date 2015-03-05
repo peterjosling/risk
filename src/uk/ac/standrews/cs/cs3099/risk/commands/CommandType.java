@@ -1,4 +1,4 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public enum CommandType {
 	ATTACK,
@@ -15,8 +15,5 @@ public enum CommandType {
 	TIMEOUT,
 	ATTACK_CAPTURE,
 	LEAVE_GAME,
-	PLAY_CARDS,
-	ROLL_NUMBER,
-	ROLL,
-	ROLL_HASH
+	ROLL_NUMBER, ROLL_HASH, ROLL, PLAY_CARDS
 }

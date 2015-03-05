@@ -1,16 +1,11 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class LeaveGameCommand extends Command {
 	private int response;
 	private boolean receiveUpdates;
 
-	public LeaveGameCommand(int playerId, int ackId)
-	{
-		super(playerId, ackId);
-	}
-	
 	public LeaveGameCommand(int playerId, int ackId, int response,
-							boolean receiveUpdates)
+			boolean receiveUpdates) 
 	{
 		super(playerId, ackId);
 		this.response = response;
@@ -28,7 +23,7 @@ public class LeaveGameCommand extends Command {
 	}
 
 	@Override
-	public CommandType getType()
+	public CommandType getType() 
 	{
 		return CommandType.LEAVE_GAME;
 	}

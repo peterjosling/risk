@@ -4,7 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import uk.ac.standrews.cs.cs3099.risk.game.DeployCommand.Deployment;
+
+import uk.ac.standrews.cs.cs3099.risk.commands.*;
+import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.DefendCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
+import uk.ac.standrews.cs.cs3099.risk.commands.DrawCardCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.PlayCardsCommand;
+
 
 /**
  * GameState Class
@@ -101,6 +113,7 @@ public class GameState {
 		return playersDeployableArmies[playerID];
 	}
 
+
 	public void playMove(Command command, int playerId){
 		switch(command.getType()){
 			case ASSIGN_ARMY:
@@ -109,8 +122,6 @@ public class GameState {
 				playMove((AttackCommand) command, playerId);
 			case FORTIFY:
 				playMove((FortifyCommand) command, playerId);
-			case TRADE_IN_CARDS:
-				playMove((TradeCardsCommand) command, playerId);
 			case DEPLOY:
 				playMove((DeployCommand) command, playerId);
 			case DRAW_CARD:
@@ -262,7 +273,7 @@ public class GameState {
 		moveArmies(source, destination, armies);
 	}
 
-	public void playMove(TradeCardsCommand move, int playerID){
+	public void playMove(PlayCardsCommand move, int playerID){
 		Card[] cards = move.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
 		int armies = calculateArmiesFromTradeIn();
@@ -350,7 +361,8 @@ public class GameState {
 		return false;
 	}
 
-	public boolean isMoveValid(Command command)
+
+	public boolean isMoveValid(Command move)
 	{
 		System.out.println("Command not found");
 		return false;
@@ -397,7 +409,9 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(TradeCardsCommand move)
+
+
+	public boolean isMoveValid(PlayCardsCommand move)
 	{
 		// Check if own cards trading in.
 		return true;

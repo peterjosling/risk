@@ -1,4 +1,5 @@
-package uk.ac.standrews.cs.cs3099.risk.game;
+package uk.ac.standrews.cs.cs3099.risk.commands;
+
 
 public class AssignArmyCommand extends Command {
 	private int territoryId;

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
 public class NetworkPlayer extends Player {
 	private String ip;
 	private int port;
@@ -35,7 +38,7 @@ public class NetworkPlayer extends Player {
 	}
 
 	@Override
-	public void notifyMove(Command command)
+	public void notifyMove(Command move)
 	{
 
 	}
