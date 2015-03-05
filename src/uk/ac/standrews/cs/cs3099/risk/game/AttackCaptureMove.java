@@ -1,7 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 public class AttackCaptureMove extends Move {
-	public int[] captureDetails = new int[3];
+	private int[] captureDetails = new int[3];
 
 	public AttackCaptureMove(int playerId, int ackId) 
 	{

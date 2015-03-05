@@ -238,6 +238,30 @@ public class GameState {
 		return losses;
 	}
 
+	public void playMove(DefendMove move, int playerID){
+		attackPhaseMoves.add(move);
+	}
+
+	public void playMove(RollMove move, int playerID){
+		attackPhaseMoves.add(move);
+	}
+
+	public void playMove(RollHashMove move, int playerID){
+		attackPhaseMoves.add(move);
+	}
+
+	public void playMove(RollNumberMove move, int playerID){
+		attackPhaseMoves.add(move);
+	}
+
+	public void playMove(AttackCaptureMove move){
+		int[] captureDetails = move.getCaptureDetails();
+		int source = captureDetails[0];
+		int destination = captureDetails[1];
+		int armies = captureDetails[2];
+		moveArmies(source, destination, armies);
+	}
+
 	public void playMove(TradeCardsMove move, int playerID){
 		Card[] cards = move.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
@@ -255,10 +279,10 @@ public class GameState {
 		tradeInCount++;
 	}
 
-//	public void playMove(DrawCardMove move, int playerID){
-//		Card drawnCard = deck.dealCard();
-//		playerCards[playerID].add(drawnCard);
-//	}
+	public void playMove(DrawCardMove move, int playerID){
+		Card drawnCard = deck.dealCard();
+		playerCards[playerID].add(drawnCard);
+	}
 
 	public int calculateArmiesFromTradeIn(){
 		if(tradeInCount<=5){
