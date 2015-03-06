@@ -1,25 +1,29 @@
 import Model = require('./model');
 
 class Player extends Model {
+	constructor(options?) {
+		super(options);
+		this.defaults = <any>{
+			isActive: false
+		};
+	}
+
 	idAttribute = 'player_id';
-	defaults = <any>{
-		isActive: false
-	};
 
-	getPlayerId() : number {
-		return this.get('player_id');
+	get playerId() : number {
+		return super.get('player_id');
 	}
 
-	getName() : string {
-		return this.get('name');
+	get name() : string {
+		return super.get('name');
 	}
 
-	isActive() : boolean {
-		return this.get('isActive');
+	get isActive() : boolean {
+		return super.get('isActive');
 	}
 
-	setIsActive(isActive : boolean) : void {
-		this.set('isActive', isActive);
+	set isActive(isActive : boolean) {
+		super.set('isActive', isActive);
 	}
 }
 

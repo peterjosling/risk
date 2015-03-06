@@ -82,10 +82,12 @@ class Game extends Model {
 
 	private playersJoinedMessageReceived(message : Messages.PlayersJoinedMessage) {
 		message.payload.forEach((playerInfo) => {
-			this.playerList.add({
+			var player = new Player({
 				player_id: playerInfo[0],
 				name: playerInfo[1]
 			});
+
+			this.playerList.add(player);
 		}, this);
 	}
 
@@ -96,7 +98,7 @@ class Game extends Model {
 		}
 
 		var player : Player = this.playerList.get(message.player_id);
-		player.setIsActive(true);
+		player.isActive = true;
 	}
 
 	private initialiseGameMessageReceived(message : Messages.InitialiseGameMessage) {
