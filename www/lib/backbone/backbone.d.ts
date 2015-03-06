@@ -120,7 +120,7 @@ declare module Backbone {
         *    return super.get("name");
         * }
         **/
-        private get(attributeName: string): any;
+        /*private*/ get(attributeName: string): any;
 
         /**
         * For strongly-typed assignment of attributes, use the `set` method only privately in public setter properties.
@@ -129,7 +129,7 @@ declare module Backbone {
         *    super.set("name", value);
         * }
         **/
-        private set(attributeName: string, value: any, options?: ModelSetOptions): Model;
+        /*private*/ set(attributeName: string, value: any, options?: ModelSetOptions): Model;
         set(obj: any, options?: ModelSetOptions): Model;
 
         change(): any;
