@@ -1,29 +1,25 @@
 import View = require('./view');
+import Model = require('./model');
 import Game = require('./game');
-import PlayerListView = require('./player-list-view');
-import MapView = require('./map-view');
+import ConnectionView = require('./connection-view');
 
-class App extends View<Game> {
+class App extends View<Model> {
 	template = <Function>require('../hbs/app.hbs');
+	game : Game;
+	view : View<Model>;
 
-	childViews = [
-		{
-			view: new PlayerListView(),
-			el: '#player-list'
-		},
-		{
-			view: new MapView(),
-			el: '#map'
-		}
-	];
-
-	constructor(options?) {
-		super(options);
+	setView(view : View<Model>) : void {
+		this.view.destroy();
+		this.view = view;
+		this.$el.html(this.view.render().el);
 	}
 }
 
 var app = new App();
+var game = new Game();
+var view = new ConnectionView({model: game});
 app.render();
+app.setView(view);
 document.body.appendChild(app.el);
 
-export = App;
+export = app;
