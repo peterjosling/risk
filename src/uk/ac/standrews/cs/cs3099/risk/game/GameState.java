@@ -29,7 +29,7 @@ public class GameState {
 
 	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
-	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
+	private ArrayList<Card>[] playerCards;
 	private boolean inAttackPhase = false;
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private ArrayList<Integer> playerIDs;
@@ -44,11 +44,16 @@ public class GameState {
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
+		playerCards = new ArrayList[getNumberOfPlayers()];
 	}
 
 	public void loadMap(MapParser m) throws MapParseException
 	{
 		map = new Map(m);
+	}
+
+	public Map getMap(){
+		return map;
 	}
 
 	public void initTradeInValues(){
