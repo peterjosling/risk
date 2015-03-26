@@ -380,9 +380,13 @@ public class GameState {
 				return isMoveValid((DrawCardCommand) command);
 			case DEFEND:
 				return isMoveValid((DefendCommand) command);
-			case JOIN_GAME:
+			case TIMEOUT:
+				return isMoveValid((TimeoutCommand) command);
+			case ATTACK_CAPTURE:
 				return isMoveValid((AttackCaptureCommand) command);
 			case LEAVE_GAME:
+				return isMoveValid((LeaveGameCommand) command);
+			case PLAY_CARDS:
 				return isMoveValid((PlayCardsCommand) command);
 			case ROLL_NUMBER:
 				return isMoveValid((RollNumberCommand) command);
@@ -503,32 +507,19 @@ public class GameState {
 
 	public boolean isMoveValid(DrawCardCommand command)
 	{
+		// Possible to check? Boolean for player having gained new territory on turn.
 		return true;
 	}
 	
 	public boolean isMoveValid(PlayCardsCommand command) 
 	{
-		return true;
-	}
-
-	public boolean isMoveValid(RollNumberCommand command) 
-	{
+		// Check cards match
 		return true;
 	}
 
 	public boolean isMoveValid(RollCommand command) 
 	{
-		return true;
-	}
-
-	public boolean isMoveValid(RollHashCommand command) 
-	{
-		return true;
-	}
-	
-	/*************************/	
-	public boolean isMoveValid(ReadyCommand command)
-	{
+		// Faces & number of dice
 		return true;
 	}
 
