@@ -381,20 +381,8 @@ public class GameState {
 			case DEFEND:
 				return isMoveValid((DefendCommand) command);
 			case JOIN_GAME:
-				return isMoveValid((JoinGameCommand) command);
-			case ACCEPT_JOIN_GAME:
-				return isMoveValid((AcceptJoinGameCommand) command);
-			case REJECT_JOIN_GAME:
-				return isMoveValid((RejectJoinGameCommand) command);
-			case ACKNOWLEDGEMENT:
-				return isMoveValid((AcknowledgementCommand) command);
-			case TIMEOUT:
-				return isMoveValid((TimeoutCommand) command);
-			case ATTACK_CAPTURE:
 				return isMoveValid((AttackCaptureCommand) command);
 			case LEAVE_GAME:
-				return isMoveValid((LeaveGameCommand) command);
-			case PLAY_CARDS:
 				return isMoveValid((PlayCardsCommand) command);
 			case ROLL_NUMBER:
 				return isMoveValid((RollNumberCommand) command);
@@ -497,38 +485,19 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(JoinGameCommand command) 
-	{
-		return true;
-	}
-
-	public boolean isMoveValid(AcceptJoinGameCommand command) 
-	{
-		return true;
-	}
-
-	public boolean isMoveValid(RejectJoinGameCommand command) 
-	{
-		return true;
-	}
-
-	public boolean isMoveValid(AcknowledgementCommand command) 
-	{
-		return true;
-	}
-
-	public boolean isMoveValid(TimeoutCommand command) 
-	{
-		return true;
-	}
-
 	public boolean isMoveValid(AttackCaptureCommand command) 
 	{
-		return true;
-	}
+		int playerId = command.getPlayerId();
+		
+		int[] captureDetails = command.getCaptureDetails();
 
-	public boolean isMoveValid(LeaveGameCommand command) 
-	{
+		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
+		if(sourceTerritory.getOwner() != playerId) return false;
+		
+		// Own destination territory by this point?
+		
+		if(sourceTerritory.getArmies() <= captureDetails[2]) return false;
+		
 		return true;
 	}
 
@@ -557,23 +526,8 @@ public class GameState {
 		return true;
 	}
 	
-	/*************************/
-	public boolean isMoveValid(InitialiseGameCommand command)
-	{
-		return true;
-	}
-	
+	/*************************/	
 	public boolean isMoveValid(ReadyCommand command)
-	{
-		return true;
-	}
-	
-	public boolean isMoveValid(PingCommand command)
-	{
-		return true;
-	}
-	
-	public boolean isMoveValid(PlayersJoinedCommand command)
 	{
 		return true;
 	}
