@@ -381,34 +381,31 @@ public class GameState {
 			case DEFEND:
 				isMoveValid((DefendCommand) command);
 //			case JOIN_GAME:
-//				playMove((JoinGameCommand) command, playerId);
+//				isMoveValid((JoinGameCommand) command);
 //			case ACCEPT_JOIN_GAME:
-//				playMove((AcceptJoinGameCommand) command, playerId);
+//				isMoveValid((AcceptJoinGameCommand) command);
 //			case REJECT_JOIN_GAME:
-//				playMove((RejectJoinGameCommand) command, playerId);
+//				isMoveValid((RejectJoinGameCommand) command);
 //			case ACKNOWLEDGEMENT:
-//				playMove((AcknowledgementCommand) command, playerId);
+//				isMoveValid((AcknowledgementCommand) command);
 //			case TIMEOUT:
-//				playMove((TimeoutCommand) command, playerId);
+//				isMoveValid((TimeoutCommand) command);
 //			case ATTACK_CAPTURE:
-//				playMove((AttackCaptureCommand) command, playerId);
+//				isMoveValid((AttackCaptureCommand) command);
 //			case LEAVE_GAME:
-//				playMove((LeaveGameCommand) command, playerId);
+//				isMoveValid((LeaveGameCommand) command);
 //			case PLAY_CARDS:
-//				playMove((PlayCardsCommand) command, playerId);
+//				isMoveValid((PlayCardsCommand) command);
 //			case ROLL_NUMBER:
-//				playMove((RollNumberCommand) command, playerId);
+//				isMoveValid((RollNumberCommand) command);
 //			case ROLL:
-//				playMove((RollCommand) command, playerId);
+//				isMoveValid((RollCommand) command);
 //			case ROLL_HASH:
-//				playMove((RollHashCommand) command, playerId);
+//				isMoveValid((RollHashCommand) command);
 			default:
 				System.out.println("Command not found");
 		}
-		
 		return true;
-		
-		 		
 	}
 
 	public boolean isMoveValid(AssignArmyCommand move)
