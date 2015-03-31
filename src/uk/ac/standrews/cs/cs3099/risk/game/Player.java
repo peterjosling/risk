@@ -16,6 +16,7 @@ public abstract class Player {
 	// Unique per-player values
 	private int id;
 	private String name;
+	protected int lastAckid = 0;
 
 	// Game state properties
 	private List<Card> usedCards = new ArrayList<Card>();

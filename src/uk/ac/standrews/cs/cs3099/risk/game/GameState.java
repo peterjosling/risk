@@ -119,42 +119,43 @@ public class GameState {
 	}
 
 
-	public void playMove(Command command, int playerId){
+	public void playMove(Command command){
 		switch(command.getType()){
 			case ASSIGN_ARMY:
-				playMove((AssignArmyCommand) command, playerId);
+				playMove((AssignArmyCommand) command);
 			case ATTACK:
-				playMove((AttackCommand) command, playerId);
+				playMove((AttackCommand) command);
 			case FORTIFY:
-				playMove((FortifyCommand) command, playerId);
+				playMove((FortifyCommand) command);
 			case DEPLOY:
-				playMove((DeployCommand) command, playerId);
+				playMove((DeployCommand) command);
 			case DRAW_CARD:
-				playMove((DrawCardCommand) command, playerId);
+				playMove((DrawCardCommand) command);
 			case DEFEND:
-				playMove((DefendCommand) command, playerId);
+				playMove((DefendCommand) command);
 			case TIMEOUT:
-				playMove((TimeoutCommand) command, playerId);
+				playMove((TimeoutCommand) command);
 			case ATTACK_CAPTURE:
-				playMove((AttackCaptureCommand) command, playerId);
+				playMove((AttackCaptureCommand) command);
 			case LEAVE_GAME:
-				playMove((LeaveGameCommand) command, playerId);
+				playMove((LeaveGameCommand) command);
 			case PLAY_CARDS:
-				playMove((PlayCardsCommand) command, playerId);
+				playMove((PlayCardsCommand) command);
 			case ROLL_NUMBER:
-				playMove((RollNumberCommand) command, playerId);
+				playMove((RollNumberCommand) command);
 			case ROLL:
-				playMove((RollCommand) command, playerId);
+				playMove((RollCommand) command);
 			case ROLL_HASH:
-				playMove((RollHashCommand) command, playerId);
+				playMove((RollHashCommand) command);
 
 		}
 	}
 
-	public void playMove(AssignArmyCommand command, int playerID){
+
+	public void playMove(AssignArmyCommand command){
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
 		territory.addArmies(1);
-		territory.claim(playerID);
+		territory.claim(command.getPlayerId());
 	}
 
 	public void playMove(FortifyCommand command){
@@ -246,19 +247,20 @@ public class GameState {
 		return losses;
 	}
 
-	public void playMove(DefendCommand command, int playerID){
+
+	public void playMove(DefendCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollCommand command, int playerID){
+	public void playMove(RollCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollHashCommand command, int playerID){
+	public void playMove(RollHashCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollNumberCommand command, int playerID){
+	public void playMove(RollNumberCommand command){
 		attackPhaseCommands.add(command);
 	}
 
@@ -268,37 +270,42 @@ public class GameState {
 		int destination = captureDetails[1];
 		int armies = captureDetails[2];
 		moveArmies(source, destination, armies);
+		Territory territory = map.findTerritoryById(destination);
+		territory.claim(command.getPlayerId());
 	}
 
-	public void playMove(PlayCardsCommand command, int playerID){
-		Card[] cards = command.getCards();
-		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
+
+	public void playMove(PlayCardsCommand command){
+		Card[][] cards = command.getCards();
+		Territory[] playersTerritories = getTerritoriesForPlayer(command.getPlayerId());
 		int armies = calculateArmiesFromTradeIn();
-		for(Card card:cards){
-			for(Territory playerTerritory: playersTerritories){
-				if(card.getTerritoryId()==playerTerritory.getId()){
-					armies+=2; //this will need to be added to specific territory in future
-					break;
+		for(Card[] cardSet:cards){
+			for(Card card:cardSet) {
+				for (Territory playerTerritory : playersTerritories) {
+					if (card.getTerritoryId() == playerTerritory.getId()) {
+						armies += 2; //this will need to be added to specific territory in future
+						break;
+					}
 				}
+				playerCards[command.getPlayerId()].remove(card);
 			}
-			playerCards[playerID].remove(card);
 		}
-		playersDeployableArmies[playerID] += armies;
+		playersDeployableArmies[command.getPlayerId()] += armies;
 		tradeInCount++;
 	}
 
-	public void playMove(DrawCardCommand command, int playerID){
+	public void playMove(DrawCardCommand command){
 		Card drawnCard = deck.dealCard();
-		playerCards[playerID].add(drawnCard);
+		playerCards[command.getPlayerId()].add(drawnCard);
 	}
 
-	public void playMove(LeaveGameCommand command, int playerID){
+	public void playMove(LeaveGameCommand command){
 		for(Integer id:playerIDs){
 			playerIDs.remove(command.getPlayerId());
 		}
 	}
 
-	public void playMove(TimeoutCommand command, int PlayerId){
+	public void playMove(TimeoutCommand command){
 		for(Integer id:playerIDs){
 			playerIDs.remove(command.getPlayerId());
 		}
