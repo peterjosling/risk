@@ -21,16 +21,19 @@ public class LocalPlayer extends Player {
 			case ASSIGN_ARMY:
 				int territoryID = 0;
 				command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
+				break;
 			case ATTACK:
 				int sourceID = 0;
 				int destinationID = 0;
 				int armies = 0;
 				command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+				break;
 			case FORTIFY:
 				sourceID = 0;
 				destinationID = 0;
 				armies = 0;
 				command = new FortifyCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+				break;
 			case DEPLOY:
 				int numberOfDeployments = 0;
 				DeployCommand.Deployment[] deployments = new DeployCommand.Deployment[numberOfDeployments];
@@ -40,25 +43,41 @@ public class LocalPlayer extends Player {
 					deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 				}
 				command = new DeployCommand(this.getId(), lastAckid++, deployments);
+				break;
 			case DRAW_CARD:
 				command = new DrawCardCommand(this.getId(), lastAckid++);
+				break;
 			case DEFEND:
 				territoryID = 0;
 				armies = 0;
 				command = new DefendCommand(this.getId(), lastAckid++, territoryID, armies);
+			case JOIN_GAME:
+				float[] supportedVersions = {1};
+				String[] supportedFeatures = {};
+				command = new JoinGameCommand(this.getId(), lastAckid++,supportedVersions, supportedFeatures);
+				break;
+			case ACCEPT_JOIN_GAME:
+				break;
+			case REJECT_JOIN_GAME:
+				break;
+			case ACKNOWLEDGEMENT:
+				break;
 			case TIMEOUT:
 				int timedOutPlayerId = 0;
 				command = new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+				break;
 			case ATTACK_CAPTURE:
 				sourceID = 0;
 				destinationID = 0;
 				armies = 0;
 				int[] captureDetails = {sourceID,destinationID,armies};
 				command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+				break;
 			case LEAVE_GAME:
 				int response = 0;
 				boolean receiveUpdates = false;
 				command = new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
+				break;
 			case PLAY_CARDS:
 				int numberOfTradeIns = 0;
 				Card[][] cards = new Card[numberOfTradeIns][3];
@@ -68,12 +87,20 @@ public class LocalPlayer extends Player {
 					}
 				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+				break;
 			case ROLL_NUMBER:
-				command = null;
+				String hash = "";
+				command = new RollNumberCommand(this.getId(), lastAckid++, hash);
+				break;
 			case ROLL:
-				command = null;
+				int faces = 0;
+				int numberOfDice = 0;
+				command = new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
+				break;
 			case ROLL_HASH:
-				command = null;
+				hash = "";
+				command = new RollHashCommand(this.getId(), lastAckid++, hash);
+				break;
 		}
 		return command;
 	}

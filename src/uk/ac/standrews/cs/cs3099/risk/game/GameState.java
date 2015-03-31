@@ -34,6 +34,9 @@ public class GameState {
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private ArrayList<Integer> playerIDs;
 	private final int[] TRADE_IN_VALUES = new int[6];
+	private boolean attackSuccessful = false;
+	private int remainingArmies = 0;
+
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -208,6 +211,11 @@ public class GameState {
 		//apply result to board
 		removeArmiesForTerritory(command.getSource(), result[0]);
 		removeArmiesForTerritory(command.getDest(), result[1]);
+		if(map.findTerritoryById(command.getDest()).getArmies() == 0){
+			attackSuccessful = true;
+			remainingArmies = numberOfAttackingDice-result[0];
+		}
+
 	}
 
 	/**
@@ -300,15 +308,11 @@ public class GameState {
 	}
 
 	public void playMove(LeaveGameCommand command){
-		for(Integer id:playerIDs){
 			playerIDs.remove(command.getPlayerId());
-		}
 	}
 
 	public void playMove(TimeoutCommand command){
-		for(Integer id:playerIDs){
 			playerIDs.remove(command.getPlayerId());
-		}
 	}
 
 	public int calculateArmiesFromTradeIn(){
@@ -543,5 +547,8 @@ public class GameState {
 		return true;
 	}
 
+	public void setAttackSuccessful(boolean attackSuccessful) {
+		this.attackSuccessful = attackSuccessful;
+	}
 }
 
