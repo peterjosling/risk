@@ -9,7 +9,10 @@ class App extends View<Model> {
 	view : View<Model>;
 
 	setView(view : View<Model>) : void {
-		this.view.destroy();
+		if (this.view) {
+			this.view.destroy();
+		}
+
 		this.view = view;
 		this.$el.html(this.view.render().el);
 	}
