@@ -16,13 +16,17 @@ class App extends View<Model> {
 		this.view = view;
 		this.$el.html(this.view.render().el);
 	}
+
+	// Show the connection view and allow the user to join a game.
+	init() : void {
+		this.game = new Game();
+		var view = new ConnectionView({model: this.game});
+		app.setView(view);
+	}
 }
 
 var app = new App();
-var game = new Game();
-var view = new ConnectionView({model: game});
-app.render();
-app.setView(view);
-document.body.appendChild(app.el);
+document.body.appendChild(app.render().el);
+app.init();
 
 export = app;
