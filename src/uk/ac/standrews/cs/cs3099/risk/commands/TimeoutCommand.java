@@ -10,6 +10,9 @@ public class TimeoutCommand extends Command {
 		this.timeoutId = timeoutId;
 	}
 
+	/**
+	 * @return Integer ID of the player who has timed out.
+	 */
 	public int getTimeoutId()
 	{
 		return timeoutId;
