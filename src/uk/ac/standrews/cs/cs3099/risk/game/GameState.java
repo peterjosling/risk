@@ -486,6 +486,7 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 		
+		// Armies greater than successful attacking armies.
 		int[] captureDetails = command.getCaptureDetails();
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
@@ -501,7 +502,10 @@ public class GameState {
 
 	public boolean isMoveValid(DrawCardCommand command)
 	{
-		// Possible to check? Boolean for player having gained new territory on turn.
+		int playerId = command.getPlayerId();
+
+//		if(!playerCaptured[playerId]) return false;
+		
 		return true;
 	}
 	
@@ -522,7 +526,7 @@ public class GameState {
 					&& (cardSet[1].getCardType() != cardSet[2].getCardType()))
 				return true;
 			
-			// Any 2 Cards & 1 wildcard
+			// Any 2 Cards & 1 wild card
 			if ((cardSet[0].getCardType() == CardType.WILD)
 					^ (cardSet[1].getCardType() == CardType.WILD)
 					^ (cardSet[2].getCardType() == CardType.WILD))
@@ -535,7 +539,8 @@ public class GameState {
 	public boolean isMoveValid(RollCommand command) 
 	{
 		int faces = command.getNumberOfFaces();
-		// Check faces??
+		
+		if((faces != getNumberOfPlayers()) && (faces != 6)) return false;
 		
 		int noOfDice = command.getNumberOfDice();
 		if(noOfDice<1 || noOfDice>3){
