@@ -153,9 +153,9 @@ public class GameState {
 	}
 
 	public void playMove(FortifyCommand command){
-		int destination = command.getDest();
-		int source = command.getSource();
-		int numberOfArmies = command.getArmies();
+		int source = command.getFortifyDetails()[0];
+		int destination = command.getFortifyDetails()[1];
+		int numberOfArmies = command.getFortifyDetails()[2];
 		moveArmies(source, destination, numberOfArmies);
 	}
 
@@ -439,14 +439,14 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
-		Territory fortifySource = map.findTerritoryById(command.getSource());
+		Territory fortifySource = map.findTerritoryById(command.getFortifyDetails()[0]);
 		if(fortifySource.getOwner() != playerId) return false;
 
-		Territory fortifyDest = map.findTerritoryById(command.getDest());
+		Territory fortifyDest = map.findTerritoryById(command.getFortifyDetails()[1]);
 		if(fortifyDest.getOwner() != playerId) return false;
 
 		if(fortifySource.getArmies() > 1){
-			if((command.getArmies()) < fortifySource.getArmies()) return false;
+			if((command.getFortifyDetails()[2]) < fortifySource.getArmies()) return false;
 		} else {
 			return false;
 		}
@@ -498,8 +498,9 @@ public class GameState {
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
 		if(sourceTerritory.getOwner() != playerId) return false;
 		
-		// Own destination territory by this point?
-		
+		Territory destTerritory = map.findTerritoryById(captureDetails[1]);
+		if(destTerritory.getOwner() == playerId) return false;
+				
 		if(sourceTerritory.getArmies() <= captureDetails[2]) return false;
 		
 		return true;
@@ -519,7 +520,14 @@ public class GameState {
 
 	public boolean isMoveValid(RollCommand command) 
 	{
-		// Faces & number of dice
+		int faces = command.getNumberOfFaces();
+		// Check faces??
+		
+		int noOfDice = command.getNumberOfDice();
+		if(noOfDice<1 || noOfDice>3){
+			return false;
+		}
+		
 		return true;
 	}
 
