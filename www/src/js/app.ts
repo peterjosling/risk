@@ -2,6 +2,8 @@ import View = require('./view');
 import Model = require('./model');
 import Game = require('./game');
 import ConnectionView = require('./connection-view');
+import LobbyView = require('./lobby-view');
+import GameView = require('./game-view');
 
 class App extends View<Model> {
 	template = <Function>require('../hbs/app.hbs');
@@ -21,6 +23,20 @@ class App extends View<Model> {
 	init() : void {
 		this.game = new Game();
 		var view = new ConnectionView({model: this.game});
+		view.on('connected', this.gameConnected, this);
+		app.setView(view);
+	}
+
+	// Joined an existing game (or created one). Go to the lobby view.
+	gameConnected() : void {
+		var view = new LobbyView({model: this.game});
+		view.on('gameStart', this.gameStart, this);
+		app.setView(view);
+	}
+
+	// Game started. Go to main game view.
+	gameStart() : void {
+		var view = new GameView({model: this.game});
 		app.setView(view);
 	}
 }
