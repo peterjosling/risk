@@ -5,17 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 
+
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
-import uk.ac.standrews.cs.cs3099.risk.commands.DefendCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
-import uk.ac.standrews.cs.cs3099.risk.commands.DrawCardCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.PlayCardsCommand;
+import uk.ac.standrews.cs.cs3099.risk.game.Card.CardType;
 
 
 /**
@@ -514,8 +507,29 @@ public class GameState {
 	
 	public boolean isMoveValid(PlayCardsCommand command) 
 	{
-		// Check cards match
-		return true;
+		Card[][] cards = command.getCards();
+		for(Card[] cardSet : cards){
+			if(cardSet.length != 3) return false;
+			
+			// All matching
+			if ((cardSet[0].getCardType() == cardSet[1].getCardType())
+					&& (cardSet[1].getCardType() == cardSet[2].getCardType()))
+				return true;
+			
+			// All different
+			if ((cardSet[0].getCardType() != cardSet[1].getCardType())
+					&& (cardSet[0].getCardType() != cardSet[2].getCardType())
+					&& (cardSet[1].getCardType() != cardSet[2].getCardType()))
+				return true;
+			
+			// Any 2 Cards & 1 wildcard
+			if ((cardSet[0].getCardType() == CardType.WILD)
+					^ (cardSet[1].getCardType() == CardType.WILD)
+					^ (cardSet[2].getCardType() == CardType.WILD))
+				return true;			
+		}
+
+		return false;
 	}
 
 	public boolean isMoveValid(RollCommand command) 
