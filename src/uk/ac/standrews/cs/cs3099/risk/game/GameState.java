@@ -265,22 +265,22 @@ public class GameState {
 		moveArmies(source, destination, armies);
 	}
 
-	public void playMove(PlayCardsCommand command, int playerID){
-		Card[] cards = command.getCards();
-		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
-		int armies = calculateArmiesFromTradeIn();
-		for(Card card:cards){
-			for(Territory playerTerritory: playersTerritories){
-				if(card.getTerritoryId()==playerTerritory.getId()){
-					armies+=2; //this will need to be added to specific territory in future
-					break;
-				}
-			}
-			playerCards[playerID].remove(card);
-		}
-		playersDeployableArmies[playerID] += armies;
-		tradeInCount++;
-	}
+//	public void playMove(PlayCardsCommand command, int playerID){
+//		Card[][] cards = command.getCards();
+//		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
+//		int armies = calculateArmiesFromTradeIn();
+//		for(Card card:cards){
+//			for(Territory playerTerritory: playersTerritories){
+//				if(card.getTerritoryId()==playerTerritory.getId()){
+//					armies+=2; //this will need to be added to specific territory in future
+//					break;
+//				}
+//			}
+//			playerCards[playerID].remove(card);
+//		}
+//		playersDeployableArmies[playerID] += armies;
+//		tradeInCount++;
+//	}
 
 	public void playMove(DrawCardCommand command, int playerID){
 		Card drawnCard = deck.dealCard();
