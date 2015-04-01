@@ -1,4 +1,4 @@
-package uk.ac.standrews.cs.cs3099.risk.commands;
+ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class JoinGameCommand extends Command {
 	private float[] supported_versions;

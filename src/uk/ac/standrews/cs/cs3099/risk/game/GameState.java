@@ -550,5 +550,9 @@ public class GameState {
 		return true;
 	}
 
+	public boolean isMoveValid(RollNumberCommand command){
+		// Compare with previous RollHash
+		return true;
+	}
 }
 
