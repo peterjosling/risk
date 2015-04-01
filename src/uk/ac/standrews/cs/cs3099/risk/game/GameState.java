@@ -255,7 +255,6 @@ public class GameState {
 		return losses;
 	}
 
-
 	public void playMove(DefendCommand command){
 		attackPhaseCommands.add(command);
 	}
@@ -281,7 +280,6 @@ public class GameState {
 		Territory territory = map.findTerritoryById(destination);
 		territory.claim(command.getPlayerId());
 	}
-
 
 	public void playMove(PlayCardsCommand command){
 		Card[][] cards = command.getCards();
@@ -381,6 +379,7 @@ public class GameState {
 		return false;
 	}
 
+
 	public boolean isMoveValid(Command command)
 	{
 		switch(command.getType()){
@@ -431,11 +430,11 @@ public class GameState {
 		return true;
 	}
 	
+
 	public boolean isMoveValid(AttackCommand command)
 	{
 
 		int playerId = command.getPlayerId();
-
 		Territory sourceTerritory = map.findTerritoryById(command.getSource());
 		if(sourceTerritory.getOwner() != playerId) return false;
 
@@ -455,6 +454,7 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
+
 		Territory fortifySource = map.findTerritoryById(command.getFortifyDetails()[0]);
 		if(fortifySource.getOwner() != playerId) return false;
 
@@ -472,8 +472,11 @@ public class GameState {
 		return true;
 	}
 
+
+
 	public boolean isMoveValid(DeployCommand command)
 	{
+
 		int playerId = command.getPlayerId();
 
 		int deployingTroops = 0;
@@ -491,8 +494,15 @@ public class GameState {
 		return true;
 	}
 	
+
+	public boolean isMoveValid(DrawCardCommand command)
+	{
+		return true;
+	}
+	
 	public boolean isMoveValid(DefendCommand command)
 	{
+
 		int playerId = command.getPlayerId();
 
 		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
@@ -505,11 +515,13 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(AttackCaptureCommand command) 
+	public boolean isMoveValid(AttackCaptureCommand command)
+
 	{
 		int playerId = command.getPlayerId();
 		
 		int[] captureDetails = command.getCaptureDetails();
+
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
 		if(sourceTerritory.getOwner() != playerId) return false;
@@ -522,11 +534,6 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(DrawCardCommand command)
-	{
-		// Possible to check? Boolean for player having gained new territory on turn.
-		return true;
-	}
 	
 	public boolean isMoveValid(PlayCardsCommand command) 
 	{
