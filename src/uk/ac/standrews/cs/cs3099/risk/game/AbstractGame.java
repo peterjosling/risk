@@ -71,6 +71,7 @@ public abstract class AbstractGame {
 	 */
 	public Player nextTurn()
 	{
+		gameState.setAttackSuccessful(false);
 		currentTurn++;
 
 		if (currentTurn >= players.size()) {

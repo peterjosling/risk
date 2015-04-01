@@ -29,11 +29,14 @@ public class GameState {
 
 	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
-	private ArrayList<Card>[] playerCards = new ArrayList[getNumberOfPlayers()];
+	private ArrayList<Card>[] playerCards;
 	private boolean inAttackPhase = false;
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private ArrayList<Integer> playerIDs;
 	private final int[] TRADE_IN_VALUES = new int[6];
+	private boolean attackSuccessful = false;
+	private int remainingArmies = 0;
+
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -44,11 +47,16 @@ public class GameState {
 		deck = new Deck(DECK_SIZE);
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
+		playerCards = new ArrayList[getNumberOfPlayers()];
 	}
 
 	public void loadMap(MapParser m) throws MapParseException
 	{
 		map = new Map(m);
+	}
+
+	public Map getMap(){
+		return map;
 	}
 
 	public void initTradeInValues(){
@@ -114,42 +122,43 @@ public class GameState {
 	}
 
 
-	public void playMove(Command command, int playerId){
+	public void playMove(Command command){
 		switch(command.getType()){
 			case ASSIGN_ARMY:
-				playMove((AssignArmyCommand) command, playerId);
+				playMove((AssignArmyCommand) command);
 			case ATTACK:
-				playMove((AttackCommand) command, playerId);
+				playMove((AttackCommand) command);
 			case FORTIFY:
-				playMove((FortifyCommand) command, playerId);
+				playMove((FortifyCommand) command);
 			case DEPLOY:
-				playMove((DeployCommand) command, playerId);
+				playMove((DeployCommand) command);
 			case DRAW_CARD:
-				playMove((DrawCardCommand) command, playerId);
+				playMove((DrawCardCommand) command);
 			case DEFEND:
-				playMove((DefendCommand) command, playerId);
+				playMove((DefendCommand) command);
 			case TIMEOUT:
-				playMove((TimeoutCommand) command, playerId);
+				playMove((TimeoutCommand) command);
 			case ATTACK_CAPTURE:
-				playMove((AttackCaptureCommand) command, playerId);
+				playMove((AttackCaptureCommand) command);
 			case LEAVE_GAME:
-				playMove((LeaveGameCommand) command, playerId);
+				playMove((LeaveGameCommand) command);
 			case PLAY_CARDS:
-				playMove((PlayCardsCommand) command, playerId);
+				playMove((PlayCardsCommand) command);
 			case ROLL_NUMBER:
-				playMove((RollNumberCommand) command, playerId);
+				playMove((RollNumberCommand) command);
 			case ROLL:
-				playMove((RollCommand) command, playerId);
+				playMove((RollCommand) command);
 			case ROLL_HASH:
-				playMove((RollHashCommand) command, playerId);
+				playMove((RollHashCommand) command);
 
 		}
 	}
 
-	public void playMove(AssignArmyCommand command, int playerID){
+
+	public void playMove(AssignArmyCommand command){
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
 		territory.addArmies(1);
-		territory.claim(playerID);
+		territory.claim(command.getPlayerId());
 	}
 
 	public void playMove(FortifyCommand command){
@@ -202,6 +211,11 @@ public class GameState {
 		//apply result to board
 		removeArmiesForTerritory(command.getSource(), result[0]);
 		removeArmiesForTerritory(command.getDest(), result[1]);
+		if(map.findTerritoryById(command.getDest()).getArmies() == 0){
+			attackSuccessful = true;
+			remainingArmies = numberOfAttackingDice-result[0];
+		}
+
 	}
 
 	/**
@@ -241,19 +255,19 @@ public class GameState {
 		return losses;
 	}
 
-	public void playMove(DefendCommand command, int playerID){
+	public void playMove(DefendCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollCommand command, int playerID){
+	public void playMove(RollCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollHashCommand command, int playerID){
+	public void playMove(RollHashCommand command){
 		attackPhaseCommands.add(command);
 	}
 
-	public void playMove(RollNumberCommand command, int playerID){
+	public void playMove(RollNumberCommand command){
 		attackPhaseCommands.add(command);
 	}
 
@@ -263,40 +277,40 @@ public class GameState {
 		int destination = captureDetails[1];
 		int armies = captureDetails[2];
 		moveArmies(source, destination, armies);
+		Territory territory = map.findTerritoryById(destination);
+		territory.claim(command.getPlayerId());
 	}
 
-	public void playMove(PlayCardsCommand command, int playerID){
-		Card[] cards = command.getCards();
-		Territory[] playersTerritories = getTerritoriesForPlayer(playerID);
+	public void playMove(PlayCardsCommand command){
+		Card[][] cards = command.getCards();
+		Territory[] playersTerritories = getTerritoriesForPlayer(command.getPlayerId());
 		int armies = calculateArmiesFromTradeIn();
-		for(Card card:cards){
-			for(Territory playerTerritory: playersTerritories){
-				if(card.getTerritoryId()==playerTerritory.getId()){
-					armies+=2; //this will need to be added to specific territory in future
-					break;
+		for(Card[] cardSet:cards){
+			for(Card card:cardSet) {
+				for (Territory playerTerritory : playersTerritories) {
+					if (card.getTerritoryId() == playerTerritory.getId()) {
+						armies += 2; //this will need to be added to specific territory in future
+						break;
+					}
 				}
+				playerCards[command.getPlayerId()].remove(card);
 			}
-			playerCards[playerID].remove(card);
 		}
-		playersDeployableArmies[playerID] += armies;
+		playersDeployableArmies[command.getPlayerId()] += armies;
 		tradeInCount++;
 	}
 
-	public void playMove(DrawCardCommand command, int playerID){
+	public void playMove(DrawCardCommand command){
 		Card drawnCard = deck.dealCard();
-		playerCards[playerID].add(drawnCard);
+		playerCards[command.getPlayerId()].add(drawnCard);
 	}
 
-	public void playMove(LeaveGameCommand command, int playerID){
-		for(Integer id:playerIDs){
+	public void playMove(LeaveGameCommand command){
 			playerIDs.remove(command.getPlayerId());
-		}
 	}
 
-	public void playMove(TimeoutCommand command, int PlayerId){
-		for(Integer id:playerIDs){
+	public void playMove(TimeoutCommand command){
 			playerIDs.remove(command.getPlayerId());
-		}
 	}
 
 	public int calculateArmiesFromTradeIn(){
@@ -365,6 +379,7 @@ public class GameState {
 		return false;
 	}
 
+
 	public boolean isMoveValid(Command command)
 	{
 		switch(command.getType()){
@@ -415,11 +430,11 @@ public class GameState {
 		return true;
 	}
 	
+
 	public boolean isMoveValid(AttackCommand command)
 	{
 
 		int playerId = command.getPlayerId();
-
 		Territory sourceTerritory = map.findTerritoryById(command.getSource());
 		if(sourceTerritory.getOwner() != playerId) return false;
 
@@ -439,6 +454,7 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
+
 		Territory fortifySource = map.findTerritoryById(command.getFortifyDetails()[0]);
 		if(fortifySource.getOwner() != playerId) return false;
 
@@ -456,8 +472,11 @@ public class GameState {
 		return true;
 	}
 
+
+
 	public boolean isMoveValid(DeployCommand command)
 	{
+
 		int playerId = command.getPlayerId();
 
 		int deployingTroops = 0;
@@ -475,8 +494,15 @@ public class GameState {
 		return true;
 	}
 	
+
+	public boolean isMoveValid(DrawCardCommand command)
+	{
+		return true;
+	}
+	
 	public boolean isMoveValid(DefendCommand command)
 	{
+
 		int playerId = command.getPlayerId();
 
 		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
@@ -489,11 +515,13 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(AttackCaptureCommand command) 
+	public boolean isMoveValid(AttackCaptureCommand command)
+
 	{
 		int playerId = command.getPlayerId();
 		
 		int[] captureDetails = command.getCaptureDetails();
+
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
 		if(sourceTerritory.getOwner() != playerId) return false;
@@ -506,11 +534,6 @@ public class GameState {
 		return true;
 	}
 
-	public boolean isMoveValid(DrawCardCommand command)
-	{
-		// Possible to check? Boolean for player having gained new territory on turn.
-		return true;
-	}
 	
 	public boolean isMoveValid(PlayCardsCommand command) 
 	{
@@ -531,5 +554,8 @@ public class GameState {
 		return true;
 	}
 
+	public void setAttackSuccessful(boolean attackSuccessful) {
+		this.attackSuccessful = attackSuccessful;
+	}
 }
 
