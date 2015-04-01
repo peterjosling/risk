@@ -57,10 +57,17 @@ public class LocalPlayer extends Player {
 				command = new JoinGameCommand(this.getId(), lastAckid++,supportedVersions, supportedFeatures);
 				break;
 			case ACCEPT_JOIN_GAME:
+				int ackTimeout = 2;
+				int moveTimeout = 30;
+				command = new AcceptJoinGameCommand(this.getId(), lastAckid++, ackTimeout, moveTimeout);
 				break;
 			case REJECT_JOIN_GAME:
+				String message = "Game in progress";
+				command = new RejectJoinGameCommand(this.getId(), lastAckid++, message);
 				break;
 			case ACKNOWLEDGEMENT:
+				int commandId = lastAckid;
+				command = new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
 				break;
 			case TIMEOUT:
 				int timedOutPlayerId = 0;
