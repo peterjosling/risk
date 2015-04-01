@@ -423,7 +423,6 @@ public class GameState {
 		return true;
 	}
 	
-
 	public boolean isMoveValid(AttackCommand command)
 	{
 
@@ -447,7 +446,6 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
-
 		Territory fortifySource = map.findTerritoryById(command.getFortifyDetails()[0]);
 		if(fortifySource.getOwner() != playerId) return false;
 
@@ -465,11 +463,8 @@ public class GameState {
 		return true;
 	}
 
-
-
 	public boolean isMoveValid(DeployCommand command)
 	{
-
 		int playerId = command.getPlayerId();
 
 		int deployingTroops = 0;
@@ -503,13 +498,11 @@ public class GameState {
 	}
 
 	public boolean isMoveValid(AttackCaptureCommand command)
-
 	{
 		int playerId = command.getPlayerId();
 		
 		// Armies greater than successful attacking armies.
 		int[] captureDetails = command.getCaptureDetails();
-
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
 		if(sourceTerritory.getOwner() != playerId) return false;
@@ -524,9 +517,7 @@ public class GameState {
 
 	public boolean isMoveValid(DrawCardCommand command)
 	{
-		int playerId = command.getPlayerId();
-
-//		if(!playerCaptured[playerId]) return false;
+		if(!attackSuccessful) return false;
 		
 		return true;
 	}
