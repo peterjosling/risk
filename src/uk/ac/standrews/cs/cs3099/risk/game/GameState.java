@@ -147,7 +147,6 @@ public class GameState {
 		}
 	}
 
-
 	public void playMove(AssignArmyCommand command){
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
 		territory.addArmies(1);
@@ -372,7 +371,6 @@ public class GameState {
 		return false;
 	}
 
-
 	public boolean isMoveValid(Command command)
 	{
 		switch(command.getType()){
@@ -411,7 +409,6 @@ public class GameState {
 
 	public boolean isMoveValid(AssignArmyCommand command)
 	{
-
 		int territoryId = command.getTerritoryId();
 
 		Territory territory = map.findTerritoryById(territoryId);
@@ -425,7 +422,6 @@ public class GameState {
 	
 	public boolean isMoveValid(AttackCommand command)
 	{
-
 		int playerId = command.getPlayerId();
 		Territory sourceTerritory = map.findTerritoryById(command.getSource());
 		if(sourceTerritory.getOwner() != playerId) return false;
@@ -484,7 +480,6 @@ public class GameState {
 	
 	public boolean isMoveValid(DefendCommand command)
 	{
-
 		int playerId = command.getPlayerId();
 
 		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
@@ -501,7 +496,6 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 		
-		// Armies greater than successful attacking armies.
 		int[] captureDetails = command.getCaptureDetails();
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
@@ -510,7 +504,7 @@ public class GameState {
 		Territory destTerritory = map.findTerritoryById(captureDetails[1]);
 		if(destTerritory.getOwner() == playerId) return false;
 				
-		if(sourceTerritory.getArmies() <= captureDetails[2]) return false;
+		if((sourceTerritory.getArmies() <= captureDetails[2]) || (captureDetails[2] < remainingArmies)) return false;
 		
 		return true;
 	}
