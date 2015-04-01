@@ -109,6 +109,6 @@ public abstract class Player {
 		return t.getOwner() == id;
 	}
 
-	public abstract Command getMove(CommandType type);
-	public abstract void notifyMove(Command move);
+	public abstract Command getCommand(CommandType type);
+	public abstract void notifyCommand(Command command);
 }
