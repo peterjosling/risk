@@ -487,12 +487,6 @@ public class GameState {
 		return true;
 	}
 	
-
-	public boolean isMoveValid(DrawCardCommand command)
-	{
-		return true;
-	}
-	
 	public boolean isMoveValid(DefendCommand command)
 	{
 
