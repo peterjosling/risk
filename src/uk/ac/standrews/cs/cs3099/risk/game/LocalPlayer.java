@@ -32,7 +32,8 @@ public class LocalPlayer extends Player {
 				sourceID = 0;
 				destinationID = 0;
 				armies = 0;
-				command = new FortifyCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+				int[] details = {sourceID, destinationID, armies};
+				command = new FortifyCommand(this.getId(), lastAckid++, details);
 				break;
 			case DEPLOY:
 				int numberOfDeployments = 0;
@@ -108,6 +109,8 @@ public class LocalPlayer extends Player {
 				hash = "";
 				command = new RollHashCommand(this.getId(), lastAckid++, hash);
 				break;
+			default:
+				System.out.println("command not found");
 		}
 		return command;
 	}
