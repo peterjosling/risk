@@ -2,6 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
+import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.io.IOException;
@@ -143,6 +144,19 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void playersJoined(PlayersJoinedCommand command)
 	{
+		// Allow the local player to update any UI.
 		localPlayer.notifyMove(command);
+
+		// Add new players to the game.
+		// TODO don't really want this as String[][] - create a new data structure to hold the tuple.
+		String[][] playerNames = command.getPlayerNames();
+
+		for (String[] playerDetails : playerNames) {
+			int playerId = Integer.parseInt(playerDetails[0]);
+			String name = playerDetails[1];
+			// TODO store public key on player.
+			Player player = new NetworkPlayer(connectionManager, playerId, name);
+			addPlayer(player);
+		}
 	}
 }
