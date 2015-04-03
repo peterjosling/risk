@@ -45,7 +45,12 @@ public abstract class AbstractGame {
 
 		for (int i = 0; i < totalArmies; i++) {
 			Player player = getCurrentTurnPlayer();
-			Command command = player.getCommand(CommandType.ASSIGN_ARMY);
+			Command command = null;
+			try {
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} catch (CommandNotFoundException e) {
+				e.printStackTrace();
+			}
 
 			if (command.getType() != CommandType.ASSIGN_ARMY) {
 				terminate();

@@ -14,104 +14,157 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Command getCommand(CommandType type)
+	public Command getCommand(CommandType type) throws CommandNotFoundException
 	{
 		switch(type) {
 			case ASSIGN_ARMY:
-				int territoryID = 0;
-				command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
-				break;
+				return getAssignArmyCommand();
 			case ATTACK:
-				int sourceID = 0;
-				int destinationID = 0;
-				int armies = 0;
-				command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
-				break;
+				return getAttackCommand();
 			case FORTIFY:
-				sourceID = 0;
-				destinationID = 0;
-				armies = 0;
-				int[] details = {sourceID, destinationID, armies};
-				command = new FortifyCommand(this.getId(), lastAckid++, details);
-				break;
+				return getFortifyCommand();
 			case DEPLOY:
-				int numberOfDeployments = 0;
-				DeployCommand.Deployment[] deployments = new DeployCommand.Deployment[numberOfDeployments];
-				for(int i=0; i<numberOfDeployments; i++){
-					territoryID = 0;
-					armies = 0;
-					deployments[i] = new DeployCommand.Deployment(territoryID, armies);
-				}
-				command = new DeployCommand(this.getId(), lastAckid++, deployments);
-				break;
+				return getDeployCommand();
 			case DRAW_CARD:
-				command = new DrawCardCommand(this.getId(), lastAckid++);
-				break;
+				return getDrawCardCommand();
 			case DEFEND:
-				territoryID = 0;
-				armies = 0;
-				command = new DefendCommand(this.getId(), lastAckid++, territoryID, armies);
+				return getDefendCommand();
 			case JOIN_GAME:
-				float[] supportedVersions = {1};
-				String[] supportedFeatures = {};
-				command = new JoinGameCommand(supportedVersions, supportedFeatures);
-				break;
+				return getJoinGameCommand();
 			case ACCEPT_JOIN_GAME:
-				int ackTimeout = 2;
-				int commandTimeout = 30;
-				command = new AcceptJoinGameCommand(this.getId(), ackTimeout, commandTimeout);
-				break;
+				return getAcceptJoinGameCommand();
 			case REJECT_JOIN_GAME:
-				String message = "Game in progress";
-				command = new RejectJoinGameCommand(message);
-				break;
+				return getRejectJoinGameCommand();
 			case ACKNOWLEDGEMENT:
-				int commandId = lastAckid;
-				command = new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
-				break;
+				return getAcknowledgementCommand();
 			case TIMEOUT:
-				int timedOutPlayerId = 0;
-				command = new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
-				break;
+				return getTimeoutCommand();
 			case ATTACK_CAPTURE:
-				sourceID = 0;
-				destinationID = 0;
-				armies = 0;
-				int[] captureDetails = {sourceID,destinationID,armies};
-				command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
-				break;
+				return getAttackCaptureCommand();
 			case LEAVE_GAME:
-				int response = 0;
-				boolean receiveUpdates = false;
-				command = new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
-				break;
+				return getLeaveGameCommand();
 			case PLAY_CARDS:
-				int numberOfTradeIns = 0;
-				Card[][] cards = new Card[numberOfTradeIns][3];
-				for(int i =0; i<numberOfTradeIns; i++){
-					for(int j=0; i<cards[i].length; j++) {
-						cards[i][j] = null;
-					}
-				}
-				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
-				break;
+				return getPlayCardsCommand();
 			case ROLL_NUMBER:
-				String hash = "";
-				command = new RollNumberCommand(this.getId(), lastAckid++, hash);
-				break;
+				return getRollNumberCommand();
 			case ROLL:
-				int faces = 0;
-				int numberOfDice = 0;
-				command = new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
-				break;
+				return getRollCommand();
 			case ROLL_HASH:
-				hash = "";
-				command = new RollHashCommand(this.getId(), lastAckid++, hash);
-				break;
+				return getRollHashCommand();
 			default:
-				System.out.println("command not found");
+				throw new CommandNotFoundException("command not found");
 		}
-		return command;
+	}
+
+	public Command getAssignArmyCommand(){
+		int territoryID = 0;
+		return new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
+	}
+
+	public Command getAttackCommand(){
+		int sourceID = 0;
+		int destinationID = 0;
+		int armies = 0;
+		return new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+	}
+
+	public Command getFortifyCommand(){
+		int sourceID = 0;
+		int destinationID = 0;
+		int armies = 0;
+		int[] details = {sourceID, destinationID, armies};
+		return new FortifyCommand(this.getId(), lastAckid++, details);
+	}
+
+	public Command getDeployCommand(){
+		int numberOfDeployments = 0;
+		int territoryID;
+		int armies;
+		DeployCommand.Deployment[] deployments = new DeployCommand.Deployment[numberOfDeployments];
+		for(int i=0; i<numberOfDeployments; i++){
+			territoryID = 0;
+			armies = 0;
+			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
+		}
+		return new DeployCommand(this.getId(), lastAckid++, deployments);
+	}
+
+	public Command getDrawCardCommand(){
+		return new DrawCardCommand(this.getId(), lastAckid++);
+	}
+
+	public Command getDefendCommand(){
+		int territoryID = 0;
+		int armies = 0;
+		return new DefendCommand(this.getId(), lastAckid++, territoryID, armies);
+	}
+
+	public Command getJoinGameCommand(){
+		float[] supportedVersions = {1};
+		String[] supportedFeatures = {};
+		return new JoinGameCommand(supportedVersions, supportedFeatures);
+	}
+
+	public Command getAcceptJoinGameCommand(){
+		int ackTimeout = 2;
+		int moveTimeout = 30;
+		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
+	}
+
+	public Command getRejectJoinGameCommand(){
+		String message = "Game in progress";
+		return new RejectJoinGameCommand(message);
+	}
+
+	public Command getAcknowledgementCommand(){
+		int commandId = lastAckid;
+		return new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
+	}
+
+	public Command getTimeoutCommand(){
+		int timedOutPlayerId = 0;
+		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+	}
+
+	public Command getAttackCaptureCommand(){
+		int sourceID = 0;
+		int destinationID = 0;
+		int armies = 0;
+		int[] captureDetails = {sourceID,destinationID,armies};
+		return new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+	}
+
+	public Command getLeaveGameCommand(){
+		int response = 0;
+		boolean receiveUpdates = false;
+		return new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
+	}
+
+	public Command getPlayCardsCommand(){
+		int numberOfTradeIns = 0;
+		Card[][] cards = new Card[numberOfTradeIns][3];
+		for(int i =0; i<numberOfTradeIns; i++){
+			for(int j=0; i<cards[i].length; j++) {
+				cards[i][j] = null;
+			}
+		}
+		return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+	}
+
+	public Command getRollNumberCommand(){
+		String hash = "";
+		return new RollNumberCommand(this.getId(), lastAckid++, hash);
+	}
+
+	public Command getRollCommand(){
+		int faces = 0;
+		int numberOfDice = 0;
+		return new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
+	}
+
+	public Command getRollHashCommand(){
+		String hash = "";
+		return new RollHashCommand(this.getId(), lastAckid++, hash);
 	}
 
 	@Override
