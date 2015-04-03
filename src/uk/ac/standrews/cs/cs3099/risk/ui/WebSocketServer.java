@@ -10,6 +10,7 @@ import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +67,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		ServerConnectCommand command = new Gson().fromJson(messageString, ServerConnectCommand.class);
 		NetworkedGame game = new NetworkedGame(24);
 		Player player = new UIPlayer(ws, 0, "Test player");
+		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
+
+		try {
+			game.connectToServer(command.getHostname(), command.getPort());
+		} catch (IOException e) {
+			System.err.println("Failed to connect to remote host.");
+			e.printStackTrace();
+		}
 	}
 
 	/**
