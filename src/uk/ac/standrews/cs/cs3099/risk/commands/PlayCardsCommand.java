@@ -27,6 +27,6 @@ public class PlayCardsCommand extends Command {
 	@Override
 	public CommandType getType()
 	{
-		return CommandType.TRADE_IN_CARDS;
+		return CommandType.PLAY_CARDS;
 	}
 }

@@ -10,6 +10,6 @@ public class DrawCardCommand extends Command {
 	@Override
 	public CommandType getType()
 	{
-		return CommandType.TRADE_IN_CARDS;
+		return CommandType.DRAW_CARD;
 	}
 }

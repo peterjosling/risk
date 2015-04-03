@@ -211,7 +211,157 @@ public class LocalPlayer extends Player {
 	@Override
 	public void notifyCommand(Command command)
 	{
-		//calls play move in gamestate
-		//notifies all player of that command
+		switch(command.getType()) {
+		case ASSIGN_ARMY:
+			notifyCommand((AssignArmyCommand) command);
+		case ATTACK:
+			notifyCommand((AttackCommand) command);
+		case FORTIFY:
+			notifyCommand((FortifyCommand) command);
+		case DEPLOY:
+			notifyCommand((DeployCommand) command);
+		case DRAW_CARD:
+			notifyCommand((DrawCardCommand) command);
+		case DEFEND:
+			notifyCommand((DefendCommand) command);
+		case ATTACK_CAPTURE:
+			notifyCommand((AttackCaptureCommand) command);
+		case JOIN_GAME:
+			notifyCommand((JoinGameCommand) command);
+		case ACCEPT_JOIN_GAME:
+			notifyCommand((AcceptJoinGameCommand) command);
+		case REJECT_JOIN_GAME:
+			notifyCommand((RejectJoinGameCommand) command);
+		case ACKNOWLEDGEMENT:
+			notifyCommand((AcknowledgementCommand) command);
+		case INITIALISE_GAME:
+			notifyCommand((InitialiseGameCommand) command);
+		case PING:
+			notifyCommand((PingCommand) command);
+		case PLAYERS_JOINED:
+			notifyCommand((PlayersJoinedCommand) command);
+		case READY:
+			notifyCommand((ReadyCommand) command);
+		case TIMEOUT:
+			notifyCommand((TimeoutCommand) command);
+		case LEAVE_GAME:
+			notifyCommand((LeaveGameCommand) command);
+		case PLAY_CARDS:
+			notifyCommand((PlayCardsCommand) command);
+		case ROLL_NUMBER:
+			notifyCommand((RollNumberCommand) command);
+		case ROLL:
+			notifyCommand((RollCommand) command);
+		case ROLL_HASH:
+			notifyCommand((RollHashCommand) command);
+		default:
+			notifyCommand((LeaveGameCommand) command);
+		}
 	}
+	
+	public void notifyCommand(AssignArmyCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(AttackCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(FortifyCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(DeployCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(DrawCardCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(DefendCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(AttackCaptureCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(JoinGameCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(AcceptJoinGameCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(RejectJoinGameCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(AcknowledgementCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(InitialiseGameCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(PingCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(PlayersJoinedCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(ReadyCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(TimeoutCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(LeaveGameCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(PlayCardsCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(RollNumberCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(RollCommand command)
+	{
+		
+	}
+	
+	public void notifyCommand(RollHashCommand command)
+	{
+		
+	}
+	
 }

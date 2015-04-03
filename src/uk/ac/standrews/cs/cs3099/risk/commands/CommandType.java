@@ -3,7 +3,6 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 public enum CommandType {
 	ATTACK,
 	FORTIFY,
-	TRADE_IN_CARDS,
 	DEPLOY,
 	DRAW_CARD,
 	ASSIGN_ARMY,
