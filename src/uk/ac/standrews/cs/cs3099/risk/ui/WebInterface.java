@@ -1,7 +1,12 @@
 package uk.ac.standrews.cs.cs3099.risk.ui;
 
-public class WebInterface {
-    public void main(String args[]) {
+import java.net.InetSocketAddress;
 
+public class WebInterface {
+    private static final int PORT = 7574;
+
+    public static void main(String args[]) {
+        WebSocketServer server = new WebSocketServer(new InetSocketAddress(PORT));
+        server.start();
     }
 }
