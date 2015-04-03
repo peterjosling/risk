@@ -28,6 +28,7 @@ public class UIPlayer extends Player {
 		try {
 			return moveQueue.take();
 		} catch (InterruptedException e) {
+			System.err.println("Failed to get move from queue.");
 			e.printStackTrace();
 		}
 
