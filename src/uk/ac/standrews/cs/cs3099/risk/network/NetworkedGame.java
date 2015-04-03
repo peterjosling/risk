@@ -110,6 +110,7 @@ public class NetworkedGame extends AbstractGame {
 		// Automatically accept players up until the limit.
 		// TODO forward this command to UIPlayers and get a response.
 		// TODO accept player.
+		// TODO check if we have max number of players, issue a "ping" command.
 	}
 
 	/**
