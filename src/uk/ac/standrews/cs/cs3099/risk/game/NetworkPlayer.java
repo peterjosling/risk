@@ -44,6 +44,6 @@ public class NetworkPlayer extends Player {
 	@Override
 	public void notifyCommand(Command command)
 	{
-		connectionManager.sendCommand(move);
+		connectionManager.sendCommand(command);
 	}
 }
