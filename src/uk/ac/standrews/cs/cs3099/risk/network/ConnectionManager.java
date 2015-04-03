@@ -52,9 +52,9 @@ public class ConnectionManager {
 	 */
 	public void sendCommand(Command command)
 	{
+		String commandJSON = command.toJSON();
 		for (PrintWriter writer : writers) {
-			// TODO serialise this to JSON before sending
-			writer.write(command.toString() + "\n");
+			writer.write(commandJSON + "\n");
 		}
 	}
 

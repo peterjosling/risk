@@ -1,7 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import uk.ac.standrews.cs.cs3099.risk.game.*;
-
 public class RollHashCommand extends Command {
 
 	String hash;
@@ -18,6 +16,12 @@ public class RollHashCommand extends Command {
 	@Override
 	public CommandType getType() {
 		return CommandType.ROLL_HASH;
+	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
 	}
 
 	public String getHash() {

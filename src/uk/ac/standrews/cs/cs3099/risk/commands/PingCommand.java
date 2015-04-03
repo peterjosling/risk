@@ -28,4 +28,10 @@ public class PingCommand extends Command {
 		return CommandType.PING;
 	}
 
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
+
 }

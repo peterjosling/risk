@@ -12,4 +12,10 @@ public class ReadyCommand extends Command {
 	{
 		return CommandType.READY;
 	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
 }

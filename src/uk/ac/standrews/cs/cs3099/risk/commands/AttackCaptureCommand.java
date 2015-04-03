@@ -21,4 +21,10 @@ public class AttackCaptureCommand extends Command {
 		return CommandType.ATTACK_CAPTURE;
 	}
 
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
+
 }

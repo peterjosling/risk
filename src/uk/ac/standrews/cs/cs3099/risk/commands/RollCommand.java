@@ -34,4 +34,10 @@ public class RollCommand extends Command{
 	{
 		return CommandType.ROLL;
 	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
 }

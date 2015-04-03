@@ -43,4 +43,10 @@ public class AttackCommand extends Command {
 	{
 		return CommandType.ATTACK;
 	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
 }

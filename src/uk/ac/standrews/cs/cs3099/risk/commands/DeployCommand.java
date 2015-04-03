@@ -20,6 +20,12 @@ public class DeployCommand extends Command {
 		return CommandType.DEPLOY;
 	}
 
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
+
 	public static class Deployment {
 		private int territoryId;
 		private int armies;
