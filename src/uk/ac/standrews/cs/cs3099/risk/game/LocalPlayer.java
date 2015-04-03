@@ -7,15 +7,21 @@ import java.util.List;
 
 
 public class LocalPlayer extends Player {
+	private GameState gameState;
+	private int attackSourceId;
+	private int attackDestId;
+	
 	public LocalPlayer(int id)
 	{
 		super(id);
 	}
+	
 	public LocalPlayer(int id, String name)
 	{
 		super(id, name);
 	}
 
+	// Validation to be added within getCommand.
 	@Override
 	public Command getCommand(CommandType type)
 	{
@@ -59,13 +65,15 @@ public class LocalPlayer extends Player {
 		}
 	}
 
-	public Command getAssignArmyCommand(){
+	public Command getAssignArmyCommand()
+	{
 		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
 		int territoryID = EasyIn.getInt();
 		return new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
 	}
 
-	public Command getAttackCommand(){
+	public Command getAttackCommand()
+	{
 		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
 		int sourceID = EasyIn.getInt();
 		System.out.println("Choose Territory to Attack. Enter Territory ID:");
@@ -75,7 +83,8 @@ public class LocalPlayer extends Player {
 		return new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
 	}
 
-	public Command getFortifyCommand(){
+	public Command getFortifyCommand()
+	{
 		System.out.println("Choose Territory to Fortify from. Enter Territory ID:");
 		int sourceID = EasyIn.getInt();
 		System.out.println("Choose Territory to Fortify. Enter Territory ID:");
@@ -86,7 +95,8 @@ public class LocalPlayer extends Player {
 		return new FortifyCommand(this.getId(), lastAckid++, details);
 	}
 
-	public Command getDeployCommand(){
+	public Command getDeployCommand()
+	{
 		System.out.println("Enter number of deployments:");
 		int numberOfDeployments = EasyIn.getInt();
 		int territoryID;
@@ -102,53 +112,59 @@ public class LocalPlayer extends Player {
 		return new DeployCommand(this.getId(), lastAckid++, deployments);
 	}
 
-	public Command getDrawCardCommand(){
+	public Command getDrawCardCommand()
+	{
 		return new DrawCardCommand(this.getId(), lastAckid++);
 	}
 
-	public Command getDefendCommand(){
-		int territoryID = EasyIn.getInt(); //Where does this come from????
+	public Command getDefendCommand()
+	{
 		System.out.println("Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
-		return new DefendCommand(this.getId(), lastAckid++, territoryID, armies);
+		return new DefendCommand(this.getId(), lastAckid++, attackDestId, armies);
 	}
 
-	public Command getJoinGameCommand(){
+	public Command getJoinGameCommand()
+	{
 		float[] supportedVersions = {1};
 		String[] supportedFeatures = {};
 		return new JoinGameCommand(supportedVersions, supportedFeatures);
 	}
 
-	public Command getAcceptJoinGameCommand(){
+	public Command getAcceptJoinGameCommand()
+	{
 		int ackTimeout = 4; //Check these values
 		int moveTimeout = 30;
 		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
 	}
 
-	public Command getRejectJoinGameCommand(){
+	public Command getRejectJoinGameCommand()
+	{
 		String message = "Game in progress";
 		return new RejectJoinGameCommand(message);
 	}
 
-	public Command getAcknowledgementCommand(){
+	public Command getAcknowledgementCommand()
+	{
 		int commandId = lastAckid;
 		return new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
 	}
 
-	public Command getTimeoutCommand(){
+	public Command getTimeoutCommand()
+	{
 		int timedOutPlayerId = EasyIn.getInt();
 		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
 	}
 
-	public Command getAttackCaptureCommand(){
-		int sourceID = EasyIn.getInt();
-		int destinationID = EasyIn.getInt();
+	public Command getAttackCaptureCommand()
+	{
 		int armies = EasyIn.getInt();
-		int[] captureDetails = {sourceID,destinationID,armies};
+		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		return new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
 	}
 
-	public Command getLeaveGameCommand(){
+	public Command getLeaveGameCommand()
+	{
 		int response = EasyIn.getInt();
 		String updates = "";
 		boolean receiveUpdates = false;
@@ -164,7 +180,8 @@ public class LocalPlayer extends Player {
 		return new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
 	}
 
-	public Command getPlayCardsCommand(){
+	public Command getPlayCardsCommand()
+	{
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
 		List<Card> playersCards = getCards();
@@ -191,19 +208,22 @@ public class LocalPlayer extends Player {
 		return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 	}
 
-	public Command getRollNumberCommand(){
+	public Command getRollNumberCommand()
+	{
 		String hash = "";
 		return new RollNumberCommand(this.getId(), lastAckid++, hash);
 	}
 
-	public Command getRollCommand(){
+	public Command getRollCommand()
+	{
 		int faces = 6;
 		System.out.println("Enter number of dice to be rolled:");
 		int numberOfDice = 0;
 		return new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
 	}
 
-	public Command getRollHashCommand(){
+	public Command getRollHashCommand()
+	{
 		String hash = "";
 		return new RollHashCommand(this.getId(), lastAckid++, hash);
 	}
@@ -261,107 +281,109 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(AssignArmyCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(AttackCommand command)
 	{
-		
+		this.attackSourceId = command.getSource();
+		this.attackDestId = command.getDest();
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(FortifyCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DeployCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DrawCardCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DefendCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(AttackCaptureCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(JoinGameCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(AcceptJoinGameCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RejectJoinGameCommand command)
-	{
-		
+	{		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(AcknowledgementCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(InitialiseGameCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(PingCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(PlayersJoinedCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(ReadyCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(TimeoutCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(LeaveGameCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RollNumberCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RollCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RollHashCommand command)
 	{
-		
+		gameState.playCommand(command);
 	}
 	
 }
