@@ -16,7 +16,6 @@ public class LocalPlayer extends Player {
 	@Override
 	public Command getCommand(CommandType type)
 	{
-		Command command = null;
 		switch(type) {
 			case ASSIGN_ARMY:
 				int territoryID = 0;
