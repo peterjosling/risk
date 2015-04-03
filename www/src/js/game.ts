@@ -3,7 +3,7 @@ import Collection = require('./collection');
 import Player = require('./player');
 import Messages = require('./messages');
 
-var HOST : string = 'ws://localhost';
+var HOST : string = 'ws://localhost:7574';
 
 class Game extends Model {
 	private socket : WebSocket;
@@ -22,9 +22,9 @@ class Game extends Model {
 			this.socket.onmessage = this.messageReceived.bind(this);
 			this.socket.onopen = () => {
 				this.sendMessage({
-					command: 'connect',
+					command: 'server_connect',
 					payload: {
-						host: host,
+						hostname: host,
 						port: port
 					}
 				});
