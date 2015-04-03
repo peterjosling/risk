@@ -1,11 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 /**
  * Player Class
@@ -85,6 +85,11 @@ public abstract class Player {
 	public int getId()
 	{
 		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
 	}
 
 	public boolean canMoveArmies(Territory src, Territory dst, int amount)

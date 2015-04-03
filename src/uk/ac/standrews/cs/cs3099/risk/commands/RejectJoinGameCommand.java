@@ -3,9 +3,9 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 public class RejectJoinGameCommand extends Command {
 	private String errorMessage;
 
-	public RejectJoinGameCommand(int playerId, int ackId, String errorMessage)
+	public RejectJoinGameCommand(String errorMessage)
 	{
-		super(playerId, ackId);
+		super();
 		this.errorMessage = errorMessage;
 	}
 	

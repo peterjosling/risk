@@ -5,6 +5,18 @@ public abstract class Command {
 	private int playerId;
 
 	/**
+	 * Creates a move instance which requires acknowledgement.
+	 *
+	 * @param playerId ID of the player making this move.
+	 * @param ackId    Unique integer acknowledgement ID.
+	 */
+	public Command(int playerId, int ackId)
+	{
+		this.playerId = playerId;
+		this.ackId = ackId;
+	}
+
+	/**
 	 * Creates a move instance with no acknowledgement ID.
 	 *
 	 * @param playerId ID of the player making this move.
@@ -15,15 +27,11 @@ public abstract class Command {
 	}
 
 	/**
-	 * Creates a move instance which requires acknowledgement.
-	 *
-	 * @param playerId ID of the player making this move.
-	 * @param ackId Unique integer acknowledgement ID.
+	 * Create a Command instance which has no player_id or ack_id fields.
 	 */
-	public Command(int playerId, int ackId)
+	public Command()
 	{
-		this.playerId = playerId;
-		this.ackId = ackId;
+		this(-1, -1);
 	}
 
 	public int getPlayerId()

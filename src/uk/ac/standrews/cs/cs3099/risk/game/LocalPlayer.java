@@ -55,16 +55,16 @@ public class LocalPlayer extends Player {
 			case JOIN_GAME:
 				float[] supportedVersions = {1};
 				String[] supportedFeatures = {};
-				command = new JoinGameCommand(this.getId(), lastAckid++,supportedVersions, supportedFeatures);
+				command = new JoinGameCommand(supportedVersions, supportedFeatures);
 				break;
 			case ACCEPT_JOIN_GAME:
 				int ackTimeout = 2;
 				int commandTimeout = 30;
-				command = new AcceptJoinGameCommand(this.getId(), lastAckid++, ackTimeout, commandTimeout);
+				command = new AcceptJoinGameCommand(this.getId(), ackTimeout, commandTimeout);
 				break;
 			case REJECT_JOIN_GAME:
 				String message = "Game in progress";
-				command = new RejectJoinGameCommand(this.getId(), lastAckid++, message);
+				command = new RejectJoinGameCommand(message);
 				break;
 			case ACKNOWLEDGEMENT:
 				int commandId = lastAckid;
