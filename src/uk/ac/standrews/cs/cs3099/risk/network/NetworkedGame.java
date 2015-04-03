@@ -122,11 +122,11 @@ public class NetworkedGame extends AbstractGame {
 	{
 		// Update game/player state from response.
 		acknowledgementTimeout = command.getAcknowledgementTimeout();
-		moveTimeout = command.getMoveTimeout();
+		moveTimeout = command.getCommandTimeout();
 		localPlayer.setId(command.getPlayerId());
 
 		// Notify the local player, so UI can be updated.
-		localPlayer.notifyMove(command);
+		localPlayer.notifyCommand(command);
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void joinRejected(RejectJoinGameCommand command)
 	{
-		localPlayer.notifyMove(command);
+		localPlayer.notifyCommand(command);
 		// TODO disconnect.
 	}
 
@@ -146,7 +146,7 @@ public class NetworkedGame extends AbstractGame {
 	private void playersJoined(PlayersJoinedCommand command)
 	{
 		// Allow the local player to update any UI.
-		localPlayer.notifyMove(command);
+		localPlayer.notifyCommand(command);
 
 		// Add new players to the game.
 		// TODO don't really want this as String[][] - create a new data structure to hold the tuple.
