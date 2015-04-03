@@ -9,6 +9,8 @@ import java.io.IOException;
 public class NetworkedGame extends AbstractGame {
 	private ConnectionManager connectionManager;
 	private Player localPlayer;
+	private int moveTimeout;
+	private int acknowledgementTimeout;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -26,6 +28,8 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	public void startServer(int port) throws IOException
 	{
+		// TODO ensure move/ack timeouts are set.
+
 		if (connectionManager != null) {
 			return;
 		}
@@ -86,6 +90,10 @@ public class NetworkedGame extends AbstractGame {
 			case REJECT_JOIN_GAME:
 				joinRejected((RejectJoinGameCommand) command);
 				return;
+
+			case PLAYERS_JOINED:
+				playersJoined((PlayersJoinedCommand) command);
+				return;
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -110,7 +118,13 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void joinAccepted(AcceptJoinGameCommand command)
 	{
-		// TODO notify player.
+		// Update game/player state from response.
+		acknowledgementTimeout = command.getAcknowledgementTimeout();
+		moveTimeout = command.getMoveTimeout();
+		localPlayer.setId(command.getPlayerId());
+
+		// Notify the local player, so UI can be updated.
+		localPlayer.notifyMove(command);
 	}
 
 	/**
@@ -120,7 +134,15 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void joinRejected(RejectJoinGameCommand command)
 	{
-		// TODO notify player.
+		localPlayer.notifyMove(command);
 		// TODO disconnect.
+	}
+
+	/**
+	 * Forwards details of new players joining the game to the local player.
+	 */
+	private void playersJoined(PlayersJoinedCommand command)
+	{
+		localPlayer.notifyMove(command);
 	}
 }
