@@ -17,7 +17,7 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Command getCommand(CommandType type) throws CommandNotFoundException
+	public Command getCommand(CommandType type)
 	{
 		switch(type) {
 			case ASSIGN_ARMY:
@@ -55,7 +55,7 @@ public class LocalPlayer extends Player {
 			case ROLL_HASH:
 				return getRollHashCommand();
 			default:
-				throw new CommandNotFoundException("command not found");
+				return getLeaveGameCommand();
 		}
 	}
 

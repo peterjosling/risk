@@ -127,6 +127,6 @@ public abstract class Player {
 		return t.getOwner() == id;
 	}
 
-	public abstract Command getCommand(CommandType type) throws CommandNotFoundException;
+	public abstract Command getCommand(CommandType type);
 	public abstract void notifyCommand(Command command);
 }
