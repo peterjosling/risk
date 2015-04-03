@@ -11,7 +11,6 @@ public class LocalPlayer extends Player {
 	{
 		super(id);
 	}
-
 	public LocalPlayer(int id, String name)
 	{
 		super(id, name);
@@ -212,6 +211,7 @@ public class LocalPlayer extends Player {
 	@Override
 	public void notifyCommand(Command command)
 	{
-
+		//calls play move in gamestate
+		//notifies all player of that command
 	}
 }
