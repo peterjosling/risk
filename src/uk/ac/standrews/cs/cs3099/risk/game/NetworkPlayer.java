@@ -1,45 +1,49 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.network.ConnectionManager;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class NetworkPlayer extends Player {
-	private String ip;
-	private int port;
-	private Socket socket;
+	private ConnectionManager connectionManager;
+	private BlockingQueue<Command> moveQueue = new LinkedBlockingDeque<Command>();
 
-	public NetworkPlayer(int id, String ip, int port)
+	public NetworkPlayer(ConnectionManager connectionManager, int id)
 	{
 		super(id);
-		this.ip = ip;
-		this.port = port;
+		this.connectionManager = connectionManager;
 	}
 
-	public NetworkPlayer(int id, String name, String ip, int port)
+	public NetworkPlayer(ConnectionManager connectionManager, int id, String name)
 	{
 		super(id, name);
-		this.ip = ip;
-		this.port = port;
+		this.connectionManager = connectionManager;
 	}
 
-	public void connect() throws IOException
+	public BlockingQueue getMoveQueue()
 	{
-		socket = new Socket(InetAddress.getByName(ip), port);
+		return moveQueue;
 	}
 
 	@Override
 	public Command getCommand(CommandType type)
 	{
+		try {
+			return moveQueue.take();
+		} catch (InterruptedException e) {
+			System.err.println("Failed to get move for player " + getId());
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
 	@Override
 	public void notifyCommand(Command command)
 	{
-
+		connectionManager.sendCommand(move);
 	}
 }
