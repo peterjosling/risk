@@ -6,7 +6,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkedGame;
+import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 
@@ -64,7 +64,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void connectToServer(WebSocket ws, String messageString)
 	{
 		ServerConnectCommand command = new Gson().fromJson(messageString, ServerConnectCommand.class);
-		AbstractGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame(24);
 		Player player = new UIPlayer(ws, 0, "Test player");
 		games.put(ws.getRemoteSocketAddress(), game);
 	}
