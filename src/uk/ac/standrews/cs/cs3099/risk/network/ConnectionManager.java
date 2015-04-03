@@ -1,7 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +14,6 @@ public class ConnectionManager {
 	private final ArrayList<PrintWriter> writers = new ArrayList<PrintWriter>();
 
 	private NetworkedGame game;
-	private Player hostPlayer = null;
 
 	/**
 	 * Create a new server instance, listening on the specified port.
@@ -44,16 +42,6 @@ public class ConnectionManager {
 		Socket socket = new Socket(hostname, port);
 		sockets.add(socket);
 		writers.add(new PrintWriter(socket.getOutputStream()));
-	}
-
-	/**
-	 * Set the host player (ID 0) which will receive all connection messages.
-	 *
-	 * @param player
-	 */
-	public void setHostPlayer(Player player)
-	{
-		hostPlayer = player;
 	}
 
 	/**
