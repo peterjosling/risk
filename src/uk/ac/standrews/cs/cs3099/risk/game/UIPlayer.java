@@ -17,13 +17,13 @@ public class UIPlayer extends Player {
 		webSocket = ws;
 	}
 
-	public void queueCommand(Command move)
+	public void queueCommand(Command command)
 	{
-		moveQueue.add(move);
+		moveQueue.add(command);
 	}
 
 	@Override
-	public Command getMove(CommandType type)
+	public Command getCommand(CommandType type)
 	{
 		try {
 			return moveQueue.take();
@@ -35,7 +35,7 @@ public class UIPlayer extends Player {
 	}
 
 	@Override
-	public void notifyMove(Command move)
+	public void notifyCommand(Command command)
 	{
 		// TODO send move JSON down websocket.
 	}
