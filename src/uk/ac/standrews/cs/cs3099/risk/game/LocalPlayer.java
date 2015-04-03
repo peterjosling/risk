@@ -14,7 +14,7 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public Command getMove(CommandType type)
+	public Command getCommand(CommandType type)
 	{
 		Command command = null;
 		switch(type) {
@@ -59,8 +59,8 @@ public class LocalPlayer extends Player {
 				break;
 			case ACCEPT_JOIN_GAME:
 				int ackTimeout = 2;
-				int moveTimeout = 30;
-				command = new AcceptJoinGameCommand(this.getId(), lastAckid++, ackTimeout, moveTimeout);
+				int commandTimeout = 30;
+				command = new AcceptJoinGameCommand(this.getId(), lastAckid++, ackTimeout, commandTimeout);
 				break;
 			case REJECT_JOIN_GAME:
 				String message = "Game in progress";
@@ -116,7 +116,7 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public void notifyMove(Command move)
+	public void notifyCommand(Command command)
 	{
 
 	}

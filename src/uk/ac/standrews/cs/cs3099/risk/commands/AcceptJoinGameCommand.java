@@ -3,13 +3,13 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class AcceptJoinGameCommand extends Command {
 	private int acknowledgementTimeout;
-	private int moveTimeout;
+	private int commandTimeout;
 	
-	public AcceptJoinGameCommand(int playerId, int ackId, int ackTimeout, int moveTimeout)
+	public AcceptJoinGameCommand(int playerId, int ackId, int ackTimeout, int commandTimeout)
 	{
 		super(playerId, ackId);
 		this.acknowledgementTimeout = ackTimeout;
-		this.moveTimeout = moveTimeout;
+		this.commandTimeout = commandTimeout;
 	}
 	
 	public int getAcknowledgementTimeout() 
@@ -17,9 +17,9 @@ public class AcceptJoinGameCommand extends Command {
 		return acknowledgementTimeout;
 	}
 
-	public int getMoveTimeout() 
+	public int getCommandTimeout() 
 	{
-		return moveTimeout;
+		return commandTimeout;
 	}
 
 	@Override

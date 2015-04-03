@@ -36,7 +36,7 @@ public class GameStateTest {
     	
 
     	
-    	AssignArmyCommand move;
+    	AssignArmyCommand command;
     	
     	// Need initialisation of map to test
     	
@@ -46,7 +46,7 @@ public class GameStateTest {
     public void validateFortify(){
     	
 
-    	FortifyCommand move;
+    	FortifyCommand command;
     	
     	// Need initialisation of map to test
     	
@@ -57,7 +57,7 @@ public class GameStateTest {
     	
 
     	
-    	DeployCommand move;
+    	DeployCommand command;
     	
     	// Need initialisation of map to test
     	
@@ -67,7 +67,7 @@ public class GameStateTest {
     public void validateAttack(){
 
     	
-    	AttackCommand move;
+    	AttackCommand command;
     	
     	// Need initialisation of map to test
     	

@@ -18,23 +18,23 @@ public class DumbPlayer extends Player {
 		super(id, name);
 	}
 
-	public Command getMove(CommandType type)
+	public Command getCommand(CommandType type)
 	{
 		if (type == CommandType.ASSIGN_ARMY) {
-			return getArmyAssignmentMove();
+			return getArmyAssignmentCommand();
 		} else if (type == CommandType.DEPLOY){
-			return getDeployMove();			
+			return getDeployCommand();			
 		}
 
 		return null;
 	}
 
-	public void notifyMove(Command move)
+	public void notifyCommand(Command command)
 	{
-		state.playMove(move);
+		state.playCommand(command);
 	}
 
-	private DeployCommand getDeployMove() 
+	private DeployCommand getDeployCommand() 
 	{
 		// Deploys all troops to first owned territory.
 		Territory deployTerritory = state.getTerritoriesForPlayer(getId())[0];
@@ -44,7 +44,7 @@ public class DumbPlayer extends Player {
 		return new DeployCommand(getId(), ++ack_id, deployments);
 	}
 	
-	private AssignArmyCommand getArmyAssignmentMove()
+	private AssignArmyCommand getArmyAssignmentCommand()
 	{
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = state.getUnclaimedTerritories();
