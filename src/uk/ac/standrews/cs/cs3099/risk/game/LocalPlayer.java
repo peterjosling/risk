@@ -2,6 +2,10 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class LocalPlayer extends Player {
 	public LocalPlayer(int id)
 	{
@@ -57,33 +61,43 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getAssignArmyCommand(){
-		int territoryID = 0;
+		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
+		int territoryID = EasyIn.getInt();
 		return new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
 	}
 
 	public Command getAttackCommand(){
-		int sourceID = 0;
-		int destinationID = 0;
-		int armies = 0;
+		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
+		int sourceID = EasyIn.getInt();
+		System.out.println("Choose Territory to Attack. Enter Territory ID:");
+		int destinationID = EasyIn.getInt();
+		System.out.println("Enter number of armies to attack with:");
+		int armies = EasyIn.getInt();
 		return new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
 	}
 
 	public Command getFortifyCommand(){
-		int sourceID = 0;
-		int destinationID = 0;
-		int armies = 0;
+		System.out.println("Choose Territory to Fortify from. Enter Territory ID:");
+		int sourceID = EasyIn.getInt();
+		System.out.println("Choose Territory to Fortify. Enter Territory ID:");
+		int destinationID = EasyIn.getInt();
+		System.out.println("Enter number of armies to fortify with:");
+		int armies = EasyIn.getInt();
 		int[] details = {sourceID, destinationID, armies};
 		return new FortifyCommand(this.getId(), lastAckid++, details);
 	}
 
 	public Command getDeployCommand(){
-		int numberOfDeployments = 0;
+		System.out.println("Enter number of deployments:");
+		int numberOfDeployments = EasyIn.getInt();
 		int territoryID;
 		int armies;
 		DeployCommand.Deployment[] deployments = new DeployCommand.Deployment[numberOfDeployments];
 		for(int i=0; i<numberOfDeployments; i++){
-			territoryID = 0;
-			armies = 0;
+			System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
+			territoryID = EasyIn.getInt();
+			System.out.println("Enter number of armies to deploy here:");
+			armies = EasyIn.getInt();
 			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 		}
 		return new DeployCommand(this.getId(), lastAckid++, deployments);
@@ -94,8 +108,9 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getDefendCommand(){
-		int territoryID = 0;
-		int armies = 0;
+		int territoryID = EasyIn.getInt(); //Where does this come from????
+		System.out.println("Enter number of armies to defend with:");
+		int armies = EasyIn.getInt();
 		return new DefendCommand(this.getId(), lastAckid++, territoryID, armies);
 	}
 
@@ -106,7 +121,7 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getAcceptJoinGameCommand(){
-		int ackTimeout = 2;
+		int ackTimeout = 4; //Check these values
 		int moveTimeout = 30;
 		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
 	}
@@ -122,30 +137,56 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getTimeoutCommand(){
-		int timedOutPlayerId = 0;
+		int timedOutPlayerId = EasyIn.getInt();
 		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
 	}
 
 	public Command getAttackCaptureCommand(){
-		int sourceID = 0;
-		int destinationID = 0;
-		int armies = 0;
+		int sourceID = EasyIn.getInt();
+		int destinationID = EasyIn.getInt();
+		int armies = EasyIn.getInt();
 		int[] captureDetails = {sourceID,destinationID,armies};
 		return new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
 	}
 
 	public Command getLeaveGameCommand(){
-		int response = 0;
+		int response = EasyIn.getInt();
+		String updates = "";
 		boolean receiveUpdates = false;
+		do{
+			System.out.println("Would you like to receive game updates? Please Enter: 'Y' or 'N'");
+			updates = EasyIn.getString();
+			if(updates=="Y"){
+				receiveUpdates = true;
+			} else if(updates=="N"){
+				receiveUpdates = false;
+			}
+		}while(updates!="Y" || updates!="N");
 		return new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
 	}
 
 	public Command getPlayCardsCommand(){
-		int numberOfTradeIns = 0;
+		System.out.println("Select number of card sets to trade in:");
+		int numberOfTradeIns = EasyIn.getInt();
+		List<Card> playersCards = getCards();
+		System.out.println("Your Cards:");
+		for(Card card:playersCards){
+			System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
+					card.getTerritoryId() + "Card Type:" + card.getCardType());
+		}
 		Card[][] cards = new Card[numberOfTradeIns][3];
+		int cardId;
 		for(int i =0; i<numberOfTradeIns; i++){
-			for(int j=0; i<cards[i].length; j++) {
-				cards[i][j] = null;
+			System.out.println("Select 3 cards to trade in:");
+			for(int j=0; j<cards[i].length; j++) {
+				System.out.println("Enter Card ID:");
+				cardId = EasyIn.getInt();
+				try {
+					cards[i][j] = getCardByID(cardId);
+				} catch (CardNotFoundException e) {
+					System.out.println("Card not found please enter another ID");
+					j--;
+				}
 			}
 		}
 		return new PlayCardsCommand(this.getId(), lastAckid++, cards);
@@ -157,7 +198,8 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getRollCommand(){
-		int faces = 0;
+		int faces = 6;
+		System.out.println("Enter number of dice to be rolled:");
 		int numberOfDice = 0;
 		return new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
 	}

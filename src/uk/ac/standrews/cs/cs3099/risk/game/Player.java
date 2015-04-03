@@ -109,6 +109,19 @@ public abstract class Player {
 		usedCards.add(c);
 	}
 
+	public List<Card> getCards(){
+		return hiddenCards;
+	}
+
+	public Card getCardByID(int id) throws CardNotFoundException{
+		for(Card card:hiddenCards){
+			if(card.getId()==id){
+				return card;
+			}
+		}
+		throw new CardNotFoundException("Card Not Found");
+	}
+
 	public boolean ownsTerritory(Territory t)
 	{
 		return t.getOwner() == id;
