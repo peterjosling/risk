@@ -23,4 +23,10 @@ public class PlayersJoinedCommand extends Command {
 		return CommandType.PLAYERS_JOINED;
 	}
 
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
+
 }

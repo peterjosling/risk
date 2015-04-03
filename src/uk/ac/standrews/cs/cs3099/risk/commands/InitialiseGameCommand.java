@@ -34,4 +34,10 @@ public class InitialiseGameCommand extends Command {
 		return CommandType.INITIALISE_GAME;
 	}
 
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
+
 }

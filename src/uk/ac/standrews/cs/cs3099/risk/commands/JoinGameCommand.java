@@ -26,4 +26,10 @@ public class JoinGameCommand extends Command {
 	{
 		return CommandType.JOIN_GAME;
 	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
+	}
 }

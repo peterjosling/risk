@@ -37,6 +37,6 @@ public class UIPlayer extends Player {
 	@Override
 	public void notifyCommand(Command command)
 	{
-		// TODO send move JSON down websocket.
+		webSocket.send(command.toJSON());
 	}
 }

@@ -1,7 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import uk.ac.standrews.cs.cs3099.risk.game.*;
-
 public class RollNumberCommand extends Command {
 
 	String rollNumberHex;
@@ -22,5 +20,11 @@ public class RollNumberCommand extends Command {
 	@Override
 	public CommandType getType() {
 		return CommandType.ROLL_NUMBER;
+	}
+
+	@Override
+	public String toJSON()
+	{
+		return null;
 	}
 }
