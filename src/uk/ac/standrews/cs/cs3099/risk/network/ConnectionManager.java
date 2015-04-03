@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class ConnectionManager {
 	private final boolean isServer;
 	private final ArrayList<Socket> sockets = new ArrayList<Socket>();
+	private final ArrayList<PlayerSocket> playerSockets = new ArrayList<PlayerSocket>();
 	private final ArrayList<PrintWriter> writers = new ArrayList<PrintWriter>();
 
 	private NetworkedGame game;
@@ -65,5 +66,14 @@ public class ConnectionManager {
 	protected void clientConnected(Socket socket)
 	{
 		sockets.add(socket);
+
+		try {
+			PlayerSocket playerSocket = new PlayerSocket(game, socket);
+			playerSockets.add(playerSocket);
+			playerSocket.run();
+		} catch (IOException e) {
+			System.err.println("Failed to process new client socket.");
+			e.printStackTrace();
+		}
 	}
 }
