@@ -9,20 +9,30 @@ import java.net.Socket;
 
 public class PlayerSocket implements Runnable {
 	private final NetworkedGame game;
+	private final Socket socket;
 	private final BufferedReader reader;
 
 	public PlayerSocket(NetworkedGame game, Socket socket) throws IOException
 	{
 		this.game = game;
+		this.socket = socket;
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
 	@Override
 	public void run()
 	{
-		while (true) {
+		while (!socket.isClosed()) {
 			try {
 				String commandString = reader.readLine();
+				System.out.println("Message received: " + commandString);
+
+				if (commandString == null) {
+					System.out.println("Client socket closed.");
+					Thread.currentThread().interrupt();
+					return;
+				}
+
 				Command command = Command.fromJSON(commandString);
 
 				if (command == null) {
