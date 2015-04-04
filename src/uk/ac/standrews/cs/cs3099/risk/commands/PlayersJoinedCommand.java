@@ -67,4 +67,16 @@ public class PlayersJoinedCommand extends Command {
 			return new PlayersNames(playerId, playerName, publicKey);
 		}
 	}
+
+	public static class PlayersNameSerializer implements JsonSerializer<PlayersNames> {
+		@Override
+		public JsonElement serialize(PlayersNames playersNames, Type type, JsonSerializationContext jsonSerializationContext)
+		{
+			JsonArray jsonArray = new JsonArray();
+			jsonArray.add(new JsonPrimitive(playersNames.getPlayerId()));
+			jsonArray.add(new JsonPrimitive(playersNames.getPlayerName()));
+			jsonArray.add(new JsonPrimitive(playersNames.getPublicKey()));
+			return jsonArray;
+		}
+	}
 }

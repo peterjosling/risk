@@ -11,6 +11,7 @@ public abstract class Command {
 	static {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(Command.class, new CommandDeserializer());
+		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNameSerializer());
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
 		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandSerializer());
 		gson = builder.serializeNulls().create();
@@ -96,6 +97,14 @@ public abstract class Command {
 	public static Command fromJSON(String json)
 	{
 		return gson.fromJson(json, Command.class);
+	}
+
+	public static class CommandSerializer implements JsonSerializer<Command> {
+		@Override
+		public JsonElement serialize(Command command, Type type, JsonSerializationContext jsonSerializationContext)
+		{
+			return jsonSerializationContext.serialize(command, type);
+		}
 	}
 
 	public static class CommandDeserializer implements JsonDeserializer<Command> {
