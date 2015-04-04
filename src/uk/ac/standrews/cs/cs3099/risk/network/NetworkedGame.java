@@ -95,6 +95,10 @@ public class NetworkedGame extends AbstractGame {
 			case PLAYERS_JOINED:
 				playersJoined((PlayersJoinedCommand) command);
 				return;
+
+			case PING:
+				playerPinged((PingCommand) command);
+				return;
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -157,6 +161,21 @@ public class NetworkedGame extends AbstractGame {
 			// TODO store public key on player.
 			Player player = new NetworkPlayer(connectionManager, playerId, name);
 			addPlayer(player);
+		}
+	}
+
+	/**
+	 * Track players responding with pings, and reply to the first ping issued
+	 * @param command Command detailing the player issuing the ping.
+	 */
+	private void playerPinged(PingCommand command)
+	{
+		localPlayer.notifyCommand(command);
+
+		// If this ping is from the host, respond.
+		if (command.getNoOfPlayers() > 0) {
+			PingCommand response = new PingCommand(localPlayer.getId());
+			connectionManager.sendCommand(response);
 		}
 	}
 }
