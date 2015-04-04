@@ -13,7 +13,7 @@ public abstract class Command {
 	static {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
-		gson = builder.create();
+		gson = builder.serializeNulls().create();
 	}
 
 	private int ack_id;
