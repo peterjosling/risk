@@ -88,7 +88,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 * Create a new NetworkedGame and host a server
 	 *
 	 * @param ws
-	 * @param messageString
+	 * @param command
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
