@@ -19,11 +19,4 @@ public class RejectJoinGameCommand extends Command {
 	{
 		return CommandType.REJECT_JOIN_GAME;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

@@ -27,12 +27,6 @@ public class ServerConnectCommand extends Command {
 		return CommandType.SERVER_CONNECT;
 	}
 
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 	private class ServerConnectPayload {
 		String hostname;
 		int port;

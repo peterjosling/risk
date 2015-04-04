@@ -51,7 +51,10 @@ public abstract class Command {
 
 	public abstract CommandType getType();
 
-	public abstract String toJSON();
+	public String toJSON()
+	{
+		return new Gson().toJson(this, this.getClass());
+	};
 
 	private static HashMap<String, Class> classMap = new HashMap<String, Class>();
 

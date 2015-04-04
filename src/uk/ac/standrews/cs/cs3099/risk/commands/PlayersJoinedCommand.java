@@ -23,25 +23,23 @@ public class PlayersJoinedCommand extends Command {
 		return CommandType.PLAYERS_JOINED;
 	}
 
-	@Override
-	public String toJSON() {
-		return null;
-	}
-
-	public class PlayersNames{
+	public class PlayersNames {
 		private int playerId;
 		private String playerName;
 		private String publicKey;
 
-		public int getPlayerId() {
+		public int getPlayerId()
+		{
 			return playerId;
 		}
 
-		public String getPlayerName() {
+		public String getPlayerName()
+		{
 			return playerName;
 		}
 
-		public String getPublicKey() {
+		public String getPublicKey()
+		{
 			return publicKey;
 		}
 	}

@@ -23,11 +23,4 @@ public class TimeoutCommand extends Command {
 	{
 		return CommandType.TIMEOUT;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

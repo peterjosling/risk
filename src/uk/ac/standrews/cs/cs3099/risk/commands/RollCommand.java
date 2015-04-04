@@ -1,7 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import uk.ac.standrews.cs.cs3099.risk.game.*;
-
 public class RollCommand extends Command{
 
 	private int faces;
@@ -33,11 +31,5 @@ public class RollCommand extends Command{
 	public CommandType getType() 
 	{
 		return CommandType.ROLL;
-	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
 	}
 }

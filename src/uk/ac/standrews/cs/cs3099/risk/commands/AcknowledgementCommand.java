@@ -21,11 +21,4 @@ public class AcknowledgementCommand extends Command {
 	{
 		return CommandType.ACKNOWLEDGEMENT;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

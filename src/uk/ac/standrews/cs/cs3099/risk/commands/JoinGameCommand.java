@@ -1,7 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import com.google.gson.Gson;
-
 public class JoinGameCommand extends Command {
 	private JoinGamePayload payload = new JoinGamePayload();
 	private String command = "join_game";
@@ -27,12 +25,6 @@ public class JoinGameCommand extends Command {
 	public CommandType getType()
 	{
 		return CommandType.JOIN_GAME;
-	}
-
-	@Override
-	public String toJSON()
-	{
-		return new Gson().toJson(this, JoinGameCommand.class);
 	}
 
 	private class JoinGamePayload {

@@ -26,11 +26,4 @@ public class AcceptJoinGameCommand extends Command {
 	{
 		return CommandType.ACCEPT_JOIN_GAME;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

@@ -22,12 +22,6 @@ public class ServerStartCommand extends Command {
 		return CommandType.SERVER_START;
 	}
 
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 	private class ServerStartPayload {
 		int port;
 	}
