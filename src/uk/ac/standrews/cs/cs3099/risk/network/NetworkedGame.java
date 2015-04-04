@@ -99,6 +99,12 @@ public class NetworkedGame extends AbstractGame {
 			case PING:
 				playerPinged((PingCommand) command);
 				return;
+
+		// Send acknowledgement.
+		int ackId = command.getAckId();
+
+		if (ackId != -1) {
+			sendAcknowledgement(ackId);
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -177,5 +183,16 @@ public class NetworkedGame extends AbstractGame {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
 		}
+	}
+
+	private void sendAcknowledgement(int ackId)
+	{
+		// Non-playing hosts don't need to ack.
+		if (localPlayer == null) {
+			return;
+		}
+
+		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
+		connectionManager.sendCommand(ack);
 	}
 }
