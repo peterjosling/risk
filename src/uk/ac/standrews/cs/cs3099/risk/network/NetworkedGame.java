@@ -100,6 +100,11 @@ public class NetworkedGame extends AbstractGame {
 				playerPinged((PingCommand) command);
 				return;
 
+			case READY:
+				readyReceived((ReadyCommand) command);
+				return;
+		}
+
 		// Send acknowledgement.
 		int ackId = command.getAckId();
 
@@ -183,6 +188,12 @@ public class NetworkedGame extends AbstractGame {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
 		}
+	}
+
+	private void readyReceived(ReadyCommand command)
+	{
+		localPlayer.notifyCommand(command);
+		sendAcknowledgement(command.getAckId());
 	}
 
 	private void sendAcknowledgement(int ackId)
