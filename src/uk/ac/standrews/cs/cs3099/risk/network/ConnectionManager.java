@@ -55,6 +55,7 @@ public class ConnectionManager {
 		String commandJSON = command.toJSON();
 		for (PrintWriter writer : writers) {
 			writer.write(commandJSON + "\n");
+			writer.flush();
 		}
 	}
 
