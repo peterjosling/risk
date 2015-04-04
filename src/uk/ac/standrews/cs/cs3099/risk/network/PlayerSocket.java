@@ -18,13 +18,15 @@ public class PlayerSocket implements Runnable {
 	@Override
 	public void run()
 	{
-		try {
-			String commandString = reader.readLine();
-			// TODO parse JSON
-			game.messageReceived(null);
-		} catch (IOException e) {
-			System.err.println("Failed to read from client socket.");
-			e.printStackTrace();
+		while (true) {
+			try {
+				String commandString = reader.readLine();
+				// TODO parse JSON
+				game.messageReceived(null);
+			} catch (IOException e) {
+				System.err.println("Failed to read from client socket.");
+				e.printStackTrace();
+			}
 		}
 	}
 }
