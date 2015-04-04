@@ -11,7 +11,7 @@ interface ChildView {
 }
 
 class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
-	template : Function = (data?) => {};
+	template : Function = (context?, data?) => {};
 
 	childViews : Array<ChildView> = [];
 
@@ -21,7 +21,7 @@ class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 
 	render(data? : any) : View<TModel> {
 		// Render this view's template.
-		this.$el.html(this.template(data));
+		this.$el.html(this.template(this.getRenderData(), {data: data}));
 
 		// Render out all child views.
 		this.childViews.forEach(function(view) {
@@ -29,6 +29,16 @@ class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 		}, this);
 
 		return this;
+	}
+
+	getRenderData() : {} {
+		var model = this.model || this.collection;
+
+		if (model) {
+			return model.toJSON();
+		}
+
+		return {};
 	}
 
 	destroy() : void {
