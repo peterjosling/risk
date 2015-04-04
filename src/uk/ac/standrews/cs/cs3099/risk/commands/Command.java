@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Command {
-	private int ackId;
-	private int playerId;
+	private int ack_id;
+	private int player_id;
 
 	/**
 	 * Creates a move instance which requires acknowledgement.
@@ -17,8 +17,8 @@ public abstract class Command {
 	 */
 	public Command(int playerId, int ackId)
 	{
-		this.playerId = playerId;
-		this.ackId = ackId;
+		this.player_id = playerId;
+		this.ack_id = ackId;
 	}
 
 	/**
@@ -41,12 +41,12 @@ public abstract class Command {
 
 	public int getPlayerId()
 	{
-		return playerId;
+		return player_id;
 	}
 
 	public int getAckId()
 	{
-		return ackId;
+		return ack_id;
 	}
 
 	public abstract CommandType getType();
