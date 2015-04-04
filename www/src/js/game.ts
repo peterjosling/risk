@@ -112,6 +112,8 @@ class Game extends Model {
 			version: message.payload.version,
 			features: message.payload.supported_features
 		});
+
+		this.trigger('gameStart');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
