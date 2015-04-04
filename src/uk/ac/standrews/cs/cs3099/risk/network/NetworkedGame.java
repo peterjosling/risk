@@ -108,7 +108,7 @@ public class NetworkedGame extends AbstractGame {
 		// Send acknowledgement.
 		int ackId = command.getAckId();
 
-		if (ackId != -1) {
+		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
 			sendAcknowledgement(ackId);
 		}
 
