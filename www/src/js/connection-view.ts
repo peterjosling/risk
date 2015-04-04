@@ -19,7 +19,7 @@ class ConnectionView extends View<Game> {
 			port : number = this.$('#connection-port').val();
 
 		this.model.connect(hostname, port).then(() => {
-			this.trigger('gameConnected')
+			this.trigger('connected');
 		}, () => {
 			alert('Failed to connect');
 		});
