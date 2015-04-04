@@ -1,21 +1,22 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class RejectJoinGameCommand extends Command {
-	private String errorMessage;
+	private String command = "reject_join_game";
+	private String payload;
 
 	public RejectJoinGameCommand(String errorMessage)
 	{
 		super();
-		this.errorMessage = errorMessage;
+		this.payload = errorMessage;
 	}
-	
+
 	public String getErrorMessage()
 	{
-		return errorMessage;
+		return payload;
 	}
 
 	@Override
-	public CommandType getType() 
+	public CommandType getType()
 	{
 		return CommandType.REJECT_JOIN_GAME;
 	}

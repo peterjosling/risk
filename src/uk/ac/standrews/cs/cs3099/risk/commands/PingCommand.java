@@ -1,17 +1,19 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class PingCommand extends Command {
-	private int noOfPlayers;
+	private String command = "ping";
+	private int payload;
 
 	public PingCommand(int playerId) 
 	{
 		super(playerId);
+		this.payload = -1;
 	}
-	
+
 	public PingCommand(int playerId, int noOfPlayers)
 	{
 		super(playerId);
-		this.noOfPlayers = noOfPlayers;
+		this.payload = noOfPlayers;
 	}
 
 	/**
@@ -19,9 +21,9 @@ public class PingCommand extends Command {
 	 */
 	public int getNoOfPlayers()
 	{
-		return noOfPlayers;
+		return payload;
 	}
-	
+
 	@Override
 	public CommandType getType() 
 	{
