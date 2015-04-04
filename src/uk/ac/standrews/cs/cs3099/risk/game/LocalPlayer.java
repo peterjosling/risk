@@ -2,7 +2,6 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -137,8 +136,7 @@ public class LocalPlayer extends Player {
 	}
 
 	public Command getAcknowledgementCommand(){
-		int commandId = lastAckid;
-		return new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
+		return new AcknowledgementCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getTimeoutCommand(){

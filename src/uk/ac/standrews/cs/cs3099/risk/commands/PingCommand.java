@@ -46,14 +46,14 @@ public class PingCommand extends Command {
 
 			// Serialise player_id = -1 as null (host).
 			if (playerId == -1) {
-				result.add("player_id", new JsonNull());
+				result.add("player_id", JsonNull.INSTANCE);
 			} else {
 				result.add("player_id", new JsonPrimitive(playerId));
 			}
 
 			// Serialise payload = -1 as null (client response).
 			if (payload == -1) {
-				result.add("payload", new JsonNull());
+				result.add("payload", JsonNull.INSTANCE);
 			} else {
 				result.add("payload", new JsonPrimitive(payload));
 			}
