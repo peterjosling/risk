@@ -1,10 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 
 public abstract class Command {
@@ -12,6 +10,7 @@ public abstract class Command {
 
 	static {
 		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Command.class, new CommandDeserializer());
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
 		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandSerializer());
 		gson = builder.serializeNulls().create();
@@ -96,14 +95,31 @@ public abstract class Command {
 
 	public static Command fromJSON(String json)
 	{
-		JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
-		String command = obj.get("command").getAsString();
-		Class commandClass = classMap.get(command);
+		return gson.fromJson(json, Command.class);
+	}
 
-		if (commandClass == null) {
-			return null;
+	public static class CommandDeserializer implements JsonDeserializer<Command> {
+		@Override
+		public Command deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException
+		{
+			JsonObject obj = jsonElement.getAsJsonObject();
+			String command = obj.get("command").getAsString();
+			Class commandClass = classMap.get(command);
+
+			if (commandClass == null) {
+				return null;
+			}
+
+			// Non-existent ack_id/player_id fields are stored as int -1.
+			if (!obj.has("ack_id")) {
+				obj.add("ack_id", new JsonPrimitive(-1));
+			}
+
+			if (!obj.has("player_id")) {
+				obj.add("player_id", new JsonPrimitive(-1));
+			}
+
+			return jsonDeserializationContext.deserialize(jsonElement, commandClass);
 		}
-
-		return (Command) gson.fromJson(json, commandClass);
 	}
 }
