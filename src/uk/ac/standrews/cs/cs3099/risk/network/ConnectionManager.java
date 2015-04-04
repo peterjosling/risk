@@ -71,7 +71,7 @@ public class ConnectionManager {
 		try {
 			PlayerSocket playerSocket = new PlayerSocket(game, socket);
 			playerSockets.add(playerSocket);
-			playerSocket.run();
+			new Thread(playerSocket).start();
 		} catch (IOException e) {
 			System.err.println("Failed to process new client socket.");
 			e.printStackTrace();
