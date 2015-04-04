@@ -1,5 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,8 +23,14 @@ public class PlayerSocket implements Runnable {
 		while (true) {
 			try {
 				String commandString = reader.readLine();
-				// TODO parse JSON
-				game.messageReceived(null);
+				Command command = Command.fromJSON(commandString);
+
+				if (command == null) {
+					System.out.println("Invalid command received from player: " + commandString);
+					continue;
+				}
+
+				game.messageReceived(command);
 			} catch (IOException e) {
 				System.err.println("Failed to read from client socket.");
 				e.printStackTrace();
