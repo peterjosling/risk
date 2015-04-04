@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class AcknowledgementCommand extends Command {
+	private String command = "acknowledgement";
 	private int payload;
 
 	public AcknowledgementCommand(int playerId, int ackId)
