@@ -1,19 +1,18 @@
 package uk.ac.standrews.cs.cs3099.risk.ui;
 
-import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.Map;
 
 public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	HashMap<InetSocketAddress, AbstractGame> games = new HashMap<InetSocketAddress, AbstractGame>();
@@ -38,16 +37,24 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	@Override
 	public void onMessage(WebSocket webSocket, String s)
 	{
-		Map message = new Gson().fromJson(s, Map.class);
-		String command = (String) message.get("command");
+		Command command = Command.fromJSON(s);
 
-		if (command.equals("server_connect")) {
-			connectToServer(webSocket, s);
-		} else if (command.equals("server_start")) {
-			startServer(webSocket, s);
-		} else {
-			// TODO Parse command, push onto player's queue.
+		if (command == null) {
+			System.out.println("Invalid command received from websocket.");
+			return;
 		}
+
+		switch (command.getType()) {
+			case SERVER_CONNECT:
+				connectToServer(webSocket, (ServerConnectCommand) command);
+				return;
+
+			case SERVER_START:
+				startServer(webSocket, (ServerStartCommand) command);
+				return;
+		}
+
+		// TODO Parse command, push onto player's queue.
 	}
 
 	@Override
@@ -60,11 +67,10 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 * Create a new NetworkedGame and connect to the specified server
 	 *
 	 * @param ws
-	 * @param messageString
+	 * @param command
 	 */
-	private void connectToServer(WebSocket ws, String messageString)
+	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
-		ServerConnectCommand command = new Gson().fromJson(messageString, ServerConnectCommand.class);
 		NetworkedGame game = new NetworkedGame(24);
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
@@ -84,9 +90,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 * @param ws
 	 * @param messageString
 	 */
-	private void startServer(WebSocket ws, String messageString)
+	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		ServerStartCommand command = new Gson().fromJson(messageString, ServerStartCommand.class);
 		AbstractGame game = new NetworkedGame(24);
 		Player player = new UIPlayer(ws, 0, "Test player");
 		games.put(ws.getRemoteSocketAddress(), game);
