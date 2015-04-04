@@ -1,11 +1,21 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public abstract class Command {
+	private static Gson gson;
+
+	static {
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
+		gson = builder.create();
+	}
+
 	private int ack_id;
 	private int player_id;
 
@@ -53,8 +63,8 @@ public abstract class Command {
 
 	public String toJSON()
 	{
-		return new Gson().toJson(this, this.getClass());
-	};
+		return gson.toJson(this, this.getClass());
+	}
 
 	private static HashMap<String, Class> classMap = new HashMap<String, Class>();
 
@@ -85,14 +95,14 @@ public abstract class Command {
 
 	public static Command fromJSON(String json)
 	{
-		Map message = new Gson().fromJson(json, Map.class);
-		String command = (String) message.get("command");
+		JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
+		String command = obj.get("command").getAsString();
 		Class commandClass = classMap.get(command);
 
 		if (commandClass == null) {
 			return null;
 		}
 
-		return (Command) new Gson().fromJson(json, commandClass);
+		return (Command) gson.fromJson(json, commandClass);
 	}
 }
