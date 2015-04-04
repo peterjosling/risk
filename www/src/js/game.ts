@@ -73,6 +73,12 @@ class Game extends Model {
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
+		var self = new Player({
+			player_id: message.payload.player_id,
+			name: 'TODO Implement player names'
+		});
+
+		this.playerList.add(self);
 		this.trigger('acceptJoinGame', message);
 	}
 
