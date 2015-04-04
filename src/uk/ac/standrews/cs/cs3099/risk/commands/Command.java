@@ -13,6 +13,7 @@ public abstract class Command {
 	static {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
+		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandSerializer());
 		gson = builder.serializeNulls().create();
 	}
 
