@@ -149,12 +149,11 @@ public class NetworkedGame extends AbstractGame {
 		localPlayer.notifyCommand(command);
 
 		// Add new players to the game.
-		// TODO don't really want this as String[][] - create a new data structure to hold the tuple.
-		String[][] playerNames = command.getPlayerNames();
+		PlayersJoinedCommand.PlayersNames[] playerNames = command.getPlayerNames();
 
-		for (String[] playerDetails : playerNames) {
-			int playerId = Integer.parseInt(playerDetails[0]);
-			String name = playerDetails[1];
+		for (PlayersJoinedCommand.PlayersNames playerDetails : playerNames) {
+			int playerId = playerDetails.getPlayerId();
+			String name = playerDetails.getPlayerName();
 			// TODO store public key on player.
 			Player player = new NetworkPlayer(connectionManager, playerId, name);
 			addPlayer(player);

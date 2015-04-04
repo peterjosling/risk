@@ -15,11 +15,11 @@ public class LocalPlayer extends Player {
 	{
 		super(id, name);
 	}
+	public GameState gameState;
 
 	@Override
-	public Command getCommand(CommandType type)
-	{
-		switch(type) {
+	public Command getCommand(CommandType type) {
+		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
 			case ATTACK:
@@ -54,6 +54,12 @@ public class LocalPlayer extends Player {
 				return getRollCommand();
 			case ROLL_HASH:
 				return getRollHashCommand();
+			case PING:
+				return getPingCommand();
+			case READY:
+				return getReadyCommand();
+			case INITIALISE_GAME:
+				return getInitialiseGameCommand();
 			default:
 				return getLeaveGameCommand();
 		}
@@ -208,10 +214,25 @@ public class LocalPlayer extends Player {
 		return new RollHashCommand(this.getId(), lastAckid++, hash);
 	}
 
+	public Command getPingCommand() {
+		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
+	}
+
+	public Command getReadyCommand() {
+		return new ReadyCommand(this.getId(), lastAckid++);
+	}
+
+	public Command getInitialiseGameCommand(){
+		int version = 1;
+		String[] supportedFeatures = {};
+		return new InitialiseGameCommand(this.getId(), version, supportedFeatures);
+	}
+
 	@Override
 	public void notifyCommand(Command command)
 	{
 		//calls play move in gamestate
 		//notifies all player of that command
 	}
+
 }
