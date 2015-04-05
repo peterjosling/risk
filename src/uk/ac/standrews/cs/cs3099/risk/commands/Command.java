@@ -10,6 +10,7 @@ public abstract class Command {
 
 	static {
 		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Command.class, new CommandSerializer());
 		builder.registerTypeAdapter(Command.class, new CommandDeserializer());
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNameSerializer());
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
@@ -64,7 +65,7 @@ public abstract class Command {
 
 	public String toJSON()
 	{
-		return gson.toJson(this, this.getClass());
+		return gson.toJson(this, Command.class);
 	}
 
 	private static HashMap<String, Class> classMap = new HashMap<String, Class>();
@@ -103,7 +104,28 @@ public abstract class Command {
 		@Override
 		public JsonElement serialize(Command command, Type type, JsonSerializationContext jsonSerializationContext)
 		{
-			return jsonSerializationContext.serialize(command, type);
+			JsonElement jsonElement = jsonSerializationContext.serialize(command, command.getClass());
+
+			// Strip off ack_id and player_id if unused.
+			JsonObject obj = jsonElement.getAsJsonObject();
+
+			if (obj.has("player_id")) {
+				int playerId = obj.get("player_id").getAsInt();
+
+				if (playerId == -1) {
+					obj.remove("player_id");
+				}
+			}
+
+			if (obj.has("ack_id")) {
+				int ackId = obj.get("ack_id").getAsInt();
+
+				if (ackId == -1) {
+					obj.remove("ack_id");
+				}
+			}
+
+			return jsonElement;
 		}
 	}
 
