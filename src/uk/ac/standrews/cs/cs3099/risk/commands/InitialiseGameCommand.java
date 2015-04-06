@@ -1,36 +1,40 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class InitialiseGameCommand extends Command {
-	private int version;
-	private String[] supportedFeatures;
-	
-	public InitialiseGameCommand(int PlayerId, int version,
-			String[] supportedFeatures) 
+	private String command = "initialise_game";
+	private InitialiseGamePayload payload = new InitialiseGamePayload();
+
+	public InitialiseGameCommand(int version, String[] supportedFeatures)
 	{
-		super(PlayerId);
-		this.version = version;
-		this.supportedFeatures = supportedFeatures;
+		super();
+		this.payload.version = version;
+		this.payload.supported_features = supportedFeatures;
 	}
-	
+
 	/**
 	 * @return Integer - game protocol version used.
 	 */
 	public int getVersion()
 	{
-		return version;
+		return payload.version;
 	}
-	
+
 	/**
 	 * @return String Array of extra features enabled.
 	 */
 	public String[] getSupportedFeatures()
 	{
-		return supportedFeatures;
+		return payload.supported_features;
 	}
 
 	@Override
-	public CommandType getType() 
+	public CommandType getType()
 	{
 		return CommandType.INITIALISE_GAME;
+	}
+
+	private class InitialiseGamePayload {
+		int version;
+		String[] supported_features;
 	}
 }

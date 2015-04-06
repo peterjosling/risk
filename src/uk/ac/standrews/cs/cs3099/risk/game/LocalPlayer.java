@@ -223,7 +223,7 @@ public class LocalPlayer extends Player {
 	public Command getInitialiseGameCommand(){
 		int version = 1;
 		String[] supportedFeatures = {};
-		return new InitialiseGameCommand(this.getId(), version, supportedFeatures);
+		return new InitialiseGameCommand(version, supportedFeatures);
 	}
 
 	@Override
