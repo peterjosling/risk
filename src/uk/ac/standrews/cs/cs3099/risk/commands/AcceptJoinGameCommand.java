@@ -2,7 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class AcceptJoinGameCommand extends Command {
 	private String command = "accept_join_game";
-	private AcceptJoinPayload payload;
+	private AcceptJoinPayload payload = new AcceptJoinPayload();
 
 	public AcceptJoinGameCommand(int playerId, int ackTimeout, int commandTimeout)
 	{
