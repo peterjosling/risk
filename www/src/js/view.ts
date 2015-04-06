@@ -14,6 +14,7 @@ class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 	template : Function = (context?, data?) => {};
 
 	childViews : Array<ChildView> = [];
+	listViews : Array<View<Backbone.Model>> = [];
 
 	constructor(options?) {
 		super(options);
@@ -42,9 +43,8 @@ class View<TModel extends Backbone.Model> extends Backbone.View<TModel> {
 	}
 
 	destroy() : void {
-		this.childViews.forEach(view => {
-			view.view.destroy();
-		});
+		this.childViews.forEach(view => view.view.destroy());
+		this.listViews.forEach(view => view.destroy());
 	}
 
 	static Template;
