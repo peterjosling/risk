@@ -103,6 +103,10 @@ public class NetworkedGame extends AbstractGame {
 			case READY:
 				readyReceived((ReadyCommand) command);
 				return;
+
+			case INITIALISE_GAME:
+				initialiseGameCommand((InitialiseGameCommand) command);
+				return;
 		}
 
 		// Send acknowledgement.
@@ -177,6 +181,7 @@ public class NetworkedGame extends AbstractGame {
 
 	/**
 	 * Track players responding with pings, and reply to the first ping issued
+	 *
 	 * @param command Command detailing the player issuing the ping.
 	 */
 	private void playerPinged(PingCommand command)
@@ -188,6 +193,16 @@ public class NetworkedGame extends AbstractGame {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
 		}
+	}
+
+	/**
+	 * Let local player know what version/features the game is using.
+	 *
+	 * @param command
+	 */
+	private void initialiseGameCommand(InitialiseGameCommand command)
+	{
+		localPlayer.notifyCommand(command);
 	}
 
 	private void readyReceived(ReadyCommand command)
