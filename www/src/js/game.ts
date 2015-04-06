@@ -32,6 +32,7 @@ class Game extends Model {
 
 			this.once('acceptJoinGame', (message : Messages.Message) => {
 				this.off('rejectJoinGame');
+				this.trigger('connected');
 				resolve(message);
 			});
 

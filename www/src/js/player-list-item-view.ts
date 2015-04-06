@@ -5,6 +5,6 @@ export class PlayerListItemView extends View {
 
 	constructor() {
 		super();
-		this.listenTo(this.model, 'change', this.render, this);
+		this.listenTo(this.model, 'change', this.render);
 	}
 }

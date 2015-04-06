@@ -23,14 +23,14 @@ class App extends View<Model> {
 	init() : void {
 		this.game = new Game();
 		var view = new ConnectionView({model: this.game});
-		view.on('connected', this.gameConnected, this);
+		view.listenTo(this.game, 'connected', this.gameConnected.bind(this));
 		app.setView(view);
 	}
 
 	// Joined an existing game (or created one). Go to the lobby view.
 	gameConnected() : void {
 		var view = new LobbyView({model: this.game});
-		view.on('gameStart', this.gameStart, this);
+		view.listenTo(this.game, 'gameStart', this.gameStart.bind(this));
 		app.setView(view);
 	}
 
