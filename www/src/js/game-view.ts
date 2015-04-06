@@ -6,19 +6,19 @@ import MapView = require('./map-view');
 class GameView extends View<Game> {
 	template = <Function>require('../hbs/game-view.hbs');
 
-	childViews = [
-		{
-			view: new PlayerListView(),
-			el: '#player-list'
-		},
-		{
-			view: new MapView(),
-			el: '#map'
-		}
-	];
-
 	constructor(options?) {
 		super(options);
+
+		this.childViews = [
+			{
+				view: new PlayerListView({ collection: this.model.playerList }),
+				el: '#player-list'
+			},
+			{
+				view: new MapView(),
+				el: '#map'
+			}
+		];
 	}
 }
 
