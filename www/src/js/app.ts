@@ -1,3 +1,5 @@
+require('../less/main.less');
+
 import View = require('./view');
 import Model = require('./model');
 import Game = require('./game');

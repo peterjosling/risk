@@ -6,6 +6,10 @@ import MapView = require('./map-view');
 class GameView extends View<Game> {
 	template = <Function>require('../hbs/game-view.hbs');
 
+	get className() {
+		return 'game';
+	}
+
 	constructor(options?) {
 		super(options);
 
