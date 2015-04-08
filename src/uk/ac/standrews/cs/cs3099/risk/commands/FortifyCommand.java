@@ -28,10 +28,4 @@ public class FortifyCommand extends Command {
 	{
 		return CommandType.FORTIFY;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
 }

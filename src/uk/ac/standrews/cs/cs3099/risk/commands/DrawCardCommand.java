@@ -12,10 +12,4 @@ public class DrawCardCommand extends Command {
 	{
 		return CommandType.TRADE_IN_CARDS;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
 }

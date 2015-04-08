@@ -32,6 +32,7 @@ class Game extends Model {
 
 			this.once('acceptJoinGame', (message : Messages.Message) => {
 				this.off('rejectJoinGame');
+				this.trigger('connected');
 				resolve(message);
 			});
 
@@ -73,6 +74,12 @@ class Game extends Model {
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
+		var self = new Player({
+			player_id: message.payload.player_id,
+			name: 'TODO Implement player names'
+		});
+
+		this.playerList.add(self);
 		this.trigger('acceptJoinGame', message);
 	}
 
@@ -106,6 +113,8 @@ class Game extends Model {
 			version: message.payload.version,
 			features: message.payload.supported_features
 		});
+
+		this.trigger('gameStart');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {

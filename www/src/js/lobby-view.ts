@@ -10,7 +10,7 @@ class LobbyView extends View<Game> {
 		this.events = <any>{};
 		this.delegateEvents();
 
-		this.listenTo(this.model.playerList, 'add', this.render, this);
+		this.listenTo(this.model.playerList, 'add', this.render);
 	}
 
 	getRenderData() {

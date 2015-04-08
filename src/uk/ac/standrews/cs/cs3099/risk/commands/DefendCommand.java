@@ -32,11 +32,4 @@ public class DefendCommand extends Command{
 	{
 		return CommandType.DEFEND;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

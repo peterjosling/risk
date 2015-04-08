@@ -27,11 +27,4 @@ public class LeaveGameCommand extends Command {
 	{
 		return CommandType.LEAVE_GAME;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

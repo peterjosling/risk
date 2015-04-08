@@ -20,10 +20,4 @@ public class AssignArmyCommand extends Command {
 	{
 		return CommandType.ASSIGN_ARMY;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
 }

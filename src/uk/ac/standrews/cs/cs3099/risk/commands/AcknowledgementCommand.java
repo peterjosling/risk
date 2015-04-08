@@ -1,31 +1,23 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-
-
 public class AcknowledgementCommand extends Command {
-	private int response;
-	
-	public AcknowledgementCommand(int playerId, int ackId, int response) 
+	private String command = "acknowledgement";
+	private int payload;
+
+	public AcknowledgementCommand(int playerId, int ackId)
 	{
-		super(playerId, ackId);
-		this.response = response;
+		super(playerId);
+		payload = ackId;
 	}
 
-	public int getResponse() 
+	public int getAckId()
 	{
-		return response;
+		return payload;
 	}
-	
+
 	@Override
 	public CommandType getType() 
 	{
 		return CommandType.ACKNOWLEDGEMENT;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 }

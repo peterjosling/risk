@@ -1,10 +1,13 @@
 import View = require('./view');
+import Player = require('./player');
 
-export class PlayerListItemView extends View {
+class PlayerListItemView extends View<Player> {
 	template = <Function>require('../hbs/player-list-item-view.hbs');
 
-	constructor() {
-		super();
-		this.listenTo(this.model, 'change', this.render, this);
+	constructor(options?) {
+		super(options);
+		this.listenTo(this.model, 'change', this.render);
 	}
 }
+
+export = PlayerListItemView

@@ -21,10 +21,4 @@ public class RollNumberCommand extends Command {
 	public CommandType getType() {
 		return CommandType.ROLL_NUMBER;
 	}
-
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
 }

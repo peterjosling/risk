@@ -1,24 +1,29 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class AcceptJoinGameCommand extends Command {
-	private int acknowledgementTimeout;
-	private int commandTimeout;
+	private String command = "accept_join_game";
+	private AcceptJoinPayload payload = new AcceptJoinPayload();
 
 	public AcceptJoinGameCommand(int playerId, int ackTimeout, int commandTimeout)
 	{
 		super(playerId);
-		this.acknowledgementTimeout = ackTimeout;
-		this.commandTimeout = commandTimeout;
+		this.payload.acknowledgementTimeout = ackTimeout;
+		this.payload.commandTimeout = commandTimeout;
 	}
 
 	public int getAcknowledgementTimeout()
 	{
-		return acknowledgementTimeout;
+		return payload.acknowledgementTimeout;
 	}
 
 	public int getCommandTimeout()
 	{
-		return commandTimeout;
+		return payload.commandTimeout;
+	}
+
+	public int getPlayerId()
+	{
+		return payload.player_id;
 	}
 
 	@Override
@@ -27,10 +32,9 @@ public class AcceptJoinGameCommand extends Command {
 		return CommandType.ACCEPT_JOIN_GAME;
 	}
 
-	@Override
-	public String toJSON()
-	{
-		return null;
+	private class AcceptJoinPayload {
+		int acknowledgementTimeout;
+		int commandTimeout;
+		int player_id;
 	}
-
 }

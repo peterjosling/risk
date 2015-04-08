@@ -1,16 +1,15 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import com.google.gson.Gson;
-
 public class JoinGameCommand extends Command {
-	private JoinGamePayload payload = new JoinGamePayload();
 	private String command = "join_game";
+	private JoinGamePayload payload = new JoinGamePayload();
 
 	public JoinGameCommand(float[] supported_versions, String[] supported_features)
 	{
 		super();
 		this.payload.supported_versions = supported_versions;
 		this.payload.supported_features = supported_features;
+		this.payload.name = "Player names not implemented";
 	}
 
 	public float[] getSupported_versions()
@@ -29,14 +28,9 @@ public class JoinGameCommand extends Command {
 		return CommandType.JOIN_GAME;
 	}
 
-	@Override
-	public String toJSON()
-	{
-		return new Gson().toJson(this, JoinGameCommand.class);
-	}
-
 	private class JoinGamePayload {
 		float[] supported_versions;
 		String[] supported_features;
+		String name;
 	}
 }

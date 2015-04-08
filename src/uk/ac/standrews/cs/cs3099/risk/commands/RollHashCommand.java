@@ -18,12 +18,6 @@ public class RollHashCommand extends Command {
 		return CommandType.ROLL_HASH;
 	}
 
-	@Override
-	public String toJSON()
-	{
-		return null;
-	}
-
 	public String getHash() {
 		return hash;
 	}

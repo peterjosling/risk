@@ -43,6 +43,10 @@ public class ConnectionManager {
 		Socket socket = new Socket(hostname, port);
 		sockets.add(socket);
 		writers.add(new PrintWriter(socket.getOutputStream()));
+
+		PlayerSocket playerSocket = new PlayerSocket(game, socket);
+		playerSockets.add(playerSocket);
+		new Thread(playerSocket).start();
 	}
 
 	/**
@@ -53,8 +57,11 @@ public class ConnectionManager {
 	public void sendCommand(Command command)
 	{
 		String commandJSON = command.toJSON();
+		System.out.println("Sending command" + commandJSON);
+
 		for (PrintWriter writer : writers) {
 			writer.write(commandJSON + "\n");
+			writer.flush();
 		}
 	}
 
@@ -70,7 +77,7 @@ public class ConnectionManager {
 		try {
 			PlayerSocket playerSocket = new PlayerSocket(game, socket);
 			playerSockets.add(playerSocket);
-			playerSocket.run();
+			new Thread(playerSocket).start();
 		} catch (IOException e) {
 			System.err.println("Failed to process new client socket.");
 			e.printStackTrace();
