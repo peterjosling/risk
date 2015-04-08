@@ -49,8 +49,6 @@ public class LocalPlayer extends Player {
 				return getPlayCardsCommand();
 			case ROLL_NUMBER:
 				return getRollNumberCommand();
-			case ROLL:
-				return getRollCommand();
 			case ROLL_HASH:
 				return getRollHashCommand();
 			case PING:
@@ -198,13 +196,6 @@ public class LocalPlayer extends Player {
 	public Command getRollNumberCommand(){
 		String hash = "";
 		return new RollNumberCommand(this.getId(), lastAckid++, hash);
-	}
-
-	public Command getRollCommand(){
-		int faces = 6;
-		System.out.println("Enter number of dice to be rolled:");
-		int numberOfDice = 0;
-		return new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
 	}
 
 	public Command getRollHashCommand(){
