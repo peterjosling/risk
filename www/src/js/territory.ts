@@ -4,7 +4,8 @@ import Player = require('./player');
 
 class Territory extends Model {
 	connections : Collection<Territory>;
-	private owner : Player;
+	private owner : Player = null;
+	private armies : number = 0;
 
 	initialize(options?) {
 		this.connections = new Collection<Territory>();
@@ -32,6 +33,14 @@ class Territory extends Model {
 
 	getOwner() : Player {
 		return this.owner;
+	}
+
+	setArmies(armies : number) {
+		this.armies = armies;
+	}
+
+	getArmies() : number {
+		return this.armies;
 	}
 }
 
