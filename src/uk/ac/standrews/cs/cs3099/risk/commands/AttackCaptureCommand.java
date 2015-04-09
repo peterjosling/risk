@@ -20,5 +20,4 @@ public class AttackCaptureCommand extends Command {
 	{
 		return CommandType.ATTACK_CAPTURE;
 	}
-
 }

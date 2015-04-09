@@ -1,6 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public enum CommandType {
+	SERVER_CONNECT,
+	SERVER_START,
 	ATTACK,
 	FORTIFY,
 	DEPLOY,

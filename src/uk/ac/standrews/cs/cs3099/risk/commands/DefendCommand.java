@@ -32,5 +32,4 @@ public class DefendCommand extends Command{
 	{
 		return CommandType.DEFEND;
 	}
-	
 }

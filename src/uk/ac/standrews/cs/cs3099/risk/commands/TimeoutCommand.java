@@ -23,5 +23,4 @@ public class TimeoutCommand extends Command {
 	{
 		return CommandType.TIMEOUT;
 	}
-
 }

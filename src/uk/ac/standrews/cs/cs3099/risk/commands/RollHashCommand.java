@@ -1,7 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
-import uk.ac.standrews.cs.cs3099.risk.game.*;
-
 public class RollHashCommand extends Command {
 
 	String hash;

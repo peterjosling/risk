@@ -1,0 +1,12 @@
+{
+	"regexdash": true,
+	"browser": true,
+	"trailing": true,
+	"freeze": true,
+	"funcscope": true,
+	"devel": true,
+	"eqnull": true,
+	"quotmark": true,
+	"globals": {
+	}
+}

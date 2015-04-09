@@ -95,6 +95,25 @@ public class NetworkedGame extends AbstractGame {
 			case PLAYERS_JOINED:
 				playersJoined((PlayersJoinedCommand) command);
 				return;
+
+			case PING:
+				playerPinged((PingCommand) command);
+				return;
+
+			case READY:
+				readyReceived((ReadyCommand) command);
+				return;
+
+			case INITIALISE_GAME:
+				initialiseGameCommand((InitialiseGameCommand) command);
+				return;
+		}
+
+		// Send acknowledgement.
+		int ackId = command.getAckId();
+
+		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
+			sendAcknowledgement(ackId);
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -149,15 +168,57 @@ public class NetworkedGame extends AbstractGame {
 		localPlayer.notifyCommand(command);
 
 		// Add new players to the game.
-		// TODO don't really want this as String[][] - create a new data structure to hold the tuple.
-		String[][] playerNames = command.getPlayerNames();
+		PlayersJoinedCommand.PlayersNames[] playerNames = command.getPlayerNames();
 
-		for (String[] playerDetails : playerNames) {
-			int playerId = Integer.parseInt(playerDetails[0]);
-			String name = playerDetails[1];
+		for (PlayersJoinedCommand.PlayersNames playerDetails : playerNames) {
+			int playerId = playerDetails.getPlayerId();
+			String name = playerDetails.getPlayerName();
 			// TODO store public key on player.
 			Player player = new NetworkPlayer(connectionManager, playerId, name);
 			addPlayer(player);
 		}
+	}
+
+	/**
+	 * Track players responding with pings, and reply to the first ping issued
+	 *
+	 * @param command Command detailing the player issuing the ping.
+	 */
+	private void playerPinged(PingCommand command)
+	{
+		localPlayer.notifyCommand(command);
+
+		// If this ping is from the host, respond.
+		if (command.getNoOfPlayers() > 0) {
+			PingCommand response = new PingCommand(localPlayer.getId());
+			connectionManager.sendCommand(response);
+		}
+	}
+
+	/**
+	 * Let local player know what version/features the game is using.
+	 *
+	 * @param command
+	 */
+	private void initialiseGameCommand(InitialiseGameCommand command)
+	{
+		localPlayer.notifyCommand(command);
+	}
+
+	private void readyReceived(ReadyCommand command)
+	{
+		localPlayer.notifyCommand(command);
+		sendAcknowledgement(command.getAckId());
+	}
+
+	private void sendAcknowledgement(int ackId)
+	{
+		// Non-playing hosts don't need to ack.
+		if (localPlayer == null) {
+			return;
+		}
+
+		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
+		connectionManager.sendCommand(ack);
 	}
 }

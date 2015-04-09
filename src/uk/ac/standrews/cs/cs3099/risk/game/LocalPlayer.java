@@ -2,7 +2,6 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +19,7 @@ public class LocalPlayer extends Player {
 	{
 		super(id, name);
 	}
+	public GameState gameState;
 
 	public void initialiseGameState(ArrayList<Integer> players)
 	{
@@ -28,9 +28,8 @@ public class LocalPlayer extends Player {
 	
 	// Validation to be added within getCommand.
 	@Override
-	public Command getCommand(CommandType type)
-	{
-		switch(type) {
+	public Command getCommand(CommandType type) {
+		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
 			case ATTACK:
@@ -61,10 +60,14 @@ public class LocalPlayer extends Player {
 				return getPlayCardsCommand();
 			case ROLL_NUMBER:
 				return getRollNumberCommand();
-			case ROLL:
-				return getRollCommand();
 			case ROLL_HASH:
 				return getRollHashCommand();
+			case PING:
+				return getPingCommand();
+			case READY:
+				return getReadyCommand();
+			case INITIALISE_GAME:
+				return getInitialiseGameCommand();
 			default:
 				return getLeaveGameCommand();
 		}
@@ -150,10 +153,8 @@ public class LocalPlayer extends Player {
 		return new RejectJoinGameCommand(message);
 	}
 
-	public Command getAcknowledgementCommand()
-	{
-		int commandId = lastAckid;
-		return new AcknowledgementCommand(this.getId(), lastAckid++, commandId);
+	public Command getAcknowledgementCommand(){
+		return new AcknowledgementCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getTimeoutCommand()
@@ -220,18 +221,23 @@ public class LocalPlayer extends Player {
 		return new RollNumberCommand(this.getId(), lastAckid++, hash);
 	}
 
-	public Command getRollCommand()
-	{
-		int faces = 6;
-		System.out.println("Enter number of dice to be rolled:");
-		int numberOfDice = 0;
-		return new RollCommand(this.getId(), lastAckid++, faces, numberOfDice);
-	}
-
-	public Command getRollHashCommand()
-	{
+	public Command getRollHashCommand(){
 		String hash = "";
 		return new RollHashCommand(this.getId(), lastAckid++, hash);
+	}
+
+	public Command getPingCommand() {
+		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
+	}
+
+	public Command getReadyCommand() {
+		return new ReadyCommand(this.getId(), lastAckid++);
+	}
+
+	public Command getInitialiseGameCommand(){
+		int version = 1;
+		String[] supportedFeatures = {};
+		return new InitialiseGameCommand(version, supportedFeatures);
 	}
 
 	@Override
@@ -354,5 +360,5 @@ public class LocalPlayer extends Player {
 	{
 		gameState.playCommand(command);
 	}
-	
+
 }

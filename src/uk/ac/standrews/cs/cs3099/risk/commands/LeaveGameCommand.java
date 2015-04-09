@@ -27,5 +27,4 @@ public class LeaveGameCommand extends Command {
 	{
 		return CommandType.LEAVE_GAME;
 	}
-
 }
