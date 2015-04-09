@@ -4,6 +4,10 @@ import Game = require('./game');
 class MapView extends View<Game> {
 	template = <Function>require('../hbs/map-view.hbs');
 
+	get className() {
+		return 'map';
+	}
+
 	render() {
 		super.render();
 		this.updateMapState();
