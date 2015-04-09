@@ -2,17 +2,23 @@ import Model = require('./model');
 import Collection = require('./collection');
 import Player = require('./player');
 import Messages = require('./messages');
+import Map = require('./map');
+
+var defaultMapJson = require('../../default-map.json');
 
 var HOST : string = 'ws://localhost:7574';
 
 class Game extends Model {
 	private socket : WebSocket;
 
-	public playerList : Collection<Player>;
+	playerList : Collection<Player>;
+	map : Map;
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new Collection<Player>();
+		this.map = new Map();
+		this.map.fromJSON(defaultMapJson);
 	}
 
 	connect(host : string, port : number) : Promise<Messages.Message> {
