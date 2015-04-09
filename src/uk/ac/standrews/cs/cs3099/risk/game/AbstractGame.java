@@ -9,7 +9,7 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 public abstract class AbstractGame {
-	private GameState gameState;
+	protected GameState gameState;
 	private int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
@@ -182,4 +182,6 @@ public abstract class AbstractGame {
 	{
 
 	}
+
+
 }
