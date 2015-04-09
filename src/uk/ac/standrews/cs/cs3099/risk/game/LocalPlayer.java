@@ -19,7 +19,6 @@ public class LocalPlayer extends Player {
 	{
 		super(id, name);
 	}
-	public GameState gameState;
 
 	public void initialiseGameState(ArrayList<Integer> players)
 	{
