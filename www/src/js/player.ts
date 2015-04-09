@@ -10,11 +10,11 @@ var colours = [
 ];
 
 class Player extends Model {
-	constructor(options?) {
-		super(options);
-
-		this.defaults = <any>{
-			isActive: false
+	get defaults() : any {
+		return {
+			isActive: false,
+			armies: 0,
+			territories: 0
 		};
 	}
 
@@ -40,6 +40,22 @@ class Player extends Model {
 
 	getColour() : string {
 		return colours[this.playerId];
+	}
+
+	setArmies(armies: number) : void {
+		this.set('armies', armies);
+	}
+
+	getArmies() : number {
+		return this.get('armies');
+	}
+
+	setTerritories(territories : number) {
+		this.set('territories', territories);
+	}
+
+	getTerritories() : number {
+		return this.get('territories');
 	}
 }
 
