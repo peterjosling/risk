@@ -26,7 +26,6 @@ public class LocalPlayer extends Player {
 		gameState = new GameState(players);
 	}
 	
-	// Validation to be added within getCommand.
 	@Override
 	public Command getCommand(CommandType type) {
 		switch (type) {
@@ -77,8 +76,13 @@ public class LocalPlayer extends Player {
 	{
 		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
 		int territoryID = EasyIn.getInt();
-		
-		return new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
+		AssignArmyCommand command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
+		if(gameState.isCommandValid(command)){
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getAssignArmyCommand();
+		}
 	}
 
 	public Command getAttackCommand()
@@ -89,7 +93,13 @@ public class LocalPlayer extends Player {
 		int destinationID = EasyIn.getInt();
 		System.out.println("Enter number of armies to attack with:");
 		int armies = EasyIn.getInt();
-		return new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getAttackCommand();	
+		}
 	}
 
 	public Command getFortifyCommand()
@@ -101,7 +111,13 @@ public class LocalPlayer extends Player {
 		System.out.println("Enter number of armies to fortify with:");
 		int armies = EasyIn.getInt();
 		int[] details = {sourceID, destinationID, armies};
-		return new FortifyCommand(this.getId(), lastAckid++, details);
+		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++, details);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getFortifyCommand();	
+		}
 	}
 
 	public Command getDeployCommand()
@@ -118,19 +134,37 @@ public class LocalPlayer extends Player {
 			armies = EasyIn.getInt();
 			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 		}
-		return new DeployCommand(this.getId(), lastAckid++, deployments);
+		DeployCommand command = new DeployCommand(this.getId(), lastAckid++, deployments);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getDeployCommand();	
+		}
 	}
 
 	public Command getDrawCardCommand()
 	{
-		return new DrawCardCommand(this.getId(), lastAckid++);
+		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getDrawCardCommand();	
+		}	
 	}
 
 	public Command getDefendCommand()
 	{
 		System.out.println("Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
-		return new DefendCommand(this.getId(), lastAckid++, attackDestId, armies);
+		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, attackDestId, armies);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getDefendCommand();	
+		}		
 	}
 
 	public Command getJoinGameCommand()
@@ -167,7 +201,13 @@ public class LocalPlayer extends Player {
 	{
 		int armies = EasyIn.getInt();
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
-		return new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getAttackCaptureCommand();	
+		}		
 	}
 
 	public Command getLeaveGameCommand()
@@ -212,7 +252,13 @@ public class LocalPlayer extends Player {
 				}
 			}
 		}
-		return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getPlayCardsCommand();	
+		}		
 	}
 
 	public Command getRollNumberCommand()
