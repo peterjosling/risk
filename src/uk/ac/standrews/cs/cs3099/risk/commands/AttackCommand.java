@@ -2,16 +2,15 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 
 public class AttackCommand extends Command {
-	private int source;
-	private int dest;
-	private int armies;
+	private String command = "attack";
+	private int[] payload = new int[3];
 
 	public AttackCommand(int playerId, int ackId, int source, int dest, int armies)
 	{
 		super(playerId, ackId);
-		this.source = source;
-		this.dest = dest;
-		this.armies = armies;
+		payload[0] = source;
+		payload[1] = dest;
+		payload[2] = armies;
 	}
 
 	/**
@@ -19,7 +18,7 @@ public class AttackCommand extends Command {
 	 */
 	public int getSource()
 	{
-		return source;
+		return payload[0];
 	}
 
 	/**
@@ -27,7 +26,7 @@ public class AttackCommand extends Command {
 	 */
 	public int getDest()
 	{
-		return dest;
+		return payload[1];
 	}
 
 	/**
@@ -35,7 +34,7 @@ public class AttackCommand extends Command {
 	 */
 	public int getArmies()
 	{
-		return armies;
+		return payload[3];
 	}
 
 	@Override

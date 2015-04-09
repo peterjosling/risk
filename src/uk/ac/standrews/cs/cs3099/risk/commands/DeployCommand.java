@@ -1,17 +1,18 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class DeployCommand extends Command {
-	private Deployment[] deployments;
+	private String command = "deploy";
+	private Deployment[] payload;
 
 	public DeployCommand(int playerId, int ackId, Deployment[] deployments)
 	{
 		super(playerId, ackId);
-		this.deployments = deployments;
+		payload = deployments;
 	}
 
 	public Deployment[] getDeployments()
 	{
-		return deployments;
+		return payload;
 	}
 
 	@Override

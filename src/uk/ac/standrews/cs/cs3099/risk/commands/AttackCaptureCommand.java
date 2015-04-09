@@ -2,17 +2,19 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 
 public class AttackCaptureCommand extends Command {
-	private int[] captureDetails = new int[3];
+
+	private String command = "attack_capture";
+	public int[] payload = new int[3];
 
 	public AttackCaptureCommand(int playerId, int ackId, int[] captureDetails) 
 	{
 		super(playerId, ackId);
-		this.captureDetails = captureDetails;
+		this.payload = captureDetails;
 	}
 
 	public int[] getCaptureDetails()
 	{
-		return captureDetails;
+		return payload;
 	}
 	
 	@Override

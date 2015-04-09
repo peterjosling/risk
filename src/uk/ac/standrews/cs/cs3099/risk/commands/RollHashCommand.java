@@ -1,8 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class RollHashCommand extends Command {
-
-	String hash;
+	private String command = "roll_hash";
+	String payload;
 
 	public RollHashCommand(int playerId, int ackId) {
 		super(playerId, ackId);
@@ -10,7 +10,7 @@ public class RollHashCommand extends Command {
 
 	public RollHashCommand(int playerId, int ackId, String hash) {
 		this(playerId, ackId);
-		this.hash = hash;
+		this.payload = hash;
 	}
 
 	@Override
@@ -19,6 +19,6 @@ public class RollHashCommand extends Command {
 	}
 
 	public String getHash() {
-		return hash;
+		return payload;
 	}
 }

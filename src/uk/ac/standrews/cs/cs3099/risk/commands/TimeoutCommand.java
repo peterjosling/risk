@@ -2,12 +2,13 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 
 public class TimeoutCommand extends Command {
-	private int timeoutId;
+	private String command = "timeout";
+	private int payload;
 
 	public TimeoutCommand(int playerId, int ackId, int timeoutId) 
 	{
 		super(playerId, ackId);
-		this.timeoutId = timeoutId;
+		this.payload = timeoutId;
 	}
 
 	/**
@@ -15,7 +16,7 @@ public class TimeoutCommand extends Command {
 	 */
 	public int getTimeoutId()
 	{
-		return timeoutId;
+		return payload;
 	}
 	
 	@Override

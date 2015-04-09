@@ -2,8 +2,6 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
@@ -140,7 +138,6 @@ public class GameState {
 				playCommand((RollNumberCommand) command);
 			case ROLL_HASH:
 				playCommand((RollHashCommand) command);
-
 		}
 	}
 

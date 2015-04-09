@@ -1,8 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class RollNumberCommand extends Command {
-
-	String rollNumberHex;
+	private String command = "roll_number";
+	String payload;
 
 	public RollNumberCommand(int playerId, int ackId) {
 		super(playerId, ackId);
@@ -10,11 +10,11 @@ public class RollNumberCommand extends Command {
 
 	public RollNumberCommand(int playerId, int ackId, String rollNumberHex) {
 		this(playerId, ackId);
-		this.rollNumberHex = rollNumberHex;
+		this.payload = rollNumberHex;
 	}
 
 	public String getRollNumberHex() {
-		return rollNumberHex;
+		return payload;
 	}
 
 	@Override
