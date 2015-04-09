@@ -49,6 +49,10 @@ class Game extends Model {
 		});
 	}
 
+	showToast(message : string) {
+		this.trigger('toast', message);
+	}
+
 	private messageReceived(event : MessageEvent) {
 		var message : Messages.Message = JSON.parse(event.data);
 
