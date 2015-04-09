@@ -27,7 +27,7 @@ public class ConnectionManager {
 		this.isServer = true;
 		ServerSocket socket = new ServerSocket(port);
 		HostServer hostServer = new HostServer(this, socket);
-		hostServer.run();
+		new Thread(hostServer).start();
 	}
 
 	/**
