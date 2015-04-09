@@ -4,7 +4,7 @@ public class DefendCommand extends Command{
 	private String command = "defend";
 	private int payload;
 	
-	public DefendCommand(int playerId, int ackId, int territory, int armies)
+	public DefendCommand(int playerId, int ackId, int armies)
 	{
 		super(playerId, ackId);
 		payload = armies;

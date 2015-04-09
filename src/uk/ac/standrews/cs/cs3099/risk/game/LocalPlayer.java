@@ -160,13 +160,13 @@ public class LocalPlayer extends Player {
 		// Validate...
 		System.out.println("Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
-		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, attackDestId, armies);
+		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, armies);
 		if(gameState.isCommandValid(command)) {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
 			return getDefendCommand();	
-		}		
+		}
 	}
 
 	public Command getJoinGameCommand()
@@ -371,7 +371,7 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(DefendCommand command)
 	{
-		String name = gameState.getMap().findTerritoryById(command.getTerritory()).getName();
+		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
 		System.out.println("Player " + command.getPlayerId() + " is defending " + name + " with " + command.getArmies() + " armies");
 		gameState.playCommand(command);
 	}

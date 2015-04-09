@@ -470,14 +470,15 @@ public class GameState {
 
 	public boolean isCommandValid(DefendCommand command)
 	{
-		int playerId = command.getPlayerId();
-
-		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
-		if(defendTerritory.getOwner() != playerId) return false;
-
-		if ((defendTerritory.getArmies() < command.getArmies())
-				|| (command.getArmies() > 2))
-			return false;
+		//TODO work out how to check this command without territory id
+//		int playerId = command.getPlayerId();
+//
+//		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
+//		if(defendTerritory.getOwner() != playerId) return false;
+//
+//		if ((defendTerritory.getArmies() < command.getArmies())
+//				|| (command.getArmies() > 2))
+//			return false;
 
 		return true;
 	}
