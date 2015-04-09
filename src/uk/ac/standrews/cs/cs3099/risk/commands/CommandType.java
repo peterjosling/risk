@@ -5,7 +5,6 @@ public enum CommandType {
 	SERVER_START,
 	ATTACK,
 	FORTIFY,
-	TRADE_IN_CARDS,
 	DEPLOY,
 	DRAW_CARD,
 	ASSIGN_ARMY,
