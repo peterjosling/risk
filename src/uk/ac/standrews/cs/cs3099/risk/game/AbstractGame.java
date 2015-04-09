@@ -95,7 +95,7 @@ public abstract class AbstractGame {
 			notifyPlayers(rollNumber);
 		}
 		
-		if(gameState.getAttackSuccessful()){
+		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
 		}

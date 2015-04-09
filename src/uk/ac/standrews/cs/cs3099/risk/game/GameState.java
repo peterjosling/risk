@@ -543,7 +543,7 @@ public class GameState {
 		return true;
 	}
 	
-	public boolean getAttackSuccessful()
+	public boolean getLastAttackSuccessful()
 	{
 		return lastAttackSuccessful;
 	}

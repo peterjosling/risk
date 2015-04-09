@@ -38,20 +38,4 @@ public class LocalGame extends AbstractGame {
 			}
 		}
 	}
-
-	private void playCards(Player player) {
-	}
-
-	private void drawCard(Player player) {
-	}
-
-	private void fortify(Player player) {
-	}
-
-	private void attack(Player player) {
-	}
-
-	private void deploy(Player player) {
-
-	}
 }
