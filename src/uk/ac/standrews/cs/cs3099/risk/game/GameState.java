@@ -23,6 +23,7 @@ public class GameState {
 	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
 	private ArrayList[] playerCards;
+	private boolean inAttackPhase = false;
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private ArrayList<Integer> playerIDs;
 	private final int[] TRADE_IN_VALUES = new int[6];
@@ -166,6 +167,7 @@ public class GameState {
 	}
 
 	public void playCommand(AttackCommand command){
+		inAttackPhase = true;
 		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
 			ArrayList<String> rollHashes = new ArrayList<String>();
 			ArrayList<String> rollNumbers = new ArrayList<String>();
@@ -197,6 +199,7 @@ public class GameState {
 				remainingArmies = numberOfAttackingDice-result[0];
 			}
 			attackPhaseCommands.clear();
+			inAttackPhase = false;
 		}
 	}
 
@@ -238,15 +241,21 @@ public class GameState {
 	}
 
 	public void playCommand(DefendCommand command){
-		attackPhaseCommands.add(command);
+		if(inAttackPhase) {
+			attackPhaseCommands.add(command);
+		}
 	}
 
 	public void playCommand(RollHashCommand command){
-		attackPhaseCommands.add(command);
+		if(inAttackPhase) {
+			attackPhaseCommands.add(command);
+		}
 	}
 
 	public void playCommand(RollNumberCommand command){
-		attackPhaseCommands.add(command);
+		if(inAttackPhase) {
+			attackPhaseCommands.add(command);
+		}
 	}
 
 	public void playCommand(AttackCaptureCommand command){
