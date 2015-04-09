@@ -8,6 +8,12 @@ class PlayerListItemView extends View<Player> {
 		super(options);
 		this.listenTo(this.model, 'change', this.render);
 	}
+
+	getRenderData() {
+		var data = this.model.toJSON();
+		data.colour = this.model.getColour();
+		return data;
+	}
 }
 
 export = PlayerListItemView
