@@ -133,17 +133,23 @@ class Game extends Model {
 
 	private setupMessageReceived(message : Messages.SetupMessage) {
 		var player = this.playerList.get(message.player_id);
+		var territory = this.map.territories.get(message.payload);
+
+		// Tell the user what happened.
+		var toast = player.name + ' claimed ' + territory.getName();
+
+		if (territory.getOwner()) {
+			toast = player.name + ' reinforced ' + territory.getName();
+		}
+
+		this.showToast(toast);
 
 		// Increase army count on player.
 		player.setArmies(player.getArmies() + 1);
 
-		// Claim the specified territory.
-		var territory = this.map.territories.get(message.payload);
+		// Claim/reinforce the specified territory.
 		territory.setOwner(player);
-		territory.setArmies(1);
-
-		// Tell the user what happened.
-		this.showToast(player.name + ' claimed ' + territory.getName());
+		territory.addArmies(1);
 
 		// Trigger change to update the map view.
 		this.trigger('change:map');

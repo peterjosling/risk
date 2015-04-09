@@ -39,6 +39,10 @@ class Territory extends Model {
 		this.armies = armies;
 	}
 
+	addArmies(armies : number) {
+		this.armies += armies;
+	}
+
 	getArmies() : number {
 		return this.armies;
 	}
