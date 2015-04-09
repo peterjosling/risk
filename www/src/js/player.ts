@@ -1,5 +1,14 @@
 import Model = require('./model');
 
+var colours = [
+	'#FF2B2B',
+	'#2BE0FF',
+	'#F6FF2B',
+	'#B4EC51',
+	'#F5A623',
+	'#53A0FD'
+];
+
 class Player extends Model {
 	constructor(options?) {
 		super(options);
@@ -27,6 +36,10 @@ class Player extends Model {
 
 	set isActive(isActive : boolean) {
 		super.set('isActive', isActive);
+	}
+
+	getColour() : string {
+		return colours[this.playerId];
 	}
 }
 
