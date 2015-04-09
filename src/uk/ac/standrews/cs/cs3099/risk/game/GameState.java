@@ -166,37 +166,38 @@ public class GameState {
 	}
 
 	public void playCommand(AttackCommand command){
-		while(!(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2))); // I don't think this will work
-		ArrayList<String> rollHashes = new ArrayList<String>();
-		ArrayList<String> rollNumbers = new ArrayList<String>();
-		int dieFaces = 6;
-		int numberOfAttackingDice = command.getArmies();
-		int numberOfDefendingDice = 0;
-		for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
-			Command phaseCommand = attackPhaseCommands.get(commandIndex);
-			if(phaseCommand.getType() == CommandType.DEFEND){
-				numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
+			ArrayList<String> rollHashes = new ArrayList<String>();
+			ArrayList<String> rollNumbers = new ArrayList<String>();
+			int dieFaces = 6;
+			int numberOfAttackingDice = command.getArmies();
+			int numberOfDefendingDice = 0;
+			for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
+				Command phaseCommand = attackPhaseCommands.get(commandIndex);
+				if(phaseCommand.getType() == CommandType.DEFEND){
+					numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+				}
+				if(phaseCommand.getType() == CommandType.ROLL_HASH){
+					String hash = ((RollHashCommand) phaseCommand).getHash();
+					rollHashes.add(hash);
+				}
+				if(phaseCommand.getType() == CommandType.ROLL_NUMBER){
+					String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
+					rollNumbers.add(rollNumberHash);
+				}
 			}
-			if(phaseCommand.getType() == CommandType.ROLL_HASH){
-				String hash = ((RollHashCommand) phaseCommand).getHash();
-				rollHashes.add(hash);
+			Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
+			int[] resultingRolls = die.rollDice();
+			int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
+			//apply result to board
+			removeArmiesForTerritory(command.getSource(), result[0]);
+			removeArmiesForTerritory(command.getDest(), result[1]);
+			if(map.findTerritoryById(command.getDest()).getArmies() == 0){
+				attackSuccessful = true;
+				remainingArmies = numberOfAttackingDice-result[0];
 			}
-			if(phaseCommand.getType() == CommandType.ROLL_NUMBER){
-				String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
-				rollNumbers.add(rollNumberHash);
-			}
+			attackPhaseCommands.clear();
 		}
-		Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
-		int[] resultingRolls = die.rollDice();
-		int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
-		//apply result to board
-		removeArmiesForTerritory(command.getSource(), result[0]);
-		removeArmiesForTerritory(command.getDest(), result[1]);
-		if(map.findTerritoryById(command.getDest()).getArmies() == 0){
-			attackSuccessful = true;
-			remainingArmies = numberOfAttackingDice-result[0];
-		}
-		attackPhaseCommands.clear();
 	}
 
 	/**
