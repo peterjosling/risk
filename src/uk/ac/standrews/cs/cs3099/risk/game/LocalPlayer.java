@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
+import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,6 +157,7 @@ public class LocalPlayer extends Player {
 
 	public Command getDefendCommand()
 	{
+		// Validate...
 		System.out.println("Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
 		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, attackDestId, armies);
@@ -325,8 +327,12 @@ public class LocalPlayer extends Player {
 		}
 	}
 	
+	//VALIDATE ALL
+	
 	public void notifyCommand(AssignArmyCommand command)
 	{
+		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
+		System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
 		gameState.playCommand(command);
 	}
 	
@@ -334,76 +340,83 @@ public class LocalPlayer extends Player {
 	{
 		this.attackSourceId = command.getSource();
 		this.attackDestId = command.getDest();
+		String destName = gameState.getMap().findTerritoryById(command.getDest()).getName();
+		String srcName = gameState.getMap().findTerritoryById(command.getSource()).getName();
+		System.out.println("Player " + command.getPlayerId() + " is attacking " + destName + " from " + srcName + " with " + command.getArmies() + " armies.");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(FortifyCommand command)
 	{
+		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
+		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
+		int armies = command.getFortifyDetails()[2];
+		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DeployCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
+		for (Deployment deployment : command.getDeployments()){
+			String name = gameState.getMap().findTerritoryById(deployment.getTerritoryId()).getName();
+			System.out.println(deployment.getArmies() + " armies to " + name);
+		}
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DrawCardCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(DefendCommand command)
 	{
+		String name = gameState.getMap().findTerritoryById(command.getTerritory()).getName();
+		System.out.println("Player " + command.getPlayerId() + " is defending " + name + " with " + command.getArmies() + " armies");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(AttackCaptureCommand command)
 	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(AcknowledgementCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(InitialiseGameCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(PlayersJoinedCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(ReadyCommand command)
-	{
+		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
+		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(TimeoutCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " timed out.");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(LeaveGameCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " left the game.");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
+		int set = 1;
+		for(Card[] cardSet : command.getCards()){
+			System.out.println("Set " + set + ": " + cardSet[0].getCardType() + ", " + cardSet[1].getCardType() + " and " + cardSet[2].getCardType());
+			set++;
+		}
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RollNumberCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(RollHashCommand command)
 	{
+		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		gameState.playCommand(command);
 	}
 

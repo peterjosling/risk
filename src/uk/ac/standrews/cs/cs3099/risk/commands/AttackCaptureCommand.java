@@ -2,7 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 
 
 public class AttackCaptureCommand extends Command {
-	public int[] captureDetails = new int[3];
+	private int[] captureDetails = new int[3];
 
 	public AttackCaptureCommand(int playerId, int ackId, int[] captureDetails) 
 	{

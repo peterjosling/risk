@@ -8,7 +8,7 @@ import java.util.HashSet;
  * Each little piece of land has these properties
  */
 public class Territory {
-
+	private String name;
 	private int id;
 	private Continent continent;
 	private Set<Territory> links;
@@ -36,6 +36,16 @@ public class Territory {
 		return armies;
 	}
 
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+	
 	public void setArmies(int armies)
 	{
 		this.armies = armies;
