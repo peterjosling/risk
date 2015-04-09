@@ -12,14 +12,26 @@ class MapView extends View<Game> {
 
 	updateMapState() {
 		this.model.map.territories.forEach(function(territory) {
+			// Set fill colour to match owning player.
 			var owner = territory.getOwner();
 			var colour = '#FFFFFF';
+			var $territory = this.$('[data-territory-id' + territory.id + ']');
 
 			if (owner) {
 				colour = owner.getColour();
 			}
 
-			this.$('[data-territory-id' + territory.id + ']').attr('fill', colour);
+			$territory.attr('fill', colour);
+
+			// Show number of armies.
+			var armies = territory.getArmies();
+			var armiesText = '<text x="50%" y="50%">' + armies + '</text>';
+
+			if (armies === 0) {
+				armiesText = '';
+			}
+
+			$territory.html(armiesText);
 		}, this);
 	}
 }
