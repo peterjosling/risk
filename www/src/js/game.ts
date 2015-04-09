@@ -76,6 +76,10 @@ class Game extends Model {
 			case 'initialise_game':
 				this.initialiseGameMessageReceived(<Messages.InitialiseGameMessage>message);
 				break;
+
+			case 'setup':
+				this.setupMessageReceived(<Messages.SetupMessage>message);
+				break;
 		}
 	}
 
@@ -125,6 +129,24 @@ class Game extends Model {
 		});
 
 		this.trigger('gameStart');
+	}
+
+	private setupMessageReceived(message : Messages.SetupMessage) {
+		var player = this.playerList.get(message.player_id);
+
+		// Increase army count on player.
+		player.setArmies(player.getArmies() + 1);
+
+		// Claim the specified territory.
+		var territory = this.map.territories.get(message.payload);
+		territory.setOwner(player);
+		territory.setArmies(1);
+
+		// Tell the user what happened.
+		this.showToast(player.name + ' claimed ' + territory.getName());
+
+		// Trigger change to update the map view.
+		this.trigger('change:map');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {

@@ -8,6 +8,10 @@ class MapView extends View<Game> {
 		return 'map';
 	}
 
+	initialize() {
+		this.listenTo(this.model, 'change:map', this.updateMapState);
+	}
+
 	render() {
 		super.render();
 		this.updateMapState();
