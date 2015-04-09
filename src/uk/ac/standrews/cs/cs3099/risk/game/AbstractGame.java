@@ -11,7 +11,7 @@ public abstract class AbstractGame {
 	private GameState gameState;
 	private int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
-	private int currentTurn = 0;
+	private int currentTurn = -1;
 
 	public AbstractGame(int armiesPerPlayer)
 	{
@@ -44,7 +44,7 @@ public abstract class AbstractGame {
 		int totalArmies = armiesPerPlayer * players.size();
 
 		for (int i = 0; i < totalArmies; i++) {
-			Player player = getCurrentTurnPlayer();
+			Player player = nextTurn();
 			Command command = null;
 
 			command = player.getCommand(CommandType.ASSIGN_ARMY);
@@ -53,9 +53,13 @@ public abstract class AbstractGame {
 				terminate();
 				return;
 			}
+			notifyPlayers(command);
+		}
+	}
 
-			// gameState.checkCommand(command, playerId);
-			// gameState.playCommand(command, playerId);
+	public void notifyPlayers(Command command){
+		for(Player player: players){
+			player.notifyCommand(command);
 		}
 	}
 
