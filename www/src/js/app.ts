@@ -35,6 +35,7 @@ class App extends View<Model> {
 
 	// Joined an existing game (or created one). Go to the lobby view.
 	gameConnected() : void {
+		this.game.showToast('Connected to host');
 		var view = new LobbyView({model: this.game});
 		view.listenTo(this.game, 'gameStart', this.gameStart.bind(this));
 		app.setView(view);
@@ -42,6 +43,7 @@ class App extends View<Model> {
 
 	// Game started. Go to main game view.
 	gameStart() : void {
+		this.game.showToast('Game starting');
 		var view = new GameView({model: this.game});
 		app.setView(view);
 	}

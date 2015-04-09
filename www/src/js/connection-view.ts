@@ -18,8 +18,11 @@ class ConnectionView extends View<Game> {
 		var hostname : string = this.$('#connection-host').val(),
 			port : number = this.$('#connection-port').val();
 
+		this.model.showToast('Connecting...')
+
 		this.model.connect(hostname, port).catch(() => {
-			alert('Failed to connect');
+			this.model.showToast('Failed to connect to server.');
+			// TODO give reason.
 		});
 
 		// TODO show loading indicator.
