@@ -21,6 +21,11 @@ public class LocalPlayer extends Player {
 		super(id, name);
 	}
 
+	public void initialiseGameState(ArrayList<Integer> players)
+	{
+		gameState = new GameState(players);
+	}
+	
 	// Validation to be added within getCommand.
 	@Override
 	public Command getCommand(CommandType type)
@@ -69,6 +74,7 @@ public class LocalPlayer extends Player {
 	{
 		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
 		int territoryID = EasyIn.getInt();
+		
 		return new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
 	}
 
@@ -246,18 +252,8 @@ public class LocalPlayer extends Player {
 			notifyCommand((DefendCommand) command);
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
-		case JOIN_GAME:
-			notifyCommand((JoinGameCommand) command);
-		case ACCEPT_JOIN_GAME:
-			notifyCommand((AcceptJoinGameCommand) command);
-		case REJECT_JOIN_GAME:
-			notifyCommand((RejectJoinGameCommand) command);
-		case ACKNOWLEDGEMENT:
-			notifyCommand((AcknowledgementCommand) command);
 		case INITIALISE_GAME:
 			notifyCommand((InitialiseGameCommand) command);
-		case PING:
-			notifyCommand((PingCommand) command);
 		case PLAYERS_JOINED:
 			notifyCommand((PlayersJoinedCommand) command);
 		case READY:
@@ -270,8 +266,6 @@ public class LocalPlayer extends Player {
 			notifyCommand((PlayCardsCommand) command);
 		case ROLL_NUMBER:
 			notifyCommand((RollNumberCommand) command);
-		case ROLL:
-			notifyCommand((RollCommand) command);
 		case ROLL_HASH:
 			notifyCommand((RollHashCommand) command);
 		default:
@@ -316,32 +310,12 @@ public class LocalPlayer extends Player {
 		gameState.playCommand(command);
 	}
 	
-	public void notifyCommand(JoinGameCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(AcceptJoinGameCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(RejectJoinGameCommand command)
-	{		
-		gameState.playCommand(command);
-	}
-	
 	public void notifyCommand(AcknowledgementCommand command)
 	{
 		gameState.playCommand(command);
 	}
 	
 	public void notifyCommand(InitialiseGameCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(PingCommand command)
 	{
 		gameState.playCommand(command);
 	}
@@ -372,11 +346,6 @@ public class LocalPlayer extends Player {
 	}
 	
 	public void notifyCommand(RollNumberCommand command)
-	{
-		gameState.playCommand(command);
-	}
-	
-	public void notifyCommand(RollCommand command)
 	{
 		gameState.playCommand(command);
 	}

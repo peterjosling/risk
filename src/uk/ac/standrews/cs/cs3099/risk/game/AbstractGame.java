@@ -83,6 +83,11 @@ public abstract class AbstractGame {
 		return getCurrentTurnPlayer();
 	}
 
+	public List<Player> getPlayers()
+	{
+		return players;
+	}
+	
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */
