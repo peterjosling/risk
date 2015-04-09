@@ -3,7 +3,8 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
 import uk.ac.standrews.cs.cs3099.risk.game.Card;
 
 public class PlayCardsCommand extends Command {
-	private Card[][] cards;
+	private String command = "play_cards";
+	private Card[][] payload;
 
 	public PlayCardsCommand(int playerId, int ackId)
 	{
@@ -13,7 +14,7 @@ public class PlayCardsCommand extends Command {
 	public PlayCardsCommand(int playerId, int ackId, Card[][] cards)
 	{
 		this(playerId, ackId);
-		this.cards = cards;
+		this.payload = cards;
 	}
 
 	/**
@@ -21,7 +22,7 @@ public class PlayCardsCommand extends Command {
 	 */
 	public Card[][] getCards()
 	{
-		return cards;
+		return payload;
 	}
 
 	@Override

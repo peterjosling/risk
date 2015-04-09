@@ -1,30 +1,35 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class LeaveGameCommand extends Command {
-	private int response;
-	private boolean receiveUpdates;
+	private String command = "leave_game";
+	private LeaveGamePayload payload = new LeaveGamePayload();
 
 	public LeaveGameCommand(int playerId, int ackId, int response,
 			boolean receiveUpdates) 
 	{
 		super(playerId, ackId);
-		this.response = response;
-		this.receiveUpdates = receiveUpdates;
+		payload.response = response;
+		payload.receiveUpdates = receiveUpdates;
 	}
 
 	public int getResponse() 
 	{
-		return response;
+		return payload.response;
 	}
 
 	public boolean isReceiveUpdates() 
 	{
-		return receiveUpdates;
+		return payload.receiveUpdates;
 	}
 
 	@Override
 	public CommandType getType() 
 	{
 		return CommandType.LEAVE_GAME;
+	}
+
+	private class LeaveGamePayload {
+		int response;
+		boolean receiveUpdates;
 	}
 }

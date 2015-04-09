@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class DrawCardCommand extends Command {
+	private String command = "draw_card";
 	
 	public DrawCardCommand(int playerId, int ackId)
 	{

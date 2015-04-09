@@ -4,6 +4,7 @@ package uk.ac.standrews.cs.cs3099.risk.commands;
  * Move to represent the server_connect command. Used only for the internal frontend server.
  */
 public class ServerConnectCommand extends Command {
+	private String command = "server_connect";
 	private ServerConnectPayload payload;
 
 	public ServerConnectCommand(int playerId)

@@ -19,4 +19,8 @@ public class LocalGame extends AbstractGame {
 
 		this.loadMap(jsonMap);
 	}
+
+	public void run(){
+		assignTerritories();
+	}
 }

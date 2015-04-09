@@ -1,8 +1,10 @@
 package uk.ac.standrews.cs.cs3099.risk.commands;
 
 public class FortifyCommand extends Command {
+
+	private String command = "fortify";
 	// Source, Destination, Armies
-	private int[] fortifyDetails = new int[3];
+	private int[] payload = new int[3];
 
 	public FortifyCommand(int playerId, int ackId)
 	{
@@ -12,7 +14,7 @@ public class FortifyCommand extends Command {
 	public FortifyCommand(int playerId, int ackId, int[] fortifyDetails)
 	{
 		this(playerId, ackId);
-		this.fortifyDetails = fortifyDetails;
+		this.payload = fortifyDetails;
 	}
 
 	/**
@@ -20,7 +22,7 @@ public class FortifyCommand extends Command {
 	 */
 	public int[] getFortifyDetails()
 	{
-		return fortifyDetails;
+		return payload;
 	}
 
 	@Override
