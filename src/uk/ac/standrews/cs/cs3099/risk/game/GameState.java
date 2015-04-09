@@ -26,6 +26,7 @@ public class GameState {
 	private ArrayList<Integer> playerIDs;
 	private final int[] TRADE_IN_VALUES = new int[6];
 	private boolean attackSuccessful = false;
+	private boolean lastAttackSuccessful = false;
 	private int remainingArmies = 0;
 
 	private final int DECK_SIZE = 44;
@@ -164,6 +165,7 @@ public class GameState {
 	}
 
 	public void playCommand(AttackCommand command){
+		lastAttackSuccessful = false;
 		inAttackPhase = true;
 		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
 			ArrayList<String> rollHashes = new ArrayList<String>();
@@ -193,6 +195,7 @@ public class GameState {
 			removeArmiesForTerritory(command.getDest(), result[1]);
 			if(map.findTerritoryById(command.getDest()).getArmies() == 0){
 				attackSuccessful = true;
+				lastAttackSuccessful = true;
 				remainingArmies = numberOfAttackingDice-result[0];
 			}
 			attackPhaseCommands.clear();
@@ -534,12 +537,19 @@ public class GameState {
 		return false;
 	}
 
-	public boolean isCommandValid(RollNumberCommand command){
+	public boolean isCommandValid(RollNumberCommand command)
+	{
 		// Compare with previous RollHash
 		return true;
 	}
 	
-	public void setAttackSuccessful(boolean attackSuccessful) {
+	public boolean getAttackSuccessful()
+	{
+		return lastAttackSuccessful;
+	}
+	
+	public void setAttackSuccessful(boolean attackSuccessful) 
+	{
 		this.attackSuccessful = attackSuccessful;
 	}
 }

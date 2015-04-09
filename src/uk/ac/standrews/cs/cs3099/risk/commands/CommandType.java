@@ -18,7 +18,6 @@ public enum CommandType {
 	LEAVE_GAME,
 	ROLL_NUMBER, 
 	ROLL_HASH, 
-	ROLL, 
 	PLAY_CARDS,
 	PING,
 	READY,
