@@ -542,5 +542,9 @@ public class GameState {
 	public void setAttackSuccessful(boolean attackSuccessful) {
 		this.attackSuccessful = attackSuccessful;
 	}
+
+	public boolean getAttackSuccessful(){
+		return attackSuccessful;
+	}
 }
 
