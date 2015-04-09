@@ -19,7 +19,7 @@ class GameView extends View<Game> {
 				el: '#player-list'
 			},
 			{
-				view: new MapView(),
+				view: new MapView({model: this.model}),
 				el: '#map'
 			}
 		];

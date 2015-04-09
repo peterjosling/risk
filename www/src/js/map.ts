@@ -14,16 +14,17 @@ class Map extends Model {
 
 	fromJSON(json) {
 		// Create continent/territories structure.
-		_.forEach(json.continents, function(val : Array<string>, key) {
-			var continent = new Continent({id: +key});
+		for (var i in json.continents) {
+			var id = +i;
+			var continent = new Continent({id: id});
 			this.continents.add(continent);
 
-			val.forEach(function(territoryId) {
+			json.continents[i].forEach(function(territoryId) {
 				var territory = new Territory({id: +territoryId});
 				continent.territories.add(territory);
 				this.territories.add(territory);
 			}, this);
-		}, this);
+		}
 
 		// Set connections between each territory.
 		json.connections.forEach(function(connection) {
@@ -35,28 +36,28 @@ class Map extends Model {
 		}, this);
 
 		// Set continent values.
-		json.continent_values.forEach(function(val, key) {
-			var continent = this.continents.get(+key);
-			continent.setValue(val);
-		}, this);
+		for (var i in json.continent_values) {
+			var continent = this.continents.get(+i);
+			continent.setValue(json.continent_values[i]);
+		}
 
 		// Set territory names.
-		json.country_names.forEach(function(val, key) {
-			var territory = this.territories.get(+key);
-			territory.setName(val);
-		}, this);
+		for (var i in json.country_names) {
+			var territory = this.territories.get(+i);
+			territory.setName(json.country_names[i]);
+		}
 
 		// Set continent names.
-		json.continent_names.forEach(function(val, key) {
-			var continent = this.continents.get(+key);
-			continent.setName(val);
-		}, this);
+		for (var i in json.continent_names) {
+			var continent = this.continents.get(+i);
+			continent.setName(json.continent_names[i]);
+		}
 
 		// Set territory card types.
-		json.country_card.forEach(function(val, key) {
-			var territory = this.territories.get(+key);
-			territory.setCardType(val);
-		}, this);
+		for (var i in json.country_card) {
+			var territory = this.territories.get(+i);
+			territory.setCardType(json.country_card[i]);
+		}
 
 		// TODO do something with number of wildcards.
 	}
