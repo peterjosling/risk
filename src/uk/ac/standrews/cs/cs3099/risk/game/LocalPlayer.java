@@ -326,9 +326,7 @@ public class LocalPlayer extends Player {
 			notifyCommand((LeaveGameCommand) command);
 		}
 	}
-	
-	//VALIDATE ALL
-	
+		
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
