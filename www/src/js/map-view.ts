@@ -8,6 +8,12 @@ class MapView extends View<Game> {
 		return 'map';
 	}
 
+	get events() {
+		return {
+			'click .territory': 'territoryClick'
+		}
+	}
+
 	initialize() {
 		this.listenTo(this.model, 'change:map', this.updateMapState);
 	}
@@ -23,7 +29,7 @@ class MapView extends View<Game> {
 			// Set fill colour to match owning player.
 			var owner = territory.getOwner();
 			var colour = '#FFFFFF';
-			var $territory = this.$('[data-territory-id' + territory.id + ']');
+			var $territory = this.$('.territory[data-territory-id=' + territory.id + ']');
 
 			if (owner) {
 				colour = owner.getColour();
@@ -41,6 +47,11 @@ class MapView extends View<Game> {
 
 			$territory.html(armiesText);
 		}, this);
+	}
+
+	territoryClick(e : MouseEvent) {
+		var territoryId = this.$(e.currentTarget).data('territory-id');
+		this.trigger('territorySelect', +territoryId);
 	}
 }
 
