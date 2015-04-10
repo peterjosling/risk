@@ -1,12 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractGame {
 	protected GameState gameState;
@@ -136,7 +135,15 @@ public abstract class AbstractGame {
 		}
 		gameState.playCommand(command);
 	}
-	
+
+	/**
+	 * Get the index of the player whose turn it currently is.
+	 *
+	 * @return Index of the current player, relative to the list of players sorted by ascending ID.
+	 */
+	public int getCurrentTurn() {
+		return currentTurn;
+	}
 
 	/**
 	 * @return the {@link Player} instance whose turn it currently is.
