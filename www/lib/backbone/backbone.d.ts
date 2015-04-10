@@ -102,7 +102,7 @@ declare module Backbone {
         * For assigning an object hash, do it like this: this.defaults = <any>{ attribute: value, ... };
         * That works only if you set it in the constructor or the initialize method.
         **/
-        defaults(): any;
+        defaults: any;
         id: any;
         idAttribute: string;
         validationError: any;
@@ -336,7 +336,7 @@ declare module Backbone {
         * For assigning events as object hash, do it like this: this.events = <any>{ "event:selector": callback, ... };
         * That works only if you set it in the constructor or the initialize method.
         **/
-        events(): any;
+        events: any;
 
         $(selector: string): JQuery;
         model: TModel;

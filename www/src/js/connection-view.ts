@@ -4,14 +4,14 @@ import Game = require('./game');
 class ConnectionView extends View<Game> {
 	template = <Function>require('../hbs/connection-view.hbs');
 
-	constructor(options?) {
-		super(options);
-
-		this.events = <any>{
+	get events() : any {
+		return {
 			'click .connect-button': 'connectButtonClick'
 		};
+	}
 
-		this.delegateEvents();
+	constructor(options?) {
+		super(options);
 	}
 
 	connectButtonClick(e : Event) : boolean {
