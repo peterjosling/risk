@@ -54,6 +54,33 @@ class Game extends Model {
 		this.trigger('toast', message);
 	}
 
+	updateArmyCounts() : void {
+		// Initialise array of army/territory counts to 0.
+		var armyCounts = this.playerList.map(function(player) {
+			return 0;
+		});
+
+		var territoryCounts = armyCounts.slice(0);
+
+		// Sum up counts from every territory.
+		this.map.territories.forEach(function(territory) {
+			var player = territory.getOwner();
+
+			if (!player) {
+				return;
+			}
+
+			territoryCounts[player.id]++;
+			armyCounts[player.id] += territory.getArmies();
+		});
+
+		// Update counts on each player.
+		this.playerList.forEach(function(player) {
+			player.setArmies(armyCounts[player.id]);
+			player.setTerritories(territoryCounts[player.id]);
+		});
+	}
+
 	private messageReceived(event : MessageEvent) {
 		var message : Messages.Message = JSON.parse(event.data);
 
@@ -152,12 +179,11 @@ class Game extends Model {
 		var player = this.playerList.get(message.player_id);
 		var territory = this.map.territories.get(message.payload);
 
-		// Increase army count on player.
-		player.setArmies(player.getArmies() + 1);
-
 		// Claim/reinforce the specified territory.
 		territory.setOwner(player);
 		territory.addArmies(1);
+
+		this.updateArmyCounts();
 
 		// Trigger change to update the map view.
 		this.trigger('change:map');
