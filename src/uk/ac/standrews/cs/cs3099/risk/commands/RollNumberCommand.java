@@ -4,12 +4,12 @@ public class RollNumberCommand extends Command {
 	private String command = "roll_number";
 	String payload;
 
-	public RollNumberCommand(int playerId, int ackId) {
-		super(playerId, ackId);
+	public RollNumberCommand(int playerId) {
+		super(playerId);
 	}
 
-	public RollNumberCommand(int playerId, int ackId, String rollNumberHex) {
-		this(playerId, ackId);
+	public RollNumberCommand(int playerId, String rollNumberHex) {
+		this(playerId);
 		this.payload = rollNumberHex;
 	}
 
