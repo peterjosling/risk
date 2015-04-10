@@ -145,6 +145,13 @@ class Game extends Model {
 
 		this.showToast(toast);
 
+		this.handleSetupMessage(message);
+	}
+
+	public handleSetupMessage(message : Messages.SetupMessage) {
+		var player = this.playerList.get(message.player_id);
+		var territory = this.map.territories.get(message.payload);
+
 		// Increase army count on player.
 		player.setArmies(player.getArmies() + 1);
 
