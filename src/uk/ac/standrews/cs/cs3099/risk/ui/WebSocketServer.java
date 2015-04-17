@@ -32,6 +32,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	public void onClose(WebSocket webSocket, int i, String s, boolean b)
 	{
 		System.out.println("Client disconnected: " + webSocket);
+
+		// TODO terminate game.
 	}
 
 	@Override
