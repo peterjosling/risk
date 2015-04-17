@@ -235,7 +235,11 @@ public class AIPlayer extends Player {
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
 		System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid AssignArmyCommand.");
+		}
 	}
 	
 	public void notifyCommand(AttackCommand command)
@@ -245,7 +249,12 @@ public class AIPlayer extends Player {
 		String destName = gameState.getMap().findTerritoryById(command.getDest()).getName();
 		String srcName = gameState.getMap().findTerritoryById(command.getSource()).getName();
 		System.out.println("Player " + command.getPlayerId() + " is attacking " + destName + " from " + srcName + " with " + command.getArmies() + " armies.");
-		gameState.playCommand(command);
+		
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid AttackCommand.");
+		}	
 	}
 	
 	public void notifyCommand(FortifyCommand command)
@@ -254,7 +263,11 @@ public class AIPlayer extends Player {
 		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
 		int armies = command.getFortifyDetails()[2];
 		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid FortifyCommand.");
+		}	
 	}
 	
 	public void notifyCommand(DeployCommand command)
@@ -264,27 +277,43 @@ public class AIPlayer extends Player {
 			String name = gameState.getMap().findTerritoryById(deployment.getTerritoryId()).getName();
 			System.out.println(deployment.getArmies() + " armies to " + name);
 		}
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid DeployCommand.");
+		}	
 	}
 	
 	public void notifyCommand(DrawCardCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid DrawCardCommand.");
+		}	
 	}
 	
 	public void notifyCommand(DefendCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
 		System.out.println("Player " + command.getPlayerId() + " is defending " + name + " with " + command.getArmies() + " armies");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid DefendCommand.");
+		}	
 	}
 	
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
 		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid AttackCaptureCommand.");
+		}	
 	}
 	
 	public void notifyCommand(TimeoutCommand command)
@@ -307,18 +336,30 @@ public class AIPlayer extends Player {
 			System.out.println("Set " + set + ": " + cardSet[0].getCardType() + ", " + cardSet[1].getCardType() + " and " + cardSet[2].getCardType());
 			set++;
 		}
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid PlayCardsCommand.");
+		}	
 	}
 	
 	public void notifyCommand(RollNumberCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid RollNumberCommand.");
+		}	
 	}
 	
 	public void notifyCommand(RollHashCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid RollHashCommand.");
+		}	
 	}
 }
