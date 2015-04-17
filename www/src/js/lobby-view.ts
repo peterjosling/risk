@@ -49,6 +49,7 @@ class LobbyView extends View<Game> {
 			this.model.playerList.push(player);
 
 			response = <Messages.AcceptJoinGameMessage>({
+				command: 'accept_join_game',
 				payload: {
 					player_id: player.id,
 					acknowledgement_timeout: 0,
