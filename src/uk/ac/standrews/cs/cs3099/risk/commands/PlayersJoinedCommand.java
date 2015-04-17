@@ -8,10 +8,26 @@ public class PlayersJoinedCommand extends Command {
 	private String command = "players_joined";
 	private PlayersNames[] payload;
 
+	public PlayersJoinedCommand()
+	{
+		super(-1);
+		this.payload = new PlayersNames[0];
+	}
+
 	public PlayersJoinedCommand(PlayersNames[] playerNames)
 	{
 		super(-1);
 		this.payload = playerNames;
+	}
+
+	public void addPlayer(int playerId, String name)
+	{
+		PlayersNames player = new PlayersNames(playerId, name, "");
+		PlayersNames[] playersNames = new PlayersNames[payload.length + 1];
+
+		System.arraycopy(payload, 0, playersNames, 0, payload.length);
+		playersNames[playersNames.length - 1] = player;
+		payload = playersNames;
 	}
 
 	/**

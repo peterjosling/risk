@@ -11,7 +11,8 @@ module.exports = {
 			{ test: /\.css$/, loader: 'style!css!autoprefixer-loader' },
 			{ test: /\.ts$/, loader: 'ts-loader?additionalFiles[]=../../lib/webpack/require.d.ts&additionalFiles[]=../../lib/es6-promise/es6-promise.d.ts' },
 			{ test: /\.hbs$/, loader: 'handlebars-loader' },
-			{ test: /\.less$/, loader: 'style!css!autoprefixer-loader!less'}
+			{ test: /\.less$/, loader: 'style!css!autoprefixer-loader!less'},
+			{ test: /\.json$/, loader: 'json'}
 		]
 	},
 	resolve: {

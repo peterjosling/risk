@@ -22,6 +22,11 @@ public class JoinGameCommand extends Command {
 		return payload.supported_features;
 	}
 
+	public String getName()
+	{
+		return this.payload.name;
+	}
+
 	@Override
 	public CommandType getType()
 	{

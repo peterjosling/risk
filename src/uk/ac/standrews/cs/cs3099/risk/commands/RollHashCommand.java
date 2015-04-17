@@ -4,12 +4,12 @@ public class RollHashCommand extends Command {
 	private String command = "roll_hash";
 	String payload;
 
-	public RollHashCommand(int playerId, int ackId) {
-		super(playerId, ackId);
+	public RollHashCommand(int playerId) {
+		super(playerId);
 	}
 
-	public RollHashCommand(int playerId, int ackId, String hash) {
-		this(playerId, ackId);
+	public RollHashCommand(int playerId, String hash) {
+		this(playerId);
 		this.payload = hash;
 	}
 
