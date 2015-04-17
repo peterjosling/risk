@@ -239,13 +239,17 @@ public class NetworkedGame extends AbstractGame {
 	}
 
 	/**
-	 * Let local player know what version/features the game is using.
+	 * Let local player know what version/features the game is using, participate in player selection roll.
 	 *
 	 * @param command
 	 */
 	private void initialiseGameCommand(InitialiseGameCommand command)
 	{
 		localPlayer.notifyCommand(command);
+
+		String hash = "TODO_IMPLEMENT_HASH";
+		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
+		connectionManager.sendCommand(rollHashCommand);
 	}
 
 	private void readyReceived(ReadyCommand command)
