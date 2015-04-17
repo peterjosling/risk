@@ -3,16 +3,13 @@ package uk.ac.standrews.cs.cs3099.risk.network;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class ConnectionManager {
 	private final boolean isServer;
-	private final ArrayList<Socket> sockets = new ArrayList<Socket>();
 	private final ArrayList<PlayerSocket> playerSockets = new ArrayList<PlayerSocket>();
-	private final ArrayList<PrintWriter> writers = new ArrayList<PrintWriter>();
 
 	private NetworkedGame game;
 
@@ -27,7 +24,7 @@ public class ConnectionManager {
 		this.isServer = true;
 		ServerSocket socket = new ServerSocket(port);
 		HostServer hostServer = new HostServer(this, socket);
-		hostServer.run();
+		new Thread(hostServer).start();
 	}
 
 	/**
@@ -41,8 +38,6 @@ public class ConnectionManager {
 		this.game = game;
 		this.isServer = false;
 		Socket socket = new Socket(hostname, port);
-		sockets.add(socket);
-		writers.add(new PrintWriter(socket.getOutputStream()));
 
 		PlayerSocket playerSocket = new PlayerSocket(game, socket);
 		playerSockets.add(playerSocket);
@@ -56,12 +51,10 @@ public class ConnectionManager {
 	 */
 	public void sendCommand(Command command)
 	{
-		String commandJSON = command.toJSON();
-		System.out.println("Sending command" + commandJSON);
+		System.out.println("Sending command: " + command.toJSON());
 
-		for (PrintWriter writer : writers) {
-			writer.write(commandJSON + "\n");
-			writer.flush();
+		for (PlayerSocket playerSocket : playerSockets) {
+			playerSocket.sendCommand(command);
 		}
 	}
 
@@ -72,8 +65,6 @@ public class ConnectionManager {
 	 */
 	protected void clientConnected(Socket socket)
 	{
-		sockets.add(socket);
-
 		try {
 			PlayerSocket playerSocket = new PlayerSocket(game, socket);
 			playerSockets.add(playerSocket);

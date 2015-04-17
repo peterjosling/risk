@@ -37,12 +37,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	@Override
 	public void onMessage(WebSocket webSocket, String s)
 	{
+		System.out.println("WebSocket message received: " + s);
 		Command command = Command.fromJSON(s);
 
 		if (command == null) {
 			System.out.println("Invalid command received from websocket.");
 			return;
 		}
+
+		System.out.println("Command: " + command.getType());
 
 		switch (command.getType()) {
 			case SERVER_CONNECT:
@@ -71,6 +74,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
+		System.out.println("Connecting");
 		NetworkedGame game = new NetworkedGame(24);
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);

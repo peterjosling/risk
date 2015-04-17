@@ -2,17 +2,24 @@ import Model = require('./model');
 import Collection = require('./collection');
 import Player = require('./player');
 import Messages = require('./messages');
+import Map = require('./map');
+
+var defaultMapJson = require('../../default-map.json');
 
 var HOST : string = 'ws://localhost:7574';
 
 class Game extends Model {
 	private socket : WebSocket;
 
-	public playerList : Collection<Player>;
+	playerList : Collection<Player>;
+	self : Player;
+	map : Map;
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new Collection<Player>();
+		this.map = new Map();
+		this.map.fromJSON(defaultMapJson);
 	}
 
 	connect(host : string, port : number) : Promise<Messages.Message> {
@@ -43,6 +50,37 @@ class Game extends Model {
 		});
 	}
 
+	showToast(message : string) {
+		this.trigger('toast', message);
+	}
+
+	updateArmyCounts() : void {
+		// Initialise array of army/territory counts to 0.
+		var armyCounts = this.playerList.map(function(player) {
+			return 0;
+		});
+
+		var territoryCounts = armyCounts.slice(0);
+
+		// Sum up counts from every territory.
+		this.map.territories.forEach(function(territory) {
+			var player = territory.getOwner();
+
+			if (!player) {
+				return;
+			}
+
+			territoryCounts[player.id]++;
+			armyCounts[player.id] += territory.getArmies();
+		});
+
+		// Update counts on each player.
+		this.playerList.forEach(function(player) {
+			player.setArmies(armyCounts[player.id]);
+			player.setTerritories(territoryCounts[player.id]);
+		});
+	}
+
 	private messageReceived(event : MessageEvent) {
 		var message : Messages.Message = JSON.parse(event.data);
 
@@ -66,6 +104,22 @@ class Game extends Model {
 			case 'initialise_game':
 				this.initialiseGameMessageReceived(<Messages.InitialiseGameMessage>message);
 				break;
+
+			case 'setup':
+				this.setupMessageReceived(<Messages.SetupMessage>message);
+				break;
+
+			case 'attack':
+				this.attackMessageReceived(<Messages.AttackMessage>message);
+				break;
+
+			case 'defend':
+				this.attackMessageReceived(<Messages.DefendMessage>message);
+				break;
+
+			case 'deploy':
+				this.deployMessageReceived(<Messages.DeployMessage>message);
+				break;
 		}
 	}
 
@@ -74,12 +128,12 @@ class Game extends Model {
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
-		var self = new Player({
+		this.self = new Player({
 			player_id: message.payload.player_id,
 			name: 'TODO Implement player names'
 		});
 
-		this.playerList.add(self);
+		this.playerList.add(this.self);
 		this.trigger('acceptJoinGame', message);
 	}
 
@@ -115,6 +169,90 @@ class Game extends Model {
 		});
 
 		this.trigger('gameStart');
+	}
+
+	private setupMessageReceived(message : Messages.SetupMessage) {
+		var player = this.playerList.get(message.player_id);
+		var territory = this.map.territories.get(message.payload);
+
+		// Tell the user what happened.
+		var toast = player.name + ' claimed ' + territory.getName();
+
+		if (territory.getOwner()) {
+			toast = player.name + ' reinforced ' + territory.getName();
+		}
+
+		this.showToast(toast);
+
+		this.handleSetupMessage(message);
+	}
+
+	public handleSetupMessage(message : Messages.SetupMessage) {
+		var player = this.playerList.get(message.player_id);
+		var territory = this.map.territories.get(message.payload);
+
+		// Claim/reinforce the specified territory.
+		territory.setOwner(player);
+		territory.addArmies(1);
+
+		this.updateArmyCounts();
+
+		// Trigger change to update the map view.
+		this.trigger('change:map');
+	}
+
+	private attackMessageReceived(message : Messages.AttackMessage) {
+		var sourceId = message.payload[0];
+		var destId = message.payload[1];
+		var armyCount = message.payload[2];
+
+		var source = this.map.territories.get(sourceId);
+		var dest = this.map.territories.get(destId);
+
+		var sourcePlayer = this.playerList.get(message.player_id);
+		var destPlayer = dest.getOwner();
+		var destPlayerName = destPlayer.name;
+
+		if (destPlayer === this.self) {
+			destPlayerName = 'you';
+		}
+
+		this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
+		this.handleAttackMessage(message);
+	}
+
+	public handleAttackMessage(message : Messages.AttackMessage) {
+		// TODO store attack details.
+	}
+
+	private defendMessageReceived(message : Messages.DefendMessage) {
+		var player = this.playerList.get(message.player_id);
+		this.showToast(player.name + ' is defending with ' + message.payload + ' armies.');
+		this.handleDefendMessage(message);
+	}
+
+	public handleDefendMessage(message : Messages.DefendMessage) {
+		// TODO store defend details.
+	}
+
+	private deployMessageReceived(message : Messages.DeployMessage) {
+		var player = this.playerList.get(message.player_id);
+
+		message.payload.forEach(deployment => {
+			var territory = this.map.territories.get(deployment[0]);
+			this.showToast(player.name + ' has deployed ' + deployment[1] + ' armies to ' + territory.getName());
+		});
+
+		this.handleDeployMessage(message);
+	}
+
+	public handleDeployMessage(message : Messages.DeployMessage) {
+		message.payload.forEach(deployment => {
+			var territory = this.map.territories.get(deployment[0]);
+			territory.addArmies(deployment[1]);
+		});
+
+		this.updateArmyCounts();
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {

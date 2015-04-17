@@ -6,12 +6,15 @@ import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.io.IOException;
+import java.util.List;
 
 public class NetworkedGame extends AbstractGame {
 	private ConnectionManager connectionManager;
 	private Player localPlayer;
 	private int moveTimeout;
 	private int acknowledgementTimeout;
+	private String[] turnRollHashes;
+	private String[] turnRollNumbers;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -29,7 +32,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	public void startServer(int port) throws IOException
 	{
-		// TODO ensure move/ack timeouts are set.
+		// TODO ensure move/ack timeouts are set, or set defaults above.
 
 		if (connectionManager != null) {
 			return;
@@ -76,12 +79,12 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param command The command received from a player or the host.
 	 */
-	protected void messageReceived(Command command)
+	protected void messageReceived(Command command, PlayerSocket playerSocket)
 	{
 		// Handle commands which don't come from an individual player.
 		switch (command.getType()) {
 			case JOIN_GAME:
-				playerJoinRequested((JoinGameCommand) command);
+				playerJoinRequested((JoinGameCommand) command, playerSocket);
 				return;
 
 			case ACCEPT_JOIN_GAME:
@@ -107,6 +110,14 @@ public class NetworkedGame extends AbstractGame {
 			case INITIALISE_GAME:
 				initialiseGameCommand((InitialiseGameCommand) command);
 				return;
+
+			case ROLL_HASH:
+				rollHashCommand((RollHashCommand) command);
+				return;
+
+			case ROLL_NUMBER:
+				rollNumberCommand((RollNumberCommand) command);
+				return;
 		}
 
 		// Send acknowledgement.
@@ -117,19 +128,62 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
+		// TODO forward to all players, if host.
 	}
 
 	/**
 	 * Called when a player requests to join the game, when running as a host.
 	 *
-	 * @param command Command with details of the player requesting to join the game.
+	 * @param joinCommand Command with details of the player requesting to join the game.
+	 * @param playerSocket The PlayerSocket instance of the connecting player.
 	 */
-	private void playerJoinRequested(JoinGameCommand command)
+	private void playerJoinRequested(JoinGameCommand joinCommand, PlayerSocket playerSocket)
 	{
-		// Automatically accept players up until the limit.
+		List<Player> players = getPlayers();
+
+		// TODO check if game in progress and reject.
 		// TODO forward this command to UIPlayers and get a response.
-		// TODO accept player.
-		// TODO check if we have max number of players, issue a "ping" command.
+
+		// Automatically accept players up until the limit.
+		Command command;
+		int id = players.size();
+		String name = joinCommand.getName();
+		boolean accepted = false;
+
+		if (id > 5) {
+			command = new RejectJoinGameCommand("Game full");
+		} else {
+			command = new AcceptJoinGameCommand(id, acknowledgementTimeout, moveTimeout);
+			NetworkPlayer player = new NetworkPlayer(connectionManager, id, name);
+			addPlayer(player);
+			accepted = true;
+		}
+
+		playerSocket.sendCommand(command);
+
+		// Send PlayersJoinedCommands.
+		if (accepted) {
+			PlayersJoinedCommand newPlayerJoinedCommand = new PlayersJoinedCommand();
+			newPlayerJoinedCommand.addPlayer(id, name);
+
+			// TODO send to all players except {player}
+
+			PlayersJoinedCommand currentPlayers = new PlayersJoinedCommand();
+
+			for (Player player : players) {
+				if (player.getId() != id) {
+					currentPlayers.addPlayer(player.getId(), player.getName());
+				}
+			}
+
+			playerSocket.sendCommand(currentPlayers);
+		}
+
+		// Issue the ping command if we've reached the maximum number of players.
+		if (id == 5 && accepted) {
+			PingCommand pingCommand = new PingCommand(-1, players.size());
+			connectionManager.sendCommand(pingCommand);
+		}
 	}
 
 	/**
@@ -196,19 +250,63 @@ public class NetworkedGame extends AbstractGame {
 	}
 
 	/**
-	 * Let local player know what version/features the game is using.
+	 * Let local player know what version/features the game is using, participate in player selection roll.
 	 *
 	 * @param command
 	 */
 	private void initialiseGameCommand(InitialiseGameCommand command)
 	{
 		localPlayer.notifyCommand(command);
+
+		String hash = "TODO_IMPLEMENT_HASH";
+		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
+		connectionManager.sendCommand(rollHashCommand);
 	}
 
 	private void readyReceived(ReadyCommand command)
 	{
 		localPlayer.notifyCommand(command);
 		sendAcknowledgement(command.getAckId());
+	}
+
+	/**
+	 * Store the hash for the initial dice roll to select which player takes the first turn.
+	 *
+	 * @param command
+	 */
+	private void rollHashCommand(RollHashCommand command) {
+		turnRollHashes[command.getPlayerId()] = command.getHash();
+
+		// If we've received them all, send the roll number.
+		boolean hashesReceived = true;
+
+		for (String hash : turnRollNumbers) {
+			hashesReceived = hashesReceived && hash.length() > 0;
+		}
+
+		if (hashesReceived) {
+			RollNumberCommand rollNumberCommand = new RollNumberCommand(localPlayer.getId(), "TODO_IMPLEMENT_NUMBER");
+			connectionManager.sendCommand(rollNumberCommand);
+		}
+	}
+
+	/**
+	 * Store the number for the initial dice roll from each player. Perform the roll if all numbers received.
+	 * @param command
+	 */
+	private void rollNumberCommand(RollNumberCommand command) {
+		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
+		// TODO verify number/hash match.
+
+		boolean rollsReceived = true;
+
+		for (String number : turnRollNumbers) {
+			rollsReceived = rollsReceived && number.length() > 0;
+		}
+
+		if (rollsReceived) {
+			// TODO roll die, get first player.
+		}
 	}
 
 	private void sendAcknowledgement(int ackId)

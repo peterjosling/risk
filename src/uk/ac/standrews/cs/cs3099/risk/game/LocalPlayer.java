@@ -266,12 +266,12 @@ public class LocalPlayer extends Player {
 	public Command getRollNumberCommand()
 	{
 		String hash = "";
-		return new RollNumberCommand(this.getId(), lastAckid++, hash);
+		return new RollNumberCommand(this.getId(), hash);
 	}
 
 	public Command getRollHashCommand(){
 		String hash = "";
-		return new RollHashCommand(this.getId(), lastAckid++, hash);
+		return new RollHashCommand(this.getId(), hash);
 	}
 
 	public Command getPingCommand() {
