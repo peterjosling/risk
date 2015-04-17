@@ -537,9 +537,26 @@ public class GameState {
 		return false;
 	}
 
+	public boolean isCommandValid(RollHashCommand command)
+	{
+		return true;
+	}
+	
 	public boolean isCommandValid(RollNumberCommand command)
 	{
 		// Compare with previous RollHash
+		return true;
+	}
+	
+	public boolean isCommandValid(TimeoutCommand command)
+	{
+		// TODO
+		return true;
+	}
+	
+	public boolean isCommandValid(LeaveGameCommand command)
+	{
+		// TODO
 		return true;
 	}
 	

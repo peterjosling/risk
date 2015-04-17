@@ -125,6 +125,7 @@ public class MapParserTest {
 									 "\"country_card\":{\"0\":0}, \"continent_names\":{\"0\":\"aa\"}}");
 	}
 
+	@Test
 	public void everythingElse5() throws MapParseException
 	{
 		MapParser m = new MapParser("{\"data\":\"map\", \"continents\":{\"0\":[0, 1]}, \"connections\":[[0,1]]," +
