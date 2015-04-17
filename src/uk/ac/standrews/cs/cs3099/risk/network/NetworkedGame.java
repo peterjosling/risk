@@ -1,11 +1,10 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkedGame extends AbstractGame {
@@ -15,13 +14,16 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private String[] turnRollHashes;
 	private String[] turnRollNumbers;
+	private int numberOfPingsReceived = 0;
+	ArrayList<Boolean[]> acknowledgements = new ArrayList<Boolean[]>();
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
 
-	public NetworkedGame(int armiesPerPlayer)
+	public NetworkedGame(int armiesPerPlayer, String jsonMap) throws MapParseException
 	{
 		super(armiesPerPlayer);
+		this.loadMap(jsonMap);
 	}
 
 	/**
@@ -249,6 +251,15 @@ public class NetworkedGame extends AbstractGame {
 		if (command.getNoOfPlayers() > 0) {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
+		}
+		//TODO if its a host check that all pings received, then send ReadyCommand, wait for all acknowledgements, then send initialise game
+		if(connectionManager.isServer()){
+			numberOfPingsReceived++;
+			if(numberOfPingsReceived ==getPlayers().size()){
+				Command readyCommand = localPlayer.getCommand(CommandType.READY);
+				localPlayer.notifyCommand(readyCommand);
+				
+			}
 		}
 	}
 
