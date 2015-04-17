@@ -109,7 +109,7 @@ public abstract class Command {
 			// Strip off ack_id and player_id if unused.
 			JsonObject obj = jsonElement.getAsJsonObject();
 
-			if (obj.has("player_id")) {
+			if (obj.has("player_id") && !obj.get("player_id").isJsonNull()) {
 				int playerId = obj.get("player_id").getAsInt();
 
 				if (playerId == -1) {
