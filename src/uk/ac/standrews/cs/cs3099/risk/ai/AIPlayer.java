@@ -280,8 +280,7 @@ public class AIPlayer extends Player {
 
 	public Command getFortifyCommand() 
 	{
-		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++);
-		return command;
+		return new FortifyCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getAttackCommand() 
@@ -378,6 +377,7 @@ public class AIPlayer extends Player {
 		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
 		int armies = command.getFortifyDetails()[2];
 		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
+		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
