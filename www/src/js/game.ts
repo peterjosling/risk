@@ -64,6 +64,11 @@ class Game extends Model {
 	startServer(port : number) : Promise<Messages.Message> {
 		this._isHost = true;
 
+		this.self = new Player({
+			player_id: 0,
+			name: 'TODO Implement player names'
+		});
+
 		return new Promise<Messages.Message>((resolve, reject) => {
 			this.socket = new WebSocket(HOST);
 			this.socket.onmessage = this.messageReceived.bind(this);
