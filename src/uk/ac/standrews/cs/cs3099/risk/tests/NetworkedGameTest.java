@@ -13,16 +13,18 @@ public class NetworkedGameTest {
 		NetworkedGame game = null;
 		try {
 			game = new NetworkedGame(24, "jsonMap");
+			game.startServer(1234);
 		} catch (MapParseException e) {
 			e.printStackTrace();
 		}
-		game.startServer(1234);
+
 
 		try {
 			NetworkedGame client = new NetworkedGame(24, "jsonMap");
+			game.connectToServer("localhost", 1234);
 		} catch (MapParseException e) {
 			e.printStackTrace();
 		}
-		game.connectToServer("localhost", 1234);
+
 	}
 }
