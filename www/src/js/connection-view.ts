@@ -1,5 +1,6 @@
 import View = require('./view');
 import Game = require('./game');
+import Messages = require('./messages');
 
 class ConnectionView extends View<Game> {
 	template = <Function>require('../hbs/connection-view.hbs');
@@ -22,9 +23,14 @@ class ConnectionView extends View<Game> {
 		this.disableInputs();
 		this.model.showToast('Connecting...');
 
-		this.model.connect(hostname, port).catch(() => {
-			this.model.showToast('Failed to connect to server.');
-			// TODO give reason.
+		this.model.connect(hostname, port).catch((message) => {
+			var toastText = 'Failed to connect to WebSocket server.';
+
+			if (message.command && message.command === 'reject_join_game') {
+				toastText = 'Join rejected: "' + (<Messages.RejectJoinGameMessage>message).payload + '".';
+			}
+
+			this.model.showToast(toastText);
 			this.enableInputs();
 		});
 

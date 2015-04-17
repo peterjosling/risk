@@ -37,6 +37,10 @@ class Game extends Model {
 				});
 			};
 
+			this.socket.onerror = (error) => {
+				reject(error);
+			};
+
 			this.once('acceptJoinGame', (message : Messages.Message) => {
 				this.off('rejectJoinGame');
 				this.trigger('connected');
