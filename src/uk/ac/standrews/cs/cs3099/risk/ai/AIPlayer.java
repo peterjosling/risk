@@ -1,5 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.AcceptJoinGameCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.AcknowledgementCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCaptureCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
@@ -10,10 +12,13 @@ import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 import uk.ac.standrews.cs.cs3099.risk.commands.DrawCardCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.InitialiseGameCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.JoinGameCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.LeaveGameCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.PingCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.PlayCardsCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.PlayersJoinedCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ReadyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.RejectJoinGameCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.RollHashCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.RollNumberCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.TimeoutCommand;
@@ -41,8 +46,7 @@ public class AIPlayer extends Player {
 	}
 	
 	@Override
-	public Command getCommand(CommandType type) 
-	{
+	public Command getCommand(CommandType type) {
 		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
@@ -57,13 +61,13 @@ public class AIPlayer extends Player {
 			case DEFEND:
 				return getDefendCommand();
 			case JOIN_GAME:
-//				return getJoinGameCommand();
+				return getJoinGameCommand();
 			case ACCEPT_JOIN_GAME:
-//				return getAcceptJoinGameCommand();
+				return getAcceptJoinGameCommand();
 			case REJECT_JOIN_GAME:
-//				return getRejectJoinGameCommand();
+				return getRejectJoinGameCommand();
 			case ACKNOWLEDGEMENT:
-//				return getAcknowledgementCommand();
+				return getAcknowledgementCommand();
 			case TIMEOUT:
 //				return getTimeoutCommand();
 			case ATTACK_CAPTURE:
@@ -77,24 +81,72 @@ public class AIPlayer extends Player {
 			case ROLL_HASH:
 				return getRollHashCommand();
 			case PING:
-//				return getPingCommand();
+				return getPingCommand();
 			case READY:
-//				return getReadyCommand();
+				return getReadyCommand();
 			case INITIALISE_GAME:
-//				return getInitialiseGameCommand();
+				return getInitialiseGameCommand();
 			default:
 				return getLeaveGameCommand();
 		}
 	}
+	
+	public Command getJoinGameCommand()
+	{
+		float[] supportedVersions = {1};
+		String[] supportedFeatures = {};
+		return new JoinGameCommand(supportedVersions, supportedFeatures);
+	}
+	
+	public Command getAcceptJoinGameCommand()
+	{
+		int ackTimeout = 4; //Check these values
+		int moveTimeout = 30;
+		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
+	}
 
+	public Command getRejectJoinGameCommand()
+	{
+		String message = "Game in progress";
+		return new RejectJoinGameCommand(message);
+	}
+
+	public Command getAcknowledgementCommand(){
+		return new AcknowledgementCommand(this.getId(), lastAckid++);
+	}
+
+	public Command getPingCommand() {
+		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
+	}
+
+	public Command getReadyCommand() {
+		return new ReadyCommand(this.getId(), lastAckid++);
+	}
+
+	public Command getInitialiseGameCommand(){
+		int version = 1;
+		String[] supportedFeatures = {};
+		return new InitialiseGameCommand(version, supportedFeatures);
+	}
+	
+//	public Command getTimeoutCommand()
+//	{
+//		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+//	}
+	
 	private DeployCommand getDeployCommand() 
 	{
 		// Deploys all troops to first owned territory.
 		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
 		Deployment[] deployments = new Deployment[1];
 		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
-		
-		return new DeployCommand(getId(), ++ack_id, deployments);
+		DeployCommand command = new DeployCommand(getId(), ++ack_id, deployments);
+		if(gameState.isCommandValid(command)){
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Deploy Command");
+		}
+		return null;
 	}
 	
 	private AssignArmyCommand getAssignArmyCommand()
@@ -102,8 +154,13 @@ public class AIPlayer extends Player {
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
 		Territory territory = freeTerritories[0];
-		
-		return new AssignArmyCommand(getId(), ++ack_id, territory.getId());
+		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++ack_id, territory.getId());
+		if(gameState.isCommandValid(command)){
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Assign Army Command");
+		}
+		return null;
 	}
 
 	public Command getRollNumberCommand()
@@ -120,7 +177,36 @@ public class AIPlayer extends Player {
 
 	private Command getPlayCardsCommand() 
 	{
-		return null;		
+		
+		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
+		
+		ArrayList<Card> artillery = new ArrayList<Card>();
+		ArrayList<Card> infantry = new ArrayList<Card>();
+		ArrayList<Card> cavalry = new ArrayList<Card>();
+		ArrayList<Card> wild = new ArrayList<Card>();
+
+		
+		Card[][] cards = new Card[1][3];
+
+		List<Card> playersCards = getCards();
+
+		for(Card card:playersCards){
+			if(card.getCardType() == Card.CardType.ARTILLERY) artillery.add(card);
+			if(card.getCardType() == Card.CardType.INFANTRY) infantry.add(card);
+			if(card.getCardType() == Card.CardType.CAVALRY) cavalry.add(card);
+			if(card.getCardType() == Card.CardType.WILD) wild.add(card);
+		}
+		
+		
+		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		
+		// IF PAIR CAN BE FOUND... ELSE RETURN EMPTY COMMAND
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getPlayCardsCommand();	
+		}		
 	}
 
 	public Command getLeaveGameCommand()
@@ -136,7 +222,12 @@ public class AIPlayer extends Player {
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
-		return command;
+		if(gameState.isCommandValid(command)){
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+		}
+		return null;
 	}
 
 	private Command getDefendCommand() 
@@ -195,7 +286,12 @@ public class AIPlayer extends Player {
 			}
 		}
 		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
-		return command;
+		if(gameState.isCommandValid(command)){
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Attack Command");
+		}	
+		return null;
 	}
 	
 	@Override
