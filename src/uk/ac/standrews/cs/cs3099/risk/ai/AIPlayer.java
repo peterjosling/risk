@@ -180,12 +180,13 @@ public class AIPlayer extends Player {
 		
 		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
 		
+		ArrayList<ArrayList<Card>> cardTypes = new ArrayList<ArrayList<Card>>();
+		
 		ArrayList<Card> artillery = new ArrayList<Card>();
 		ArrayList<Card> infantry = new ArrayList<Card>();
 		ArrayList<Card> cavalry = new ArrayList<Card>();
 		ArrayList<Card> wild = new ArrayList<Card>();
 
-		
 		Card[][] cards = new Card[1][3];
 
 		List<Card> playersCards = getCards();
@@ -197,16 +198,32 @@ public class AIPlayer extends Player {
 			if(card.getCardType() == Card.CardType.WILD) wild.add(card);
 		}
 		
+		cardTypes.add(artillery);
+		cardTypes.add(infantry);
+		cardTypes.add(cavalry);
+		cardTypes.add(wild);
 		
-		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		// 3 CARDS OF SAME TYPE
+		for(ArrayList<Card> currentType : cardTypes){
+			if(currentType.size() >= 3){
+				cards[0] =  (Card[]) (currentType.subList(0, 3)).toArray();
+				return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+			}
+		}
+
+		// 3 CARDS OF DIFFERENT TYPE
+		if(artillery.size() > 0 && infantry.size() > 0 && cavalry.size() > 0){
+			for(int i = 0; i < 3; i++){
+				cards[0][i] = cardTypes.get(i).get(0);
+			}
+			return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		}
 		
-		// IF PAIR CAN BE FOUND... ELSE RETURN EMPTY COMMAND
-		if(gameState.isCommandValid(command)) {
-			return command;
-		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getPlayCardsCommand();	
-		}		
+		// 1 WILD && 2 RANDOM
+		
+
+		
+		return new PlayCardsCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getLeaveGameCommand()
