@@ -55,7 +55,7 @@ export interface PlayCardsMessage extends Message {
 	player_id : number;
 }
 
-export interface DrawCardMessage extends  Message {
+export interface DrawCardMessage extends Message {
 	payload : number;
 	player_id : number;
 }
