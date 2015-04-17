@@ -10,7 +10,7 @@ public class LocalGame extends AbstractGame {
 		addPlayer(new LocalPlayer(0));
 		
 		for (int i = 1; i < playerCount; i++) {
-			Player player = new DumbPlayer(i, "Dumb player " + i);
+			Player player = new LocalPlayer(i);
 
 			addPlayer(player);
 		}
