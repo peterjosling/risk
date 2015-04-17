@@ -109,6 +109,14 @@ class Game extends Model {
 				this.setupMessageReceived(<Messages.SetupMessage>message);
 				break;
 
+			case 'attack':
+				this.attackMessageReceived(<Messages.AttackMessage>message);
+				break;
+
+			case 'defend':
+				this.attackMessageReceived(<Messages.DefendMessage>message);
+				break;
+
 			case 'deploy':
 				this.deployMessageReceived(<Messages.DeployMessage>message);
 				break;
@@ -191,6 +199,40 @@ class Game extends Model {
 
 		// Trigger change to update the map view.
 		this.trigger('change:map');
+	}
+
+	private attackMessageReceived(message : Messages.AttackMessage) {
+		var sourceId = message.payload[0];
+		var destId = message.payload[1];
+		var armyCount = message.payload[2];
+
+		var source = this.map.territories.get(sourceId);
+		var dest = this.map.territories.get(destId);
+
+		var sourcePlayer = this.playerList.get(message.player_id);
+		var destPlayer = dest.getOwner();
+		var destPlayerName = destPlayer.name;
+
+		if (destPlayer === this.self) {
+			destPlayerName = 'you';
+		}
+
+		this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
+		this.handleAttackMessage(message);
+	}
+
+	public handleAttackMessage(message : Messages.AttackMessage) {
+		// TODO store attack details.
+	}
+
+	private defendMessageReceived(message : Messages.DefendMessage) {
+		var player = this.playerList.get(message.player_id);
+		this.showToast(player.name + ' is defending with ' + message.payload + ' armies.');
+		this.handleDefendMessage(message);
+	}
+
+	public handleDefendMessage(message : Messages.DefendMessage) {
+		// TODO store defend details.
 	}
 
 	private deployMessageReceived(message : Messages.DeployMessage) {
