@@ -6,6 +6,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.io.IOException;
+import java.util.List;
 
 public class NetworkedGame extends AbstractGame {
 	private ConnectionManager connectionManager;
@@ -81,7 +82,7 @@ public class NetworkedGame extends AbstractGame {
 		// Handle commands which don't come from an individual player.
 		switch (command.getType()) {
 			case JOIN_GAME:
-				playerJoinRequested((JoinGameCommand) command);
+				playerJoinRequested((JoinGameCommand) command, playerSocket);
 				return;
 
 			case ACCEPT_JOIN_GAME:
@@ -122,14 +123,56 @@ public class NetworkedGame extends AbstractGame {
 	/**
 	 * Called when a player requests to join the game, when running as a host.
 	 *
-	 * @param command Command with details of the player requesting to join the game.
+	 * @param joinCommand Command with details of the player requesting to join the game.
+	 * @param playerSocket The PlayerSocket instance of the connecting player.
 	 */
-	private void playerJoinRequested(JoinGameCommand command)
+	private void playerJoinRequested(JoinGameCommand joinCommand, PlayerSocket playerSocket)
 	{
-		// Automatically accept players up until the limit.
+		List<Player> players = getPlayers();
+
+		// TODO check if game in progress and reject.
 		// TODO forward this command to UIPlayers and get a response.
-		// TODO accept player.
-		// TODO check if we have max number of players, issue a "ping" command.
+
+		// Automatically accept players up until the limit.
+		Command command;
+		int id = players.size();
+		String name = joinCommand.getName();
+		boolean accepted = false;
+
+		if (id > 5) {
+			command = new RejectJoinGameCommand("Game full");
+		} else {
+			command = new AcceptJoinGameCommand(id, acknowledgementTimeout, moveTimeout);
+			NetworkPlayer player = new NetworkPlayer(connectionManager, id, name);
+			addPlayer(player);
+			accepted = true;
+		}
+
+		playerSocket.sendCommand(command);
+
+		// Send PlayersJoinedCommands.
+		if (accepted) {
+			PlayersJoinedCommand newPlayerJoinedCommand = new PlayersJoinedCommand();
+			newPlayerJoinedCommand.addPlayer(id, name);
+
+			// TODO send to all players except {player}
+
+			PlayersJoinedCommand currentPlayers = new PlayersJoinedCommand();
+
+			for (Player player : players) {
+				if (player.getId() != id) {
+					currentPlayers.addPlayer(player.getId(), player.getName());
+				}
+			}
+
+			playerSocket.sendCommand(currentPlayers);
+		}
+
+		// Issue the ping command if we've reached the maximum number of players.
+		if (id == 5 && accepted) {
+			PingCommand pingCommand = new PingCommand(-1, players.size());
+			connectionManager.sendCommand(pingCommand);
+		}
 	}
 
 	/**
