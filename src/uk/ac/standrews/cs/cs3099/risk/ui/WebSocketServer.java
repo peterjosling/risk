@@ -95,8 +95,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		AbstractGame game = new NetworkedGame(24);
-		Player player = new UIPlayer(ws, 0, "Test player");
+		Player player = new UIPlayer(ws, 0, "Player names not implemented");
+		NetworkedGame game = new NetworkedGame(24);
+		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
+
+		try {
+			game.startServer(command.getPort());
+		} catch (IOException e) {
+			System.err.println("Couldn't start host server on port " + command.getPort());
+		}
 	}
 }
