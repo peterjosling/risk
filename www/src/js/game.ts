@@ -108,6 +108,10 @@ class Game extends Model {
 			case 'setup':
 				this.setupMessageReceived(<Messages.SetupMessage>message);
 				break;
+
+			case 'deploy':
+				this.deployMessageReceived(<Messages.DeployMessage>message);
+				break;
 		}
 	}
 
@@ -187,6 +191,26 @@ class Game extends Model {
 
 		// Trigger change to update the map view.
 		this.trigger('change:map');
+	}
+
+	private deployMessageReceived(message : Messages.DeployMessage) {
+		var player = this.playerList.get(message.player_id);
+
+		message.payload.forEach(deployment => {
+			var territory = this.map.territories.get(deployment[0]);
+			this.showToast(player.name + ' has deployed ' + deployment[1] + ' armies to ' + territory.getName());
+		});
+
+		this.handleDeployMessage(message);
+	}
+
+	public handleDeployMessage(message : Messages.DeployMessage) {
+		message.payload.forEach(deployment => {
+			var territory = this.map.territories.get(deployment[0]);
+			territory.addArmies(deployment[1]);
+		});
+
+		this.updateArmyCounts();
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
