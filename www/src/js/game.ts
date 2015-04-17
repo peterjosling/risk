@@ -69,6 +69,8 @@ class Game extends Model {
 			name: 'TODO Implement player names'
 		});
 
+		this.playerList.add(this.self);
+
 		return new Promise<Messages.Message>((resolve, reject) => {
 			this.socket = new WebSocket(HOST);
 			this.socket.onmessage = this.messageReceived.bind(this);
