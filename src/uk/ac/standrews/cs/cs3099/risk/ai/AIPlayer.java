@@ -201,7 +201,7 @@ public class AIPlayer extends Player {
 		cardTypes.add(artillery);
 		cardTypes.add(infantry);
 		cardTypes.add(cavalry);
-		cardTypes.add(wild);
+//		cardTypes.add(wild);
 		
 		// 3 CARDS OF SAME TYPE
 		for(ArrayList<Card> currentType : cardTypes){
@@ -219,10 +219,22 @@ public class AIPlayer extends Player {
 			return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		}
 		
+		int total = artillery.size() + infantry.size() + cavalry.size();
 		// 1 WILD && 2 RANDOM
-		
+		if((wild.size() > 0) && (total > 1)){
+			int count = 1;
+			cards[0][0] = wild.get(0);
+			for(ArrayList<Card> currentType : cardTypes){
+				for(Card currentCard : currentType){
+					cards[0][count] = currentCard;
+					count ++;
+					if(count == 3){
+						return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+					}
+				}
+			}
+		}
 
-		
 		return new PlayCardsCommand(this.getId(), lastAckid++);
 	}
 
