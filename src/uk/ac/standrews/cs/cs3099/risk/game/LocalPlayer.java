@@ -27,6 +27,11 @@ public class LocalPlayer extends Player {
 		gameState = new GameState(playerInts);
 	}
 
+	@Override
+	public boolean isNeutral() {
+		return isNeutral;
+	}
+
 	/**
 	 * Orchestrates the getCommand methods for each command, creating commands taking deatials from a player
 	 * via the command line.
@@ -539,8 +544,7 @@ public class LocalPlayer extends Player {
 		}	
 	}
 
-	public void notifyCommand(RollHashCommand command)
-	{
+	public void notifyCommand(RollHashCommand command) {
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);

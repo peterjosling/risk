@@ -46,4 +46,12 @@ public class NetworkPlayer extends Player {
 	{
 		connectionManager.sendCommand(command);
 	}
+
+	public boolean isNeutral() {
+		return isNeutral;
+	}
+
+	public void makeNeutral() {
+		isNeutral = !isNeutral;
+	}
 }

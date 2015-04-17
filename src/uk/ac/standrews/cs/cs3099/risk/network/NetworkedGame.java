@@ -5,6 +5,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class NetworkedGame extends AbstractGame {
@@ -12,10 +13,11 @@ public class NetworkedGame extends AbstractGame {
 	private Player localPlayer;
 	private int moveTimeout;
 	private int acknowledgementTimeout;
+	private Date timePingSent;
 	private String[] turnRollHashes;
 	private String[] turnRollNumbers;
 	private int numberOfPingsReceived = 0;
-	ArrayList<Boolean[]> acknowledgements = new ArrayList<Boolean[]>();
+	ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -252,15 +254,74 @@ public class NetworkedGame extends AbstractGame {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
 		}
-		//TODO if its a host check that all pings received, then send ReadyCommand, wait for all acknowledgements, then send initialise game
+		//if host check that all pings received, then send ReadyCommand,
+		// wait for all acknowledgements, then send initialise game
 		if(connectionManager.isServer()){
 			numberOfPingsReceived++;
+			if(pingTimeoutReached() && numberOfPingsReceived !=getPlayers().size()){
+				Command LeaveGameCommand = localPlayer.getCommand(CommandType.LEAVE_GAME);
+				connectionManager.sendCommand(LeaveGameCommand);
+			}
 			if(numberOfPingsReceived ==getPlayers().size()){
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
-				localPlayer.notifyCommand(readyCommand);
-				
+				connectionManager.sendCommand(readyCommand);
+				while(!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())){
+					try {
+						wait(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
+				Command initialiseGameCommand = localPlayer.getCommand(CommandType.INITIALISE_GAME);
+				connectionManager.sendCommand(initialiseGameCommand);
 			}
 		}
+	}
+
+	private boolean pingTimeoutReached() {
+		Date currentTime = new Date();
+		long timePassedMilliSeconds = currentTime.getTime() - timePingSent.getTime();
+		int timePassedInSeconds = (int)timePassedMilliSeconds/1000;
+		if(timePassedInSeconds>moveTimeout) return true;
+		return false;
+	}
+
+	/**
+	 * Timeout players that haven't acknowledged the specified command
+	 * @param ackId the ackId of the command being checked for
+	 */
+	private void timeoutPlayersNotAcknowledged(int ackId) {
+		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
+		List<Player> players = getPlayers();
+		for(int i =0; i<6; i++){
+			if(!playersAcks[i] && !players.get(i).isNeutral()){
+				Command timeoutCommand = localPlayer.getCommand(CommandType.TIMEOUT);
+				connectionManager.sendCommand(timeoutCommand);
+				players.get(i).makeNeutral();
+			}
+		}
+	}
+
+	private boolean timeoutReached(int ackId) {
+		Acknowledgement acknowledgement = acknowledgements.get(ackId);
+		Date timeCreated = acknowledgement.getTimeCreated();
+		Date currentTime = new Date();
+		long timePassedMilliSeconds = currentTime.getTime() - timeCreated.getTime();
+		int timePassedInSeconds = (int)timePassedMilliSeconds/1000;
+		if(timePassedInSeconds>acknowledgementTimeout) return true;
+		return false;
+	}
+
+	public boolean allAcknowledgementsReceived(int ackId){
+		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
+		List<Player> players = getPlayers();
+		for(int i =0; i<6; i++){
+			if(!playersAcks[i] && !players.get(i).isNeutral()){
+					return false;
+			}
+		}
+		return true;
 	}
 
 	/**

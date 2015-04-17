@@ -16,7 +16,7 @@ public class Acknowledgement {
 	}
 
 
-	public Date getDate() {
+	public Date getTimeCreated() {
 		return date;
 	}
 
@@ -27,4 +27,5 @@ public class Acknowledgement {
 	public boolean[] getPlayersAcknowledged() {
 		return playersAcknowledged;
 	}
+
 }
