@@ -415,13 +415,21 @@ public class LocalPlayer extends Player {
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid TimeoutCommand.");
+		}	
 	}
 	
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
-		gameState.playCommand(command);
+		if(gameState.isCommandValid(command)){
+			gameState.playCommand(command);
+		} else {
+			System.out.println("Invalid LeaveGameCommand.");
+		}	
 	}
 	
 	public void notifyCommand(PlayCardsCommand command)
