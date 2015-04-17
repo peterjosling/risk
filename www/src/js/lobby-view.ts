@@ -42,7 +42,7 @@ class LobbyView extends View<Game> {
 			});
 		} else {
 			var player = new Player({
-				id: this.model.playerList.length,
+				player_id: this.model.playerList.length,
 				name: message.payload.name
 			});
 
