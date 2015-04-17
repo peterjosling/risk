@@ -22,9 +22,9 @@ public class LocalPlayer extends Player {
 		super(id, name);
 	}
 
-	public void initialiseGameState(ArrayList<Integer> players)
+	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
-		gameState = new GameState(players);
+		gameState = new GameState(playerInts);
 	}
 	
 	@Override

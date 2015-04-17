@@ -21,6 +21,8 @@ import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class AIPlayer extends Player {
 	private GameState gameState;
@@ -39,7 +41,8 @@ public class AIPlayer extends Player {
 	}
 	
 	@Override
-	public Command getCommand(CommandType type) {
+	public Command getCommand(CommandType type) 
+	{
 		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
@@ -103,28 +106,30 @@ public class AIPlayer extends Player {
 		return new AssignArmyCommand(getId(), ++ack_id, territory.getId());
 	}
 
-	private Command getRollHashCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	public Command getRollNumberCommand()
+	{
+		String hash = "";
+		return new RollNumberCommand(this.getId(), hash);
 	}
 
-	private Command getRollNumberCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	public Command getRollHashCommand()
+	{
+		String hash = "";
+		return new RollHashCommand(this.getId(), hash);
 	}
 
-	private Command getPlayCardsCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	private Command getPlayCardsCommand() 
+	{
+		return null;		
 	}
 
-	private Command getLeaveGameCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	public Command getLeaveGameCommand()
+	{
+		return new LeaveGameCommand(this.getId(), lastAckid++, 100, false);
 	}
 
-	private Command getAttackCaptureCommand() {
-		
+	private Command getAttackCaptureCommand() 
+	{	
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
 		
 		int armies = source.getArmies() - 1;
@@ -134,7 +139,8 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
-	private Command getDefendCommand() {
+	private Command getDefendCommand() 
+	{
 		Territory dest = gameState.getMap().findTerritoryById(attackDestId);
 		int armies;
 		if(dest.getArmies() >= 2) {
@@ -151,17 +157,45 @@ public class AIPlayer extends Player {
 		}
 	}
 
-	private Command getDrawCardCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	public Command getDrawCardCommand()
+	{
+		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+			return getDrawCardCommand();	
+		}	
 	}
 
-	private Command getFortifyCommand() {
-		return null;
+	private Command getFortifyCommand() 
+	{
+		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++);
+		return command;
 	}
 
-	private Command getAttackCommand() {
-		return null;
+	private Command getAttackCommand() 
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+		int sourceId = 1;
+		int destId = 1;
+		int armies = 1;
+		for(Territory territory : territories){
+			if(territory.getArmies() > 1){
+				Set<Territory> linkedTerritories = territory.getLinkedTerritories();
+				for(Territory currentLinkedTerr : linkedTerritories){
+					if(currentLinkedTerr.getOwner() != this.getId()){
+						sourceId = territory.getId();
+						destId = currentLinkedTerr.getId();
+						armies = territory.getArmies() - 1;
+					}
+				}
+			} else {
+				continue;
+			}
+		}
+		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
+		return command;
 	}
 	
 	@Override
@@ -182,10 +216,6 @@ public class AIPlayer extends Player {
 			notifyCommand((DefendCommand) command);
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
-		case PLAYERS_JOINED:
-			notifyCommand((PlayersJoinedCommand) command);
-		case READY:
-			notifyCommand((ReadyCommand) command);
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
 		case LEAVE_GAME:
@@ -291,7 +321,4 @@ public class AIPlayer extends Player {
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		gameState.playCommand(command);
 	}
-		
-
-
 }

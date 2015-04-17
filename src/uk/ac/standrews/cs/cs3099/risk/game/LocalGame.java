@@ -1,5 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 
 public class LocalGame extends AbstractGame {
@@ -9,14 +12,19 @@ public class LocalGame extends AbstractGame {
 		
 		addPlayer(new LocalPlayer(0));
 		
+		ArrayList<Integer> playerInts = new ArrayList<Integer>();
+		
 		for (int i = 1; i < playerCount; i++) {
 			Player player = new LocalPlayer(i);
-
+			playerInts.add(player.getId());
 			addPlayer(player);
 		}
 		
-		// Initialise all player gameStates
-
+		for(Player player : this.getPlayers()){
+			LocalPlayer localPlayer = (LocalPlayer) player;
+			localPlayer.initialiseGameState(playerInts);
+		}
+		
 		this.loadMap(jsonMap);
 	}
 
