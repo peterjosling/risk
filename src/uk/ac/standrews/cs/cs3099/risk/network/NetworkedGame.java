@@ -279,14 +279,6 @@ public class NetworkedGame extends AbstractGame {
 		}
 	}
 
-	private boolean pingTimeoutReached() {
-		Date currentTime = new Date();
-		long timePassedMilliSeconds = currentTime.getTime() - timePingSent.getTime();
-		int timePassedInSeconds = (int)timePassedMilliSeconds/1000;
-		if(timePassedInSeconds>moveTimeout) return true;
-		return false;
-	}
-
 	/**
 	 * Timeout players that haven't acknowledged the specified command
 	 * @param ackId the ackId of the command being checked for
@@ -303,6 +295,23 @@ public class NetworkedGame extends AbstractGame {
 		}
 	}
 
+	/**
+	 * Checks whether timeout for ping has been reached
+	 * @return true if timeout reached
+	 */
+	private boolean pingTimeoutReached() {
+		Date currentTime = new Date();
+		long timePassedMilliSeconds = currentTime.getTime() - timePingSent.getTime();
+		int timePassedInSeconds = (int)timePassedMilliSeconds/1000;
+		if(timePassedInSeconds>moveTimeout) return true;
+		return false;
+	}
+
+	/**
+	 * Checks whether timeout for command given by ackId has been reached
+	 * @param ackId the ackId of the command to check
+	 * @return true if timeout reached, false if not
+	 */
 	private boolean timeoutReached(int ackId) {
 		Acknowledgement acknowledgement = acknowledgements.get(ackId);
 		Date timeCreated = acknowledgement.getTimeCreated();
@@ -313,6 +322,11 @@ public class NetworkedGame extends AbstractGame {
 		return false;
 	}
 
+	/**
+	 * checks whether an acknowledgement for a command given by ackId has been received for every player
+	 * @param ackId the ackId of the command to check
+	 * @return true if all received, false if not
+	 */
 	public boolean allAcknowledgementsReceived(int ackId){
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
