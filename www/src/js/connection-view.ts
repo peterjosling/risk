@@ -6,7 +6,8 @@ class ConnectionView extends View<Game> {
 
 	get events() : any {
 		return {
-			'click .connect-button': 'connectButtonClick'
+			'click .connect-button': 'connectButtonClick',
+			'click .host-button': 'hostButtonClick'
 		};
 	}
 
@@ -24,6 +25,20 @@ class ConnectionView extends View<Game> {
 		this.model.connect(hostname, port).catch(() => {
 			this.model.showToast('Failed to connect to server.');
 			// TODO give reason.
+			this.enableInputs();
+		});
+
+		// TODO show loading indicator.
+		return false;
+	}
+
+	hostButtonClick(e : Event) : boolean {
+		var port : number = +this.$('#host-port').val();
+
+		this.disableInputs();
+		this.model.showToast('Starting server...');
+		this.model.startServer(port).catch(() => {
+			this.model.showToast('Failed to start server.');
 			this.enableInputs();
 		});
 

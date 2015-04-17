@@ -50,6 +50,29 @@ class Game extends Model {
 		});
 	}
 
+	startServer(port : number) : Promise<Messages.Message> {
+		return new Promise<Messages.Message>((resolve, reject) => {
+			this.socket = new WebSocket(HOST);
+			this.socket.onmessage = this.messageReceived.bind(this);
+			this.socket.onopen = () => {
+				this.sendMessage({
+					command: 'server_start',
+					payload: {
+						port: port
+					}
+				});
+
+				// TODO check the host could actually listen on that port before resolving.
+				this.trigger('connected');
+				resolve();
+			};
+
+			this.socket.onerror = (error) => {
+				reject(error);
+			};
+		});
+	}
+
 	showToast(message : string) {
 		this.trigger('toast', message);
 	}
