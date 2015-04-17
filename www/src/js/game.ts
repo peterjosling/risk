@@ -62,7 +62,7 @@ class Game extends Model {
 	}
 
 	startServer(port : number) : Promise<Messages.Message> {
-		this._isHost = false;
+		this._isHost = true;
 
 		return new Promise<Messages.Message>((resolve, reject) => {
 			this.socket = new WebSocket(HOST);
