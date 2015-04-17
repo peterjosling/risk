@@ -5,6 +5,10 @@ import Messages = require('./messages');
 class ConnectionView extends View<Game> {
 	template = <Function>require('../hbs/connection-view.hbs');
 
+	get className() : string {
+		return 'connection-view';
+	}
+
 	get events() : any {
 		return {
 			'click .connect-button': 'connectButtonClick',
