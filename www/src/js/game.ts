@@ -114,7 +114,7 @@ class Game extends Model {
 				break;
 
 			case 'defend':
-				this.attackMessageReceived(<Messages.DefendMessage>message);
+				this.defendMessageReceived(<Messages.DefendMessage>message);
 				break;
 
 			case 'deploy':
