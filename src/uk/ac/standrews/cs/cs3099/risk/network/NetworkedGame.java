@@ -76,7 +76,7 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param command The command received from a player or the host.
 	 */
-	protected void messageReceived(Command command)
+	protected void messageReceived(Command command, PlayerSocket playerSocket)
 	{
 		// Handle commands which don't come from an individual player.
 		switch (command.getType()) {

@@ -22,6 +22,11 @@ public class PlayerSocket implements Runnable {
 		writer = new PrintWriter(socket.getOutputStream());
 	}
 
+	/**
+	 * Send the specified command to this player only. Should be used to send player-specific messages from the host.
+	 *
+	 * @param command The command to send.
+	 */
 	public void sendCommand(Command command)
 	{
 		String commandJSON = command.toJSON();
@@ -50,7 +55,7 @@ public class PlayerSocket implements Runnable {
 					continue;
 				}
 
-				game.messageReceived(command);
+				game.messageReceived(command, this);
 			} catch (IOException e) {
 				System.err.println("Failed to read from client socket.");
 				e.printStackTrace();
