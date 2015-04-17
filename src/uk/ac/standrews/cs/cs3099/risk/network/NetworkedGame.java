@@ -72,6 +72,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		localPlayer = player;
+		addPlayer(player);
 	}
 
 	/**
