@@ -112,6 +112,10 @@ class Game extends Model {
 		var message : Messages.Message = JSON.parse(event.data);
 
 		switch (message.command) {
+			case 'join_game':
+				this.joinGameMessageReceived(<Messages.JoinGameMessage>message);
+				break;
+
 			case 'accept_join_game':
 				this.acceptJoinGameMessageReceived(<Messages.AcceptJoinGameMessage>message);
 				break;
@@ -150,8 +154,12 @@ class Game extends Model {
 		}
 	}
 
-	private sendMessage(json : Messages.Message) {
+	sendMessage(json : Messages.Message) {
 		this.socket.send(JSON.stringify(json));
+	}
+
+	private joinGameMessageReceived(message : Messages.JoinGameMessage) {
+		this.trigger('playerJoinRequested', message);
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {

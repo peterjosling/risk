@@ -2,6 +2,14 @@ export interface Message {
 	command : string;
 }
 
+export interface JoinGameMessage extends Message {
+	payload : {
+		supported_versions : Array<number>;
+		supported_features : Array<string>;
+		name : string;
+	}
+}
+
 export interface AcceptJoinGameMessage extends Message {
 	payload : {
 		player_id : number;
