@@ -11,12 +11,12 @@ public class LocalPlayer extends Player {
 	private GameState gameState;
 	private int attackSourceId;
 	private int attackDestId;
-	
+
 	public LocalPlayer(int id)
 	{
 		super(id);
 	}
-	
+
 	public LocalPlayer(int id, String name)
 	{
 		super(id, name);
@@ -26,7 +26,13 @@ public class LocalPlayer extends Player {
 	{
 		gameState = new GameState(playerInts);
 	}
-	
+
+	/**
+	 * Orchestrates the getCommand methods for each command, creating commands taking deatials from a player
+	 * via the command line.
+	 * @param type - the type of command
+	 * @return - the newly created command
+	 */
 	@Override
 	public Command getCommand(CommandType type) {
 		switch (type) {
@@ -73,6 +79,10 @@ public class LocalPlayer extends Player {
 		}
 	}
 
+	/**
+	 * Creates an AssignArmy command
+	 * @return the command
+	 */
 	public Command getAssignArmyCommand()
 	{
 		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
@@ -86,6 +96,10 @@ public class LocalPlayer extends Player {
 		}
 	}
 
+	/**
+	 * Creates an attack command.
+	 * @return the new AttackCommand
+	 */
 	public Command getAttackCommand()
 	{
 		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
@@ -99,10 +113,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getAttackCommand();	
+			return getAttackCommand();
 		}
 	}
 
+	/**
+	 * Creates a new Fortify command
+	 * @return new Fortify Command
+	 */
 	public Command getFortifyCommand()
 	{
 		System.out.println("Choose Territory to Fortify from. Enter Territory ID:");
@@ -117,10 +135,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getFortifyCommand();	
+			return getFortifyCommand();
 		}
 	}
 
+	/**
+	 * Creates a deployment command
+	 * @return the new deployment command
+	 */
 	public Command getDeployCommand()
 	{
 		System.out.println("Enter number of deployments:");
@@ -140,10 +162,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getDeployCommand();	
+			return getDeployCommand();
 		}
 	}
 
+	/**
+	 * Creates a draw card command
+	 * @return the new draw card command
+	 */
 	public Command getDrawCardCommand()
 	{
 		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
@@ -151,10 +177,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getDrawCardCommand();	
-		}	
+			return getDrawCardCommand();
+		}
 	}
 
+	/**
+	 * Creates a DefendCommand
+	 * @return creates a new defend command
+	 */
 	public Command getDefendCommand()
 	{
 		// Validate... Def territory stored
@@ -165,10 +195,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getDefendCommand();	
+			return getDefendCommand();
 		}
 	}
 
+	/**
+	 * Creates a join game command
+	 * @return - the new JoinGameCommand
+	 */
 	public Command getJoinGameCommand()
 	{
 		float[] supportedVersions = {1};
@@ -176,6 +210,10 @@ public class LocalPlayer extends Player {
 		return new JoinGameCommand(supportedVersions, supportedFeatures);
 	}
 
+	/**
+	 * Creates an accept game command
+	 * @return the new AcceptGameCommand
+	 */
 	public Command getAcceptJoinGameCommand()
 	{
 		int ackTimeout = 4; //Check these values
@@ -183,22 +221,38 @@ public class LocalPlayer extends Player {
 		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
 	}
 
+	/**
+	 * Creates a RejectGame Command
+	 * @return the new RejectGameCommand
+	 */
 	public Command getRejectJoinGameCommand()
 	{
 		String message = "Game in progress";
 		return new RejectJoinGameCommand(message);
 	}
 
+	/**
+	 * Creates an Acknowledgement command
+	 * @return the new AcknowledgementCommand
+	 */
 	public Command getAcknowledgementCommand(){
 		return new AcknowledgementCommand(this.getId(), lastAckid++);
 	}
 
+	/**
+	 * Creates a TimeoutCommand
+	 * @return the new TimeoutCommand
+	 */
 	public Command getTimeoutCommand()
 	{
 		int timedOutPlayerId = EasyIn.getInt();
 		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
 	}
 
+	/**
+	 * Creates an AttackCaptureCommand
+	 * @return the new AttackCapture Command
+	 */
 	public Command getAttackCaptureCommand()
 	{
 		int armies = EasyIn.getInt();
@@ -208,10 +262,14 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getAttackCaptureCommand();	
-		}		
+			return getAttackCaptureCommand();
+		}
 	}
 
+	/**
+	 * Creates a LeaveGameCommand
+	 * @return the new LeaveGameCommand
+	 */
 	public Command getLeaveGameCommand()
 	{
 		int response = EasyIn.getInt();
@@ -229,6 +287,10 @@ public class LocalPlayer extends Player {
 		return new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
 	}
 
+	/**
+	 * Creates a PlayCardCommand
+	 * @return the new PlayCardsCommand
+	 */
 	public Command getPlayCardsCommand()
 	{
 		System.out.println("Select number of card sets to trade in:");
@@ -259,35 +321,55 @@ public class LocalPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-			return getPlayCardsCommand();	
-		}		
+			return getPlayCardsCommand();
+		}
 	}
 
+	/**
+	 * Creates a new RollNumber command
+	 * @return the new RollNumberCommand
+	 */
 	public Command getRollNumberCommand()
 	{
 		String hash = "";
 		return new RollNumberCommand(this.getId(), hash);
 	}
 
+	/**
+	 * Creates a roll hash command
+	 * @return the new RollHashCommand
+	 */
 	public Command getRollHashCommand(){
 		String hash = "";
 		return new RollHashCommand(this.getId(), hash);
 	}
 
+	/**
+	 * Creates a ping command
+	 * @return the new ping command
+	 */
 	public Command getPingCommand() {
 		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
 	}
 
+	/**
+	 * Creates a ready command
+	 * @return the new ReadyCommand
+	 */
 	public Command getReadyCommand() {
 		return new ReadyCommand(this.getId(), lastAckid++);
 	}
 
+	/**
+	 * Creates an initialise game command
+	 * @return the new InitialiseGameCommand
+	 */
 	public Command getInitialiseGameCommand(){
 		int version = 1;
 		String[] supportedFeatures = {};
 		return new InitialiseGameCommand(version, supportedFeatures);
 	}
-
+	
 	@Override
 	public void notifyCommand(Command command)
 	{
@@ -326,7 +408,7 @@ public class LocalPlayer extends Player {
 			notifyCommand((LeaveGameCommand) command);
 		}
 	}
-		
+
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
@@ -337,7 +419,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AssignArmyCommand.");
 		}
 	}
-	
+
 	public void notifyCommand(AttackCommand command)
 	{
 		this.attackSourceId = command.getSource();
@@ -352,7 +434,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(FortifyCommand command)
 	{
 		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
@@ -365,7 +447,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid FortifyCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(DeployCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
@@ -379,7 +461,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DeployCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(DrawCardCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
@@ -389,7 +471,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DrawCardCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(DefendCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
@@ -400,7 +482,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DefendCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
@@ -411,7 +493,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCaptureCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
@@ -421,7 +503,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid TimeoutCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
@@ -431,7 +513,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid LeaveGameCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(PlayCardsCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
@@ -446,7 +528,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid PlayCardsCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(RollNumberCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
@@ -456,7 +538,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollNumberCommand.");
 		}	
 	}
-	
+
 	public void notifyCommand(RollHashCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
