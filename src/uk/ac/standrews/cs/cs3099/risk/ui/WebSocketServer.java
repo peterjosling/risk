@@ -6,6 +6,7 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
+import uk.ac.standrews.cs.cs3099.risk.game.MapParseException;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
@@ -32,8 +33,6 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	public void onClose(WebSocket webSocket, int i, String s, boolean b)
 	{
 		System.out.println("Client disconnected: " + webSocket);
-
-		// TODO terminate game.
 	}
 
 	@Override
@@ -77,7 +76,12 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
 		System.out.println("Connecting");
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = null;
+		try {
+			game = new NetworkedGame(24, "");
+		} catch (MapParseException e) {
+			e.printStackTrace();
+		}
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
@@ -86,6 +90,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 			game.connectToServer(command.getHostname(), command.getPort());
 		} catch (IOException e) {
 			System.err.println("Failed to connect to remote host.");
+			e.printStackTrace();
 		}
 	}
 
@@ -97,15 +102,13 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		Player player = new UIPlayer(ws, 0, "Player names not implemented");
-		NetworkedGame game = new NetworkedGame(24);
-		game.setLocalPlayer(player);
-		games.put(ws.getRemoteSocketAddress(), game);
-
+		AbstractGame game = null;
 		try {
-			game.startServer(command.getPort());
-		} catch (IOException e) {
-			System.err.println("Couldn't start host server on port " + command.getPort());
+			game = new NetworkedGame(24, "");
+		} catch (MapParseException e) {
+			e.printStackTrace();
 		}
+		Player player = new UIPlayer(ws, 0, "Test player");
+		games.put(ws.getRemoteSocketAddress(), game);
 	}
 }

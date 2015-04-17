@@ -32,6 +32,10 @@ public class LocalPlayer extends Player {
 		return isNeutral;
 	}
 
+	public void makeNeutral() {
+		isNeutral = !isNeutral;
+	}
+
 	/**
 	 * Orchestrates the getCommand methods for each command, creating commands taking deatials from a player
 	 * via the command line.

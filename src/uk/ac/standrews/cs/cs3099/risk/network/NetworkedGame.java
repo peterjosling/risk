@@ -26,6 +26,7 @@ public class NetworkedGame extends AbstractGame {
 	{
 		super(armiesPerPlayer);
 		this.loadMap(jsonMap);
+		//TODO stop catching exceptions everywhere
 	}
 
 	/**
@@ -262,7 +263,7 @@ public class NetworkedGame extends AbstractGame {
 				Command LeaveGameCommand = localPlayer.getCommand(CommandType.LEAVE_GAME);
 				connectionManager.sendCommand(LeaveGameCommand);
 			}
-			if(numberOfPingsReceived ==getPlayers().size()){
+			if(numberOfPingsReceived == getPlayers().size()){
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
 				connectionManager.sendCommand(readyCommand);
 				while(!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())){
