@@ -13,6 +13,8 @@ public class NetworkedGame extends AbstractGame {
 	private Player localPlayer;
 	private int moveTimeout;
 	private int acknowledgementTimeout;
+	private String[] turnRollHashes;
+	private String[] turnRollNumbers;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -30,7 +32,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	public void startServer(int port) throws IOException
 	{
-		// TODO ensure move/ack timeouts are set.
+		// TODO ensure move/ack timeouts are set, or set defaults above.
 
 		if (connectionManager != null) {
 			return;
@@ -108,6 +110,14 @@ public class NetworkedGame extends AbstractGame {
 			case INITIALISE_GAME:
 				initialiseGameCommand((InitialiseGameCommand) command);
 				return;
+
+			case ROLL_HASH:
+				rollHashCommand((RollHashCommand) command);
+				return;
+
+			case ROLL_NUMBER:
+				rollNumberCommand((RollNumberCommand) command);
+				return;
 		}
 
 		// Send acknowledgement.
@@ -118,6 +128,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
+		// TODO forward to all players, if host.
 	}
 
 	/**
@@ -256,6 +267,46 @@ public class NetworkedGame extends AbstractGame {
 	{
 		localPlayer.notifyCommand(command);
 		sendAcknowledgement(command.getAckId());
+	}
+
+	/**
+	 * Store the hash for the initial dice roll to select which player takes the first turn.
+	 *
+	 * @param command
+	 */
+	private void rollHashCommand(RollHashCommand command) {
+		turnRollHashes[command.getPlayerId()] = command.getHash();
+
+		// If we've received them all, send the roll number.
+		boolean hashesReceived = true;
+
+		for (String hash : turnRollNumbers) {
+			hashesReceived = hashesReceived && hash.length() > 0;
+		}
+
+		if (hashesReceived) {
+			RollNumberCommand rollNumberCommand = new RollNumberCommand(localPlayer.getId(), "TODO_IMPLEMENT_NUMBER");
+			connectionManager.sendCommand(rollNumberCommand);
+		}
+	}
+
+	/**
+	 * Store the number for the initial dice roll from each player. Perform the roll if all numbers received.
+	 * @param command
+	 */
+	private void rollNumberCommand(RollNumberCommand command) {
+		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
+		// TODO verify number/hash match.
+
+		boolean rollsReceived = true;
+
+		for (String number : turnRollNumbers) {
+			rollsReceived = rollsReceived && number.length() > 0;
+		}
+
+		if (rollsReceived) {
+			// TODO roll die, get first player.
+		}
 	}
 
 	private void sendAcknowledgement(int ackId)
