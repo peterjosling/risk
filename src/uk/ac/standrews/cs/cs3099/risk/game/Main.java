@@ -14,12 +14,11 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-		
 		String json = "";
 		
 	    BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader("risk_map.json"));
+			br = new BufferedReader(new FileReader("default-map.json"));
 			StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
 
@@ -38,27 +37,13 @@ public class Main {
 		json = json.replaceAll("\t", "");
 
 		System.out.println(json);
+		
+		
 		try {
-			LocalGame game = new LocalGame(json, 4, 10);
-			game.run();
+			LocalGame localGame = new LocalGame(json, 4, 10);
+			localGame.run();
 		} catch (MapParseException e) {
 			e.printStackTrace();
 		}
-//		Logger.print("Risk - Have some countries:");
-//
-//		Map m = new Map();
-//		Random r = new Random();
-//		Player p = new LocalPlayer(0);
-//
-//		for (int i = 0; i < 25; i++)
-//			Logger.print(m.getRandomName(r));
-//
-//		Logger.print("------------------------------------------------------------------------------");
-//		Logger.print("Risk - And some player names:");
-//
-//		for (int i = 0; i < 25; i++)
-//			Logger.print(p.genName());
-//
-//		System.exit(0);
 	}
 }

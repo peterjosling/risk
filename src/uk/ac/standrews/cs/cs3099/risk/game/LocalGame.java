@@ -1,6 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import uk.ac.standrews.cs.cs3099.risk.ai.DumbPlayer;
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 
 public class LocalGame extends AbstractGame {
 	public LocalGame(String jsonMap, int playerCount, int armiesPerPlayer) throws MapParseException

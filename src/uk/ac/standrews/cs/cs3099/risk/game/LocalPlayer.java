@@ -157,7 +157,7 @@ public class LocalPlayer extends Player {
 
 	public Command getDefendCommand()
 	{
-		// Validate...
+		// Validate... Def territory stored
 		System.out.println("Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
 		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, armies);
@@ -307,7 +307,7 @@ public class LocalPlayer extends Player {
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
 		case INITIALISE_GAME:
-			notifyCommand((InitialiseGameCommand) command);
+//			notifyCommand((InitialiseGameCommand) command);
 		case PLAYERS_JOINED:
 			notifyCommand((PlayersJoinedCommand) command);
 		case READY:
