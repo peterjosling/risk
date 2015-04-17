@@ -55,7 +55,10 @@ class App extends View<Model> {
 }
 
 var app = new App();
-document.body.appendChild(app.render().el);
-app.init();
+
+window.addEventListener('load', function() {
+	document.body.appendChild(app.render().el);
+	app.init();
+});
 
 export = app;
