@@ -68,8 +68,6 @@ public class AIPlayer extends Player {
 				return getRejectJoinGameCommand();
 			case ACKNOWLEDGEMENT:
 				return getAcknowledgementCommand();
-			case TIMEOUT:
-//				return getTimeoutCommand();
 			case ATTACK_CAPTURE:
 				return getAttackCaptureCommand();
 			case LEAVE_GAME:
@@ -128,13 +126,8 @@ public class AIPlayer extends Player {
 		String[] supportedFeatures = {};
 		return new InitialiseGameCommand(version, supportedFeatures);
 	}
-	
-//	public Command getTimeoutCommand()
-//	{
-//		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
-//	}
-	
-	private DeployCommand getDeployCommand() 
+
+	public DeployCommand getDeployCommand() 
 	{
 		// Deploys all troops to first owned territory.
 		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
@@ -149,7 +142,7 @@ public class AIPlayer extends Player {
 		return null;
 	}
 	
-	private AssignArmyCommand getAssignArmyCommand()
+	public AssignArmyCommand getAssignArmyCommand()
 	{
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
@@ -175,12 +168,11 @@ public class AIPlayer extends Player {
 		return new RollHashCommand(this.getId(), hash);
 	}
 
-	private Command getPlayCardsCommand() 
+	public Command getPlayCardsCommand() 
 	{
-		
 		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
 		
-		ArrayList<ArrayList<Card>> cardTypes = new ArrayList<ArrayList<Card>>();
+		ArrayList<ArrayList<Card>> nonWildCards = new ArrayList<ArrayList<Card>>();
 		
 		ArrayList<Card> artillery = new ArrayList<Card>();
 		ArrayList<Card> infantry = new ArrayList<Card>();
@@ -198,13 +190,12 @@ public class AIPlayer extends Player {
 			if(card.getCardType() == Card.CardType.WILD) wild.add(card);
 		}
 		
-		cardTypes.add(artillery);
-		cardTypes.add(infantry);
-		cardTypes.add(cavalry);
-//		cardTypes.add(wild);
+		nonWildCards.add(artillery);
+		nonWildCards.add(infantry);
+		nonWildCards.add(cavalry);
 		
 		// 3 CARDS OF SAME TYPE
-		for(ArrayList<Card> currentType : cardTypes){
+		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
 				cards[0] =  (Card[]) (currentType.subList(0, 3)).toArray();
 				return new PlayCardsCommand(this.getId(), lastAckid++, cards);
@@ -214,7 +205,7 @@ public class AIPlayer extends Player {
 		// 3 CARDS OF DIFFERENT TYPE
 		if(artillery.size() > 0 && infantry.size() > 0 && cavalry.size() > 0){
 			for(int i = 0; i < 3; i++){
-				cards[0][i] = cardTypes.get(i).get(0);
+				cards[0][i] = nonWildCards.get(i).get(0);
 			}
 			return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		}
@@ -224,7 +215,7 @@ public class AIPlayer extends Player {
 		if((wild.size() > 0) && (total > 1)){
 			int count = 1;
 			cards[0][0] = wild.get(0);
-			for(ArrayList<Card> currentType : cardTypes){
+			for(ArrayList<Card> currentType : nonWildCards){
 				for(Card currentCard : currentType){
 					cards[0][count] = currentCard;
 					count ++;
@@ -234,7 +225,6 @@ public class AIPlayer extends Player {
 				}
 			}
 		}
-
 		return new PlayCardsCommand(this.getId(), lastAckid++);
 	}
 
@@ -243,7 +233,7 @@ public class AIPlayer extends Player {
 		return new LeaveGameCommand(this.getId(), lastAckid++, 100, false);
 	}
 
-	private Command getAttackCaptureCommand() 
+	public Command getAttackCaptureCommand() 
 	{	
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
 		
@@ -259,7 +249,7 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
-	private Command getDefendCommand() 
+	public Command getDefendCommand() 
 	{
 		Territory dest = gameState.getMap().findTerritoryById(attackDestId);
 		int armies;
@@ -288,13 +278,13 @@ public class AIPlayer extends Player {
 		}	
 	}
 
-	private Command getFortifyCommand() 
+	public Command getFortifyCommand() 
 	{
 		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++);
 		return command;
 	}
 
-	private Command getAttackCommand() 
+	public Command getAttackCommand() 
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
 		int sourceId = 1;
