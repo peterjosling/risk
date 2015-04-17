@@ -10,6 +10,7 @@ public class HostServer implements Runnable {
 
 	public HostServer(ConnectionManager connectionManager, ServerSocket serverSocket)
 	{
+		this.connectionManager = connectionManager;
 		this.serverSocket = serverSocket;
 	}
 

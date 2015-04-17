@@ -1,10 +1,6 @@
 /// <reference path="../../lib/backbone/backbone.d.ts" />
 import Backbone = require('backbone');
 
-interface Template {
-	(data? : any) : string
-}
-
 interface ChildView {
 	view: View<Backbone.Model>
 	el: string

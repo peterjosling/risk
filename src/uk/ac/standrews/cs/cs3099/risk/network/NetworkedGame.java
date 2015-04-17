@@ -72,6 +72,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		localPlayer = player;
+		addPlayer(player);
 	}
 
 	/**
@@ -142,7 +143,9 @@ public class NetworkedGame extends AbstractGame {
 		List<Player> players = getPlayers();
 
 		// TODO check if game in progress and reject.
-		// TODO forward this command to UIPlayers and get a response.
+		// TODO get a response from the UIPlayer.
+
+		localPlayer.notifyCommand(joinCommand);
 
 		// Automatically accept players up until the limit.
 		Command command;

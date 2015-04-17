@@ -14,6 +14,7 @@ class Game extends Model {
 	playerList : Collection<Player>;
 	self : Player;
 	map : Map;
+	_isHost: boolean;
 
 	constructor(options?) {
 		super(options);
@@ -22,7 +23,13 @@ class Game extends Model {
 		this.map.fromJSON(defaultMapJson);
 	}
 
+	isHost() : boolean {
+		return this._isHost;
+	}
+
 	connect(host : string, port : number) : Promise<Messages.Message> {
+		this._isHost = false;
+
 		return new Promise<Messages.Message>((resolve, reject) => {
 			// Connect to Game server and attempt to join a game.
 			this.socket = new WebSocket(HOST);
@@ -37,6 +44,10 @@ class Game extends Model {
 				});
 			};
 
+			this.socket.onerror = (error) => {
+				reject(error);
+			};
+
 			this.once('acceptJoinGame', (message : Messages.Message) => {
 				this.off('rejectJoinGame');
 				this.trigger('connected');
@@ -47,6 +58,38 @@ class Game extends Model {
 				this.off('acceptJoinGame');
 				reject(message);
 			});
+		});
+	}
+
+	startServer(port : number) : Promise<Messages.Message> {
+		this._isHost = true;
+
+		this.self = new Player({
+			player_id: 0,
+			name: 'TODO Implement player names'
+		});
+
+		this.playerList.add(this.self);
+
+		return new Promise<Messages.Message>((resolve, reject) => {
+			this.socket = new WebSocket(HOST);
+			this.socket.onmessage = this.messageReceived.bind(this);
+			this.socket.onopen = () => {
+				this.sendMessage({
+					command: 'server_start',
+					payload: {
+						port: port
+					}
+				});
+
+				// TODO check the host could actually listen on that port before resolving.
+				this.trigger('connected');
+				resolve();
+			};
+
+			this.socket.onerror = (error) => {
+				reject(error);
+			};
 		});
 	}
 
@@ -85,6 +128,10 @@ class Game extends Model {
 		var message : Messages.Message = JSON.parse(event.data);
 
 		switch (message.command) {
+			case 'join_game':
+				this.joinGameMessageReceived(<Messages.JoinGameMessage>message);
+				break;
+
 			case 'accept_join_game':
 				this.acceptJoinGameMessageReceived(<Messages.AcceptJoinGameMessage>message);
 				break;
@@ -114,7 +161,7 @@ class Game extends Model {
 				break;
 
 			case 'defend':
-				this.attackMessageReceived(<Messages.DefendMessage>message);
+				this.defendMessageReceived(<Messages.DefendMessage>message);
 				break;
 
 			case 'deploy':
@@ -123,8 +170,12 @@ class Game extends Model {
 		}
 	}
 
-	private sendMessage(json : Messages.Message) {
+	sendMessage(json : Messages.Message) {
 		this.socket.send(JSON.stringify(json));
+	}
+
+	private joinGameMessageReceived(message : Messages.JoinGameMessage) {
+		this.trigger('playerJoinRequested', message);
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {

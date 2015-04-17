@@ -61,4 +61,27 @@ public class PingCommand extends Command {
 			return result;
 		}
 	}
+
+	public static class PingCommandDeserializer implements JsonDeserializer<PingCommand> {
+		@Override
+		public PingCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject obj = jsonElement.getAsJsonObject();
+
+			// If the player_id field is null, change it to -1 before we deserialize.
+			JsonElement playerId = obj.get("player_id");
+
+			if (playerId.isJsonNull()) {
+				obj.add("player_id", new JsonPrimitive(-1));
+			}
+
+			PingCommand ping = new PingCommand(obj.get("player_id").getAsInt());
+			JsonElement payload = obj.get("payload");
+
+			if (!payload.isJsonNull()) {
+				ping.payload = payload.getAsInt();
+			}
+
+			return ping;
+		}
+	}
 }

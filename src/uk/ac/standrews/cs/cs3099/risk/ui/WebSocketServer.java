@@ -32,6 +32,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	public void onClose(WebSocket webSocket, int i, String s, boolean b)
 	{
 		System.out.println("Client disconnected: " + webSocket);
+
+		// TODO terminate game.
 	}
 
 	@Override
@@ -84,7 +86,6 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 			game.connectToServer(command.getHostname(), command.getPort());
 		} catch (IOException e) {
 			System.err.println("Failed to connect to remote host.");
-			e.printStackTrace();
 		}
 	}
 
@@ -96,8 +97,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		AbstractGame game = new NetworkedGame(24);
-		Player player = new UIPlayer(ws, 0, "Test player");
+		Player player = new UIPlayer(ws, 0, "Player names not implemented");
+		NetworkedGame game = new NetworkedGame(24);
+		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
+
+		try {
+			game.startServer(command.getPort());
+		} catch (IOException e) {
+			System.err.println("Couldn't start host server on port " + command.getPort());
+		}
 	}
 }

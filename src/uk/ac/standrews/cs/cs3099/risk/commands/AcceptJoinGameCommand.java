@@ -6,9 +6,10 @@ public class AcceptJoinGameCommand extends Command {
 
 	public AcceptJoinGameCommand(int playerId, int ackTimeout, int commandTimeout)
 	{
-		super(playerId);
+		super(-1);
 		this.payload.acknowledgementTimeout = ackTimeout;
 		this.payload.commandTimeout = commandTimeout;
+		this.payload.player_id = playerId;
 	}
 
 	public int getAcknowledgementTimeout()
