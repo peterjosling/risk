@@ -8,6 +8,12 @@ class LobbyView extends View<Game> {
 
 	private requestedPlayers : Array<Messages.JoinGameMessage>;
 
+	get events() : any {
+		return {
+			'click .start-game-button': 'startGameButtonClick'
+		}
+	}
+
 	constructor(options?) {
 		super(options);
 		this.listenTo(this.model.playerList, 'add', this.render);
@@ -18,7 +24,8 @@ class LobbyView extends View<Game> {
 
 	getRenderData() {
 		return {
-			players: this.model.playerList.toJSON()
+			players: this.model.playerList.toJSON(),
+			isHost: this.model.isHost()
 		}
 	}
 
@@ -51,6 +58,23 @@ class LobbyView extends View<Game> {
 		}
 
 		this.model.sendMessage(response);
+	}
+
+	startGameButtonClick() : void {
+		if (this.model.playerList.length < 3) {
+			this.model.showToast('Not enough players');
+			return;
+		}
+
+		// TODO host will already be sending this. Probably want to send something else instead to trigger game start.
+		var pingCommand = <Messages.PingMessage>({
+			command: 'ping',
+			player_id: this.model.self.id,
+			payload: this.model.playerList.length
+		});
+
+		this.model.sendMessage(pingCommand);
+		this.$('.start-game-button').remove()
 	}
 }
 

@@ -3,3 +3,7 @@
 {{#each players}}
 	<div>{{name}}</div>
 {{/each}}
+
+{{#if isHost}}
+	<button class="start-game-button">Start game</button>
+{{/if}}
