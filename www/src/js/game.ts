@@ -14,6 +14,7 @@ class Game extends Model {
 	playerList : Collection<Player>;
 	self : Player;
 	map : Map;
+	_isHost: boolean;
 
 	constructor(options?) {
 		super(options);
@@ -22,7 +23,13 @@ class Game extends Model {
 		this.map.fromJSON(defaultMapJson);
 	}
 
+	isHost() : boolean {
+		return this._isHost;
+	}
+
 	connect(host : string, port : number) : Promise<Messages.Message> {
+		this._isHost = false;
+
 		return new Promise<Messages.Message>((resolve, reject) => {
 			// Connect to Game server and attempt to join a game.
 			this.socket = new WebSocket(HOST);
@@ -55,6 +62,8 @@ class Game extends Model {
 	}
 
 	startServer(port : number) : Promise<Messages.Message> {
+		this._isHost = false;
+
 		return new Promise<Messages.Message>((resolve, reject) => {
 			this.socket = new WebSocket(HOST);
 			this.socket.onmessage = this.messageReceived.bind(this);
