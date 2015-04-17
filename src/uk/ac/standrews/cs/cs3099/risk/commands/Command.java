@@ -15,6 +15,7 @@ public abstract class Command {
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNameSerializer());
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
 		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandSerializer());
+		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandDeserializer());
 		gson = builder.serializeNulls().create();
 	}
 
