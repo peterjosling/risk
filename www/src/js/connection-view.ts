@@ -18,15 +18,25 @@ class ConnectionView extends View<Game> {
 		var hostname : string = this.$('#connection-host').val(),
 			port : number = this.$('#connection-port').val();
 
-		this.model.showToast('Connecting...')
+		this.disableInputs();
+		this.model.showToast('Connecting...');
 
 		this.model.connect(hostname, port).catch(() => {
 			this.model.showToast('Failed to connect to server.');
 			// TODO give reason.
+			this.enableInputs();
 		});
 
 		// TODO show loading indicator.
 		return false;
+	}
+
+	disableInputs() : void {
+		this.$('input, button').prop('disabled', true);
+	}
+
+	enableInputs() : void {
+		this.$('input, button').prop('disabled', false);
 	}
 }
 
