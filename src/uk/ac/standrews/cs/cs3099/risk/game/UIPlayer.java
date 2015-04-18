@@ -40,4 +40,13 @@ public class UIPlayer extends Player {
 	{
 		webSocket.send(command.toJSON());
 	}
+
+	@Override
+	public boolean isNeutral() {
+		return isNeutral;
+	}
+
+	public void makeNeutral() {
+		isNeutral = true;
+	}
 }

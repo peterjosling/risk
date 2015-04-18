@@ -13,6 +13,6 @@ public class NetworkedGameTest {
 		game.startServer(1234);
 
 		NetworkedGame client = new NetworkedGame(24);
-		game.connectToServer("localhost", 1234);
+		client.connectToServer("localhost", 1234);
 	}
 }

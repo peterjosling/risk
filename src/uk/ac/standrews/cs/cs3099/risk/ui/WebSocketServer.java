@@ -33,7 +33,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	{
 		System.out.println("Client disconnected: " + webSocket);
 
-		// TODO terminate game.
+		// TODO terminate game
 	}
 
 	@Override
@@ -78,6 +78,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	{
 		System.out.println("Connecting");
 		NetworkedGame game = new NetworkedGame(24);
+
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
@@ -99,6 +100,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	{
 		Player player = new UIPlayer(ws, 0, "Player names not implemented");
 		NetworkedGame game = new NetworkedGame(24);
+		game.loadDefaultMap();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 

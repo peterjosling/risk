@@ -235,7 +235,7 @@ public class AIPlayer extends Player {
 
 	public Command getLeaveGameCommand()
 	{
-		return new LeaveGameCommand(this.getId(), lastAckid++, 100, false);
+		return new LeaveGameCommand(this.getId(), lastAckid++, 100, "", false);
 	}
 
 	public Command getAttackCaptureCommand() 
@@ -349,7 +349,17 @@ public class AIPlayer extends Player {
 			notifyCommand((LeaveGameCommand) command);
 		}
 	}
-	
+
+	@Override
+	public boolean isNeutral() {
+		return isNeutral;
+	}
+
+	@Override
+	public void makeNeutral() {
+		isNeutral = true;
+	}
+
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();

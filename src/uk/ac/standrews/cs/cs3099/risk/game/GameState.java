@@ -1,12 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.Card.CardType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -41,9 +40,9 @@ public class GameState {
 		playerCards = new ArrayList[getNumberOfPlayers()];
 	}
 
-	public void loadMap(MapParser m) throws MapParseException
+	public void loadMap(String mapJSON)
 	{
-		map = new Map(m);
+		map = Map.fromJSON(mapJSON);
 	}
 
 	public Map getMap(){

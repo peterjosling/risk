@@ -74,4 +74,8 @@ public class ConnectionManager {
 			e.printStackTrace();
 		}
 	}
+
+	public boolean isServer() {
+		return isServer;
+	}
 }

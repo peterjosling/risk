@@ -10,12 +10,12 @@ import java.util.Random;
 public class Deck {
 
 	private ArrayList<Card> cards;
-	private int topCardIndex =0;
+	private int topCardIndex = 0;
 
 	public Deck(int size)
 	{
 		cards = new ArrayList<Card>(size);
-		populateDeck(size);
+		populateDeck();
 	}
 
 	public ArrayList<Card> getDeck()
@@ -23,7 +23,8 @@ public class Deck {
 		return cards;
 	}
 
-	public int getTopCardIndex() {
+	public int getTopCardIndex()
+	{
 		return topCardIndex;
 	}
 
@@ -39,31 +40,55 @@ public class Deck {
 		cards.add(new Card(id, territoryId, type));
 	}
 
-	/**
-	 * Fills deck with an equal number of Infantry, Cavalry and Artillery cards with a given deck size.
-	 * Any remaining space will be made up of wild cards, so this can mean there are between 0-2 wild cards
-	 * in a game.
-	 *
-	 * @param size
-	 */
-	public void populateDeck(int size)
+
+	public void populateDeck()
 	{
-		Card.CardType cardType = Card.CardType.INFANTRY;
-		Card.CardType cardTypes[] = Card.CardType.values();
-		int numberOfEachCard = size / 3;
-		int cardIndex = 0;
-		int territoryID = 0;
-		for (int cardNumber = 0; cardNumber < size; cardNumber++) {
-			if (cardNumber % numberOfEachCard == 0) { //Changes cardType
-				cardType = cardTypes[cardIndex];
-				cardIndex++;
-			}
-			addCardToDeck(cardNumber, territoryID, cardType);
-			if (cardType == Card.CardType.WILD) {
-				territoryID = -1;
-			} else territoryID++;
-		}
+		addCardToDeck(0, 0, Card.CardType.ARTILLERY);
+		addCardToDeck(1, 1, Card.CardType.CAVALRY);
+		addCardToDeck(2, 2, Card.CardType.CAVALRY);
+		addCardToDeck(3, 3, Card.CardType.ARTILLERY);
+		addCardToDeck(4, 4, Card.CardType.ARTILLERY);
+		addCardToDeck(5, 5, Card.CardType.ARTILLERY);
+		addCardToDeck(6, 6, Card.CardType.ARTILLERY);
+		addCardToDeck(7, 7, Card.CardType.ARTILLERY);
+		addCardToDeck(8, 8, Card.CardType.INFANTRY);
+		addCardToDeck(9, 9, Card.CardType.CAVALRY);
+		addCardToDeck(10, 10, Card.CardType.CAVALRY);
+		addCardToDeck(11, 11, Card.CardType.INFANTRY);
+		addCardToDeck(12, 12, Card.CardType.INFANTRY);
+		addCardToDeck(13, 13, Card.CardType.CAVALRY);
+		addCardToDeck(14, 14, Card.CardType.INFANTRY);
+		addCardToDeck(15, 15, Card.CardType.INFANTRY);
+		addCardToDeck(16, 16, Card.CardType.INFANTRY);
+		addCardToDeck(17, 17, Card.CardType.CAVALRY);
+		addCardToDeck(18, 18, Card.CardType.INFANTRY);
+		addCardToDeck(19, 19, Card.CardType.INFANTRY);
+		addCardToDeck(20, 20, Card.CardType.INFANTRY);
+		addCardToDeck(21, 21, Card.CardType.CAVALRY);
+		addCardToDeck(22, 22, Card.CardType.ARTILLERY);
+		addCardToDeck(23, 23, Card.CardType.INFANTRY);
+		addCardToDeck(24, 24, Card.CardType.ARTILLERY);
+		addCardToDeck(25, 25, Card.CardType.CAVALRY);
+		addCardToDeck(26, 26, Card.CardType.INFANTRY);
+		addCardToDeck(27, 27, Card.CardType.INFANTRY);
+		addCardToDeck(28, 28, Card.CardType.ARTILLERY);
+		addCardToDeck(29, 29, Card.CardType.ARTILLERY);
+		addCardToDeck(30, 30, Card.CardType.ARTILLERY);
+		addCardToDeck(31, 31, Card.CardType.CAVALRY);
+		addCardToDeck(32, 32, Card.CardType.CAVALRY);
+		addCardToDeck(33, 33, Card.CardType.INFANTRY);
+		addCardToDeck(34, 34, Card.CardType.ARTILLERY);
+		addCardToDeck(35, 35, Card.CardType.ARTILLERY);
+		addCardToDeck(36, 36, Card.CardType.CAVALRY);
+		addCardToDeck(37, 37, Card.CardType.CAVALRY);
+		addCardToDeck(38, 38, Card.CardType.INFANTRY);
+		addCardToDeck(39, 39, Card.CardType.CAVALRY);
+		addCardToDeck(40, 40, Card.CardType.ARTILLERY);
+		addCardToDeck(41, 41, Card.CardType.CAVALRY);
+		addCardToDeck(42, -1, Card.CardType.WILD);
+		addCardToDeck(43, -1, Card.CardType.WILD);
 	}
+
 
 	/**
 	 * Deals the card on the top of the deck i.e. the card at the front of the array list of
@@ -78,7 +103,8 @@ public class Deck {
 
 	/**
 	 * Shuffle the cards list currently using java.util.Random until random number generator decided.
-	 * @param seed  - seed for random number generator
+	 *
+	 * @param seed - seed for random number generator
 	 */
 	public void shuffle(long seed)
 	{
