@@ -135,9 +135,6 @@ public class NetworkedGame extends AbstractGame {
 
 		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
 			sendAcknowledgement(ackId);
-
-			// Update value for next acknowledgement
-			this.ackId = ackId + 1;
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -469,6 +466,9 @@ public class NetworkedGame extends AbstractGame {
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
 		connectionManager.sendCommand(ack);
+
+		// Update value for next acknowledgement
+		this.ackId = ackId + 1;
 	}
 
 	private void acknowledgementReceived(AcknowledgementCommand command)
