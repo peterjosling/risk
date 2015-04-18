@@ -227,6 +227,11 @@ public class NetworkedGame extends AbstractGame {
 				timePingSent = new Date();
 				connectionManager.sendCommand(pingCommand);
 
+				// If this is a playing host, mark it has having received this ping.
+				if (playerId > -1) {
+					numberOfPingsReceived++;
+				}
+
 				// Create a new thread to wait until the timeout, and continue if necessary.
 				PingTimeout pingTimeout = new PingTimeout(this);
 				new Thread(pingTimeout).start();
@@ -291,6 +296,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void playerPinged(PingCommand command)
 	{
+		numberOfPingsReceived++;
 		localPlayer.notifyCommand(command);
 
 		// If this ping is from the host, respond.
@@ -299,22 +305,9 @@ public class NetworkedGame extends AbstractGame {
 			connectionManager.sendCommand(response);
 		}
 
-		//if host check that all pings received, then send ReadyCommand,
-		// wait for all acknowledgements, then send initialise game
-		if (connectionManager.isServer()) {
-			numberOfPingsReceived++;
-
-			// Work out how many players we have in total
-			int playerCount = numberOfPingsReceived;
-
-			if (localPlayer != null) {
-				playerCount++;
-			}
-
-			// Send ready immediately if we have all pings.
-			if (playerCount == getPlayers().size()) {
-				sendReadyCommand();
-			}
+		// Send ready immediately if we have all pings.
+		if (connectionManager.isServer() && numberOfPingsReceived == getPlayers().size()) {
+			sendReadyCommand();
 		}
 	}
 
