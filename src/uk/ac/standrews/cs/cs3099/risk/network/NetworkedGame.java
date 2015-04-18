@@ -447,6 +447,7 @@ public class NetworkedGame extends AbstractGame {
 	private void readyReceived(ReadyCommand command)
 	{
 		localPlayer.notifyCommand(command);
+		addAcknowledgement(command);
 		sendAcknowledgement(command.getAckId());
 	}
 
