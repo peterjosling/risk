@@ -142,13 +142,13 @@ public class MapParserTest {
 		return new String(encoded);
 	}
 
-	@Test
-	public void actualMap() throws IOException, MapParseException
-	{
-		String s = readFile("web/default-map.json");
-		MapParser m = new MapParser(s);
-
-		for (Continent c : m.getContinents())
-			System.out.println(c.getContinentName());
-	}
+/* 	@Test */
+/* 	public void actualMap() throws IOException, MapParseException */
+/* 	{ */
+/* 		String s = readFile("web/default-map.json"); */
+/* 		MapParser m = new MapParser(s); */
+/*  */
+/* 		for (Continent c : m.getContinents()) */
+/* 			System.out.println(c.getContinentName()); */
+/* 	} */
 }
