@@ -18,8 +18,8 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private Date timePingSent;
 	private boolean gameInProgress;
-	private String[] turnRollHashes;
-	private String[] turnRollNumbers;
+	private String[] turnRollHashes = new String[6];
+	private String[] turnRollNumbers = new String[6];
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
@@ -227,6 +227,11 @@ public class NetworkedGame extends AbstractGame {
 				timePingSent = new Date();
 				connectionManager.sendCommand(pingCommand);
 
+				// If this is a playing host, mark it has having received this ping.
+				if (playerId > -1) {
+					numberOfPingsReceived++;
+				}
+
 				// Create a new thread to wait until the timeout, and continue if necessary.
 				PingTimeout pingTimeout = new PingTimeout(this);
 				new Thread(pingTimeout).start();
@@ -291,6 +296,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void playerPinged(PingCommand command)
 	{
+		numberOfPingsReceived++;
 		localPlayer.notifyCommand(command);
 
 		// If this ping is from the host, respond.
@@ -299,22 +305,9 @@ public class NetworkedGame extends AbstractGame {
 			connectionManager.sendCommand(response);
 		}
 
-		//if host check that all pings received, then send ReadyCommand,
-		// wait for all acknowledgements, then send initialise game
-		if (connectionManager.isServer()) {
-			numberOfPingsReceived++;
-
-			// Work out how many players we have in total
-			int playerCount = numberOfPingsReceived;
-
-			if (localPlayer != null) {
-				playerCount++;
-			}
-
-			// Send ready immediately if we have all pings.
-			if (playerCount == getPlayers().size()) {
-				sendReadyCommand();
-			}
+		// Send ready immediately if we have all pings.
+		if (connectionManager.isServer() && numberOfPingsReceived == getPlayers().size()) {
+			sendReadyCommand();
 		}
 	}
 
@@ -324,7 +317,7 @@ public class NetworkedGame extends AbstractGame {
 		ReadyCommand readyCommand = new ReadyCommand(playerId, nextAckId());
 		connectionManager.sendCommand(readyCommand);
 
-		// Wait until all acks have been received, then send the initialse command.
+		// Wait until all acks have been received, then send the initialise command.
 		ReadyAcknowledgementTimeout acknowledgementTimeout = new ReadyAcknowledgementTimeout(this, readyCommand.getAckId());
 		new Thread(acknowledgementTimeout).start();
 	}
@@ -332,10 +325,9 @@ public class NetworkedGame extends AbstractGame {
 	protected void sendInitialiseGameCommand()
 	{
 		// TODO check this is an intersection of compatible versions/features.
-		Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
+		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
-
-		// TODO create a new thread which sleeps until {timeout}
+		initialiseGameCommand(initialiseGameCommand);
 	}
 
 	/**
@@ -437,9 +429,18 @@ public class NetworkedGame extends AbstractGame {
 		// Initialise the game state and load the map. Players list is finalised.
 		init();
 
-		String hash = "TODO_IMPLEMENT_HASH";
-		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
-		connectionManager.sendCommand(rollHashCommand);
+		if (localPlayer != null) {
+			int id = localPlayer.getId();
+
+			String hash = "TODO_IMPLEMENT_HASH";
+			String number = "TODO_IMPLEMENT_NUMBER";
+
+			turnRollHashes[id] = hash;
+			turnRollNumbers[id] = number;
+
+			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
+			connectionManager.sendCommand(rollHashCommand);
+		}
 	}
 
 	private void readyReceived(ReadyCommand command)
@@ -460,12 +461,16 @@ public class NetworkedGame extends AbstractGame {
 		// If we've received them all, send the roll number.
 		boolean hashesReceived = true;
 
-		for (String hash : turnRollNumbers) {
-			hashesReceived = hashesReceived && hash.length() > 0;
+		for (Player player : getPlayers()) {
+			if (!player.isNeutral()) {
+				String hash = turnRollHashes[player.getId()];
+				hashesReceived = hashesReceived && hash != null;
+			}
 		}
 
-		if (hashesReceived) {
-			RollNumberCommand rollNumberCommand = new RollNumberCommand(localPlayer.getId(), "TODO_IMPLEMENT_NUMBER");
+		if (hashesReceived && localPlayer != null) {
+			int id = localPlayer.getId();
+			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, turnRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
 	}
@@ -482,12 +487,19 @@ public class NetworkedGame extends AbstractGame {
 
 		boolean rollsReceived = true;
 
-		for (String number : turnRollNumbers) {
-			rollsReceived = rollsReceived && number.length() > 0;
+		for (Player player : getPlayers()) {
+			if (!player.isNeutral()) {
+				String number = turnRollNumbers[player.getId()];
+				rollsReceived = rollsReceived && number != null;
+			}
 		}
 
-		if (rollsReceived) {
+		if (rollsReceived && localPlayer != null) {
 			// TODO roll die, get first player.
+
+			// Send the computed result of the dice roll to the interface.
+			RollResultCommand rollResult = new RollResultCommand(0);
+			localPlayer.notifyCommand(rollResult);
 		}
 	}
 
@@ -509,7 +521,6 @@ public class NetworkedGame extends AbstractGame {
 	{
 		Acknowledgement ack = acknowledgements.get(command.getAckId());
 		ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
-		System.out.println("Ack received: player " + command.getPlayerId());
 	}
 
 	/**

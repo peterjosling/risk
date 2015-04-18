@@ -89,6 +89,7 @@ public abstract class Command {
 		classMap.put("leave_game", LeaveGameCommand.class);
 		classMap.put("roll_number", RollNumberCommand.class);
 		classMap.put("roll_hash", RollHashCommand.class);
+		classMap.put("roll_result", RollResultCommand.class);
 		classMap.put("play_cards", PlayCardsCommand.class);
 		classMap.put("ping", PingCommand.class);
 		classMap.put("ready", ReadyCommand.class);
