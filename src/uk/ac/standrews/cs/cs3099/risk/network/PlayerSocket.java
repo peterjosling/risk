@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class PlayerSocket implements Runnable {
 	private final Socket socket;
 	private final BufferedReader reader;
 	private final PrintWriter writer;
+	private int playerId;
 
 	public PlayerSocket(NetworkedGame game, Socket socket) throws IOException
 	{
@@ -29,6 +31,9 @@ public class PlayerSocket implements Runnable {
 	 */
 	public void sendCommand(Command command)
 	{
+		if(command.getType() == CommandType.ACCEPT_JOIN_GAME){
+			playerId = command.getPlayerId();
+		}
 		String commandJSON = command.toJSON();
 		writer.write(commandJSON + "\n");
 		writer.flush();
@@ -61,6 +66,11 @@ public class PlayerSocket implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public int getPlayerId()
+	{
+		return playerId;
 	}
 }
 
