@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Main Class
@@ -14,32 +15,11 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-//		String json = "";
-//		
-//	    BufferedReader br;
-//		try {
-//			br = new BufferedReader(new FileReader("default-map.json"));
-//			StringBuilder sb = new StringBuilder();
-//	        String line = br.readLine();
-//
-//	        while (line != null) {
-//	            sb.append(line);
-//	            line = br.readLine();
-//	        }
-//	        json = sb.toString();
-//	        
-//	        br.close();
-//		} catch (FileNotFoundException e1) {
-//			e1.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		json = json.replaceAll("\t", "");
-//
-//		System.out.println(json);
-//		
-		
-		LocalGame localGame = new LocalGame(4, 10);
+		System.out.println("How many players? (3-6)");
+		Scanner sc = new Scanner(System.in);
+		int players = sc.nextInt();
+		int armies = 20 + ((6-players)*5);
+		LocalGame localGame = new LocalGame(players, armies);
 		localGame.run();
 	}
 }

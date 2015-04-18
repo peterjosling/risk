@@ -1,5 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
@@ -75,16 +76,22 @@ public abstract class AbstractGame {
 	public void assignTerritories()
 	{
 
-		for (int i = 0; i < gameState.getMap().getTerritories().size(); i++) {
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(1);
+		}
+		gameState.setDeployableArmies(1);
+		
+		Command command = null;
+
+		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
-			Command command = null;
-
-			command = player.getCommand(CommandType.ASSIGN_ARMY);
-
-			if (command.getType() != CommandType.ASSIGN_ARMY) {
-				terminate();
-				return;
+			if(i < gameState.getMap().getTerritories().size()){
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} else {
+				command = player.getCommand(CommandType.DEPLOY);
 			}
+
 			notifyPlayers(command);
 		}
 	}
