@@ -367,8 +367,18 @@ public class NetworkedGame extends AbstractGame {
 	 * @param command - the new command created
 	 */
 	public void addAcknowledgement(Command command){
-		Acknowledgement acknowledgement = new Acknowledgement(command.getAckId());
-		acknowledgements.add(command.getAckId(), acknowledgement);
+		int ackId = command.getAckId();
+
+		Acknowledgement acknowledgement = new Acknowledgement(ackId);
+		acknowledgements.add(ackId, acknowledgement);
+
+		// Mark the sending player as having already acknowledged.
+		int playerId = command.getPlayerId();
+
+		if (playerId > -1) {
+			Acknowledgement ack = acknowledgements.get(ackId);
+			ack.getPlayersAcknowledged()[playerId] = true;
+		}
 	}
 
 	/**
