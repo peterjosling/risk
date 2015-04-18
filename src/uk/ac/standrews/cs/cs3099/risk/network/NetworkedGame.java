@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class NetworkedGame extends AbstractGame {
 	private ConnectionManager connectionManager;
@@ -157,7 +158,15 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
+		NetworkPlayer player = (NetworkPlayer) getPlayerById(command.getPlayerId());
+		BlockingQueue moveQueue = player.getMoveQueue();
+		moveQueue.add(command);
+
 		// TODO forward to all players, if host.
+		if(connectionManager.isServer()){
+			connectionManager.sendCommand(command);
+		}
+
 	}
 
 	/**
