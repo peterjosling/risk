@@ -58,6 +58,10 @@ public class ConnectionManager {
 				playerSocket.sendCommand(command);
 			}
 		}
+
+		if(command.getAckId()>=-1){
+			game.addAcknowledgement(command);
+		}
 	}
 
 	/**

@@ -323,7 +323,6 @@ public class NetworkedGame extends AbstractGame {
 		int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
 		ReadyCommand readyCommand = new ReadyCommand(playerId, nextAckId());
 		connectionManager.sendCommand(readyCommand);
-		addAcknowledgement(readyCommand);
 
 		// Wait until all acks have been received, then send the initialse command.
 		ReadyAcknowledgementTimeout acknowledgementTimeout = new ReadyAcknowledgementTimeout(this, readyCommand.getAckId());
@@ -335,7 +334,6 @@ public class NetworkedGame extends AbstractGame {
 		// TODO check this is an intersection of compatible versions/features.
 		Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
-		addAcknowledgement(initialiseGameCommand);
 
 		// TODO create a new thread which sleeps until {timeout}
 	}
@@ -447,7 +445,6 @@ public class NetworkedGame extends AbstractGame {
 	private void readyReceived(ReadyCommand command)
 	{
 		localPlayer.notifyCommand(command);
-		addAcknowledgement(command);
 		sendAcknowledgement(command.getAckId());
 	}
 
