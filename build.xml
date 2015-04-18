@@ -34,7 +34,7 @@
     <!-- Put everything in ${build} into the jar file -->
     <manifest file="${build}/MANIFEST.MF">
       <attribute name="Main-Class"
-                 value="uk.ac.standrews.cs.cs3099.risk.game.Main" />
+                 value="uk.ac.standrews.cs.cs3099.risk.ui.WebInterface" />
     </manifest>
     <jar jarfile="${dist}/lib/Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF">
       <fileset dir="${build}" includes="**/*.class" />
