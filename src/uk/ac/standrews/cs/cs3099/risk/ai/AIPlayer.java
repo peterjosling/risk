@@ -144,10 +144,12 @@ public class AIPlayer extends Player {
 		Deployment[] deployments = new Deployment[1];
 		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
 		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
+		
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Deploy Command");
+//			getDeployComand();
 		}
 		return null;
 	}
@@ -290,15 +292,16 @@ public class AIPlayer extends Player {
 
 	public Command getFortifyCommand() 
 	{
+		
 		return new FortifyCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getAttackCommand() 
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-		int sourceId = 1;
-		int destId = 1;
-		int armies = 1;
+		int sourceId = 0;
+		int destId = 0;
+		int armies = 0;
 		for(Territory territory : territories){
 			if(territory.getArmies() > 1){
 				Set<Territory> linkedTerritories = territory.getLinkedTerritories();
@@ -306,13 +309,18 @@ public class AIPlayer extends Player {
 					if(currentLinkedTerr.getOwner() != this.getId()){
 						sourceId = territory.getId();
 						destId = currentLinkedTerr.getId();
-						armies = territory.getArmies() - 1;
+						if(territory.getArmies() > 3){
+							armies = 3;
+						} else {
+							armies = territory.getArmies() - 1;
+						}
 					}
 				}
 			} else {
 				continue;
 			}
 		}
+		System.out.println("Source: " + sourceId + ", dest: " + destId + ", armies: " + armies);
 		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
 		if(gameState.isCommandValid(command)){
 			return command;

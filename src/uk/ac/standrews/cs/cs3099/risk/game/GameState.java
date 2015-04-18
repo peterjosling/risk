@@ -266,13 +266,13 @@ public class GameState {
 				aRoll++;
 			}
 			while(dRoll<numberOfDefendingDice){
-				defendingRolls[aRoll] = rolls[roll];
+				defendingRolls[dRoll] = rolls[roll];
 				dRoll++;
 			}
 		}
 		Arrays.sort(attackingRolls);
 		Arrays.sort(defendingRolls);
-		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice); i>=0; i--){
+		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
 			if(attackingRolls[i] < defendingRolls[i]){
 				losses[0]++;;
 			}
@@ -509,7 +509,7 @@ public class GameState {
 			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
 			if(deployTerritory.getOwner() != playerId) return false;
 
-			deployingTroops += deployTerritory.getArmies();
+			deployingTroops += deployment.getArmies();
 		}
 
 		if(deployingTroops != playersDeployableArmies[playerId]) return false;

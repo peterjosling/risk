@@ -134,8 +134,8 @@ public abstract class AbstractGame {
 	
 	public void fortify(Player player)
 	{
-		Command command = player.getCommand(CommandType.ATTACK);
-		if (command.getType() != CommandType.ATTACK) {
+		Command command = player.getCommand(CommandType.FORTIFY);
+		if (command.getType() != CommandType.FORTIFY) {
 			terminate();
 			return;
 		}
