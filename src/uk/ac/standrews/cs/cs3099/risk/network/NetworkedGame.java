@@ -17,6 +17,7 @@ public class NetworkedGame extends AbstractGame {
 	private String[] turnRollHashes;
 	private String[] turnRollNumbers;
 	private int numberOfPingsReceived = 0;
+	private int ackId = 0;
 	ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
@@ -131,8 +132,10 @@ public class NetworkedGame extends AbstractGame {
 
 		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
 			sendAcknowledgement(ackId);
-		}
 
+			// Update value for next acknowledgement
+			this.ackId = ackId + 1;
+		}
 
 		// TODO Add to correct player's move queue based on player_id field.
 		// TODO forward to all players, if host.
@@ -435,5 +438,15 @@ public class NetworkedGame extends AbstractGame {
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
 		connectionManager.sendCommand(ack);
+	}
+
+	/**
+	 * Get the acknowledgement ID for the next command, and increment it.
+	 *
+	 * @return
+	 */
+	private int nextAckId()
+	{
+		return ackId++;
 	}
 }
