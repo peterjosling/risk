@@ -11,6 +11,7 @@ public class Continent {
 
 	private int id;
 	private int continentValue;
+	private String name;
 	private Set<Territory> territories;
 
 
@@ -43,5 +44,15 @@ public class Continent {
 	public Set<Territory> getTerritories()
 	{
 		return territories;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String getName()
+	{
+		return name;
 	}
 }
