@@ -23,10 +23,9 @@ public class NetworkedGame extends AbstractGame {
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
 
-	public NetworkedGame(int armiesPerPlayer, String jsonMap) throws MapParseException
+	public NetworkedGame(int armiesPerPlayer)
 	{
 		super(armiesPerPlayer);
-		this.loadMap(jsonMap);
 		//TODO stop catching exceptions everywhere
 	}
 
@@ -389,6 +388,9 @@ public class NetworkedGame extends AbstractGame {
 	private void initialiseGameCommand(InitialiseGameCommand command)
 	{
 		localPlayer.notifyCommand(command);
+
+		// Initialise the game state and load the map. Players list is finalised.
+		init();
 
 		String hash = "TODO_IMPLEMENT_HASH";
 		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
