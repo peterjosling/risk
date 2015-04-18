@@ -1,7 +1,9 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.*;
+import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
+import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
+import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class NetworkedGame extends AbstractGame {
 	private String[] turnRollNumbers;
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
-	ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
+	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -80,6 +82,21 @@ public class NetworkedGame extends AbstractGame {
 		addPlayer(player);
 	}
 
+	public int getMoveTimeout()
+	{
+		return moveTimeout;
+	}
+
+	public int getAcknowledgementTimeout()
+	{
+		return acknowledgementTimeout;
+	}
+
+	protected int getNumberOfPingsReceived()
+	{
+		return numberOfPingsReceived;
+	}
+
 	/**
 	 * Called by the {@link ConnectionManager} instance when a command is received from the network.
 	 *
@@ -135,9 +152,6 @@ public class NetworkedGame extends AbstractGame {
 
 		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
 			sendAcknowledgement(ackId);
-
-			// Update value for next acknowledgement
-			this.ackId = ackId + 1;
 		}
 
 		// TODO Add to correct player's move queue based on player_id field.
@@ -195,11 +209,15 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		// Issue the ping command if we've reached the maximum number of players.
-		if (id == 5 && accepted) {
+		if (id == 1 && accepted) {
 			int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
 			PingCommand pingCommand = new PingCommand(playerId, players.size());
 			timePingSent = new Date();
 			connectionManager.sendCommand(pingCommand);
+
+			// Create a new thread to wait until the timeout, and continue if necessary.
+			PingTimeout pingTimeout = new PingTimeout(this);
+			new Thread(pingTimeout).start();
 		}
 	}
 
@@ -277,46 +295,33 @@ public class NetworkedGame extends AbstractGame {
 				playerCount++;
 			}
 
-			// Terminate the game if we don't have enough players for a game.
-			if (pingTimeoutReached() && playerCount < 3) {
-				LeaveGameCommand leaveGameCommand = new LeaveGameCommand(-1, nextAckId(), 404, "Not enough players to start the game", false);
-				connectionManager.sendCommand(leaveGameCommand);
-				addAcknowledgement(leaveGameCommand);
-
-				// TODO disconnect all clients, shut down the server.
-			} else if (pingTimeoutReached() || playerCount == getPlayers().size()) {
-				int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
-				ReadyCommand readyCommand = new ReadyCommand(playerId, nextAckId());
-				connectionManager.sendCommand(readyCommand);
-				addAcknowledgement(readyCommand);
-
-				while (!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())) {
-					try {
-						Thread.currentThread().sleep(100);
-					} catch (InterruptedException e) {
-						System.err.println("Failed to sleep main thread");
-						System.exit(1);
-					}
-				}
-
-				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
-
-				// TODO check this is an intersection of compatible versions/features.
-				Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
-				connectionManager.sendCommand(initialiseGameCommand);
-				addAcknowledgement(initialiseGameCommand);
-
-				while (!timeoutReached(initialiseGameCommand.getAckId())) {
-					try {
-						wait(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-
-				timeoutPlayersNotAcknowledged(initialiseGameCommand.getAckId());
+			// Send ready immediately if we have all pings.
+			if (playerCount == getPlayers().size()) {
+				sendReadyCommand();
 			}
 		}
+	}
+
+	protected void sendReadyCommand()
+	{
+		int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
+		ReadyCommand readyCommand = new ReadyCommand(playerId, nextAckId());
+		connectionManager.sendCommand(readyCommand);
+		addAcknowledgement(readyCommand);
+
+		// Wait until all acks have been received, then send the initialse command.
+		ReadyAcknowledgementTimeout acknowledgementTimeout = new ReadyAcknowledgementTimeout(this, readyCommand.getAckId());
+		new Thread(acknowledgementTimeout).start();
+	}
+
+	protected void sendInitialiseGameCommand()
+	{
+		// TODO check this is an intersection of compatible versions/features.
+		Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
+		connectionManager.sendCommand(initialiseGameCommand);
+		addAcknowledgement(initialiseGameCommand);
+
+		// TODO create a new thread which sleeps until {timeout}
 	}
 
 	/**
@@ -469,6 +474,9 @@ public class NetworkedGame extends AbstractGame {
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
 		connectionManager.sendCommand(ack);
+
+		// Update value for next acknowledgement
+		this.ackId = ackId + 1;
 	}
 
 	private void acknowledgementReceived(AcknowledgementCommand command)
