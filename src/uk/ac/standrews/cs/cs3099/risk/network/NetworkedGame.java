@@ -190,7 +190,8 @@ public class NetworkedGame extends AbstractGame {
 
 		// Issue the ping command if we've reached the maximum number of players.
 		if (id == 5 && accepted) {
-			PingCommand pingCommand = new PingCommand(-1, players.size());
+			int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
+			PingCommand pingCommand = new PingCommand(playerId, players.size());
 			connectionManager.sendCommand(pingCommand);
 		}
 	}
