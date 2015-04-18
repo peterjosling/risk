@@ -436,9 +436,18 @@ public class NetworkedGame extends AbstractGame {
 		// Initialise the game state and load the map. Players list is finalised.
 		init();
 
-		String hash = "TODO_IMPLEMENT_HASH";
-		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
-		connectionManager.sendCommand(rollHashCommand);
+		if (localPlayer != null) {
+			int id = localPlayer.getId();
+
+			String hash = "TODO_IMPLEMENT_HASH";
+			String number = "TODO_IMPLEMENT_NUMBER";
+
+			turnRollHashes[id] = hash;
+			turnRollNumbers[id] = number;
+
+			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
+			connectionManager.sendCommand(rollHashCommand);
+		}
 	}
 
 	private void readyReceived(ReadyCommand command)
@@ -459,12 +468,16 @@ public class NetworkedGame extends AbstractGame {
 		// If we've received them all, send the roll number.
 		boolean hashesReceived = true;
 
-		for (String hash : turnRollNumbers) {
-			hashesReceived = hashesReceived && hash != null;
+		for (Player player : getPlayers()) {
+			if (!player.isNeutral()) {
+				String hash = turnRollHashes[player.getId()];
+				hashesReceived = hashesReceived && hash != null;
+			}
 		}
 
-		if (hashesReceived) {
-			RollNumberCommand rollNumberCommand = new RollNumberCommand(localPlayer.getId(), "TODO_IMPLEMENT_NUMBER");
+		if (hashesReceived && localPlayer != null) {
+			int id = localPlayer.getId();
+			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, turnRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
 	}
@@ -481,12 +494,16 @@ public class NetworkedGame extends AbstractGame {
 
 		boolean rollsReceived = true;
 
-		for (String number : turnRollNumbers) {
-			rollsReceived = rollsReceived && number.length() > 0;
+		for (Player player : getPlayers()) {
+			if (!player.isNeutral()) {
+				String number = turnRollHashes[player.getId()];
+				rollsReceived = rollsReceived && number != null;
+			}
 		}
 
 		if (rollsReceived) {
 			// TODO roll die, get first player.
+			// TODO create roll_result command and forward to the UI.
 		}
 	}
 
