@@ -332,16 +332,9 @@ public class NetworkedGame extends AbstractGame {
 	protected void sendInitialiseGameCommand()
 	{
 		// TODO check this is an intersection of compatible versions/features.
-		Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
+		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
-
-		if (localPlayer != null) {
-			localPlayer.notifyCommand(initialiseGameCommand);
-		}
-
-		addAcknowledgement(initialiseGameCommand);
-
-		// TODO create a new thread which sleeps until {timeout}
+		initialiseGameCommand(initialiseGameCommand);
 	}
 
 	/**
