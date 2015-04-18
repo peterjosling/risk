@@ -369,8 +369,14 @@ public class GameState {
 		}
 		return true;
 	}
+	
+	public void setDeployableArmies(){
+		for(int player : playerIDs){
+			playersDeployableArmies[player] = calculateDeployArmies(player);
+		}
+	}
 
-	public int calculateDeployTroops(int playerId)
+	public int calculateDeployArmies(int playerId)
 	{
 		int deployableTroops = 0;
 

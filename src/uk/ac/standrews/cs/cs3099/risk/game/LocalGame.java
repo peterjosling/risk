@@ -70,7 +70,7 @@ public class LocalGame extends AbstractGame {
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
-			// CALCULATE DEPOLOYABLE ARMIES
+			calcDeployable();
 		}
 	}
 }

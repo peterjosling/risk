@@ -101,6 +101,12 @@ public abstract class AbstractGame {
 		gameState.setDeployableArmies(0);
 	}
 	
+	public void calcDeployable()
+	{
+		for(Player player : players){
+			((AIPlayer)player).getGameState().setDeployableArmies();
+		}
+	}
 	
 	public void deploy(Player player)
 	{
