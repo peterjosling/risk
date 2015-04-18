@@ -33,6 +33,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	public void onClose(WebSocket webSocket, int i, String s, boolean b)
 	{
 		System.out.println("Client disconnected: " + webSocket);
+
+		// TODO terminate game
 	}
 
 	@Override
@@ -90,7 +92,6 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 			game.connectToServer(command.getHostname(), command.getPort());
 		} catch (IOException e) {
 			System.err.println("Failed to connect to remote host.");
-			e.printStackTrace();
 		}
 	}
 
