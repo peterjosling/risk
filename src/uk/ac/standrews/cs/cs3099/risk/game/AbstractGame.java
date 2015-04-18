@@ -25,8 +25,7 @@ public abstract class AbstractGame {
 
 	public void loadMap(String jsonMap) throws MapParseException
 	{
-		MapParser m = new MapParser(jsonMap);
-		gameState.loadMap(m);
+		gameState.loadMap(jsonMap);
 	}
 
 	public void createGameState()
