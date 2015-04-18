@@ -25,6 +25,7 @@ public class LocalPlayer extends Player {
 	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
 		gameState = new GameState(playerInts);
+		gameState.loadDefaultMap();
 	}
 
 	@Override
@@ -385,36 +386,52 @@ public class LocalPlayer extends Player {
 		switch(command.getType()) {
 		case ASSIGN_ARMY:
 			notifyCommand((AssignArmyCommand) command);
+			break;
 		case ATTACK:
 			notifyCommand((AttackCommand) command);
+			break;
 		case FORTIFY:
 			notifyCommand((FortifyCommand) command);
+			break;
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
+			break;
 		case DRAW_CARD:
 			notifyCommand((DrawCardCommand) command);
+			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
+			break;
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
+			break;
 		case INITIALISE_GAME:
 //			notifyCommand((InitialiseGameCommand) command);
+			break;
 		case PLAYERS_JOINED:
 			notifyCommand((PlayersJoinedCommand) command);
+			break;
 		case READY:
 			notifyCommand((ReadyCommand) command);
+			break;
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
+			break;
 		case LEAVE_GAME:
 			notifyCommand((LeaveGameCommand) command);
+			break;
 		case PLAY_CARDS:
 			notifyCommand((PlayCardsCommand) command);
+			break;
 		case ROLL_NUMBER:
 			notifyCommand((RollNumberCommand) command);
+			break;
 		case ROLL_HASH:
 			notifyCommand((RollHashCommand) command);
+			break;
 		default:
 			notifyCommand((LeaveGameCommand) command);
+			break;
 		}
 	}
 

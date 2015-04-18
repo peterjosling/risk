@@ -71,6 +71,10 @@ public abstract class Player {
 		this.name = name;
 	}
 
+	public void initialiseGameState(ArrayList<Integer> playerInts){
+		
+	}
+	
 	public String genName()
 	{
 		Random r = new Random();

@@ -4,6 +4,10 @@ import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.Card.CardType;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +17,7 @@ import java.util.Arrays;
  * Stores the entire game and controls board movement
  */
 public class GameState {
+	private static final String DEFAULT_MAP = "www/default-map.json";
 
 	private Map map;
 	private Deck deck;
@@ -43,6 +48,30 @@ public class GameState {
 	public void loadMap(String mapJSON)
 	{
 		map = Map.fromJSON(mapJSON);
+	}
+	
+	public void loadDefaultMap()
+	{
+		String json = "";
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_MAP));
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				json += line;
+			}
+
+			reader.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("Couldn't find default map JSON file");
+			System.exit(1);
+		} catch (IOException e) {
+			System.err.println("Failed to read from input JSON file");
+			System.exit(1);
+		}
+
+		loadMap(json);
 	}
 
 	public Map getMap(){

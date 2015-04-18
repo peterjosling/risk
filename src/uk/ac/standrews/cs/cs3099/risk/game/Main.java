@@ -14,36 +14,32 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-		String json = "";
+//		String json = "";
+//		
+//	    BufferedReader br;
+//		try {
+//			br = new BufferedReader(new FileReader("default-map.json"));
+//			StringBuilder sb = new StringBuilder();
+//	        String line = br.readLine();
+//
+//	        while (line != null) {
+//	            sb.append(line);
+//	            line = br.readLine();
+//	        }
+//	        json = sb.toString();
+//	        
+//	        br.close();
+//		} catch (FileNotFoundException e1) {
+//			e1.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		json = json.replaceAll("\t", "");
+//
+//		System.out.println(json);
+//		
 		
-	    BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader("default-map.json"));
-			StringBuilder sb = new StringBuilder();
-	        String line = br.readLine();
-
-	        while (line != null) {
-	            sb.append(line);
-	            line = br.readLine();
-	        }
-	        json = sb.toString();
-	        
-	        br.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		json = json.replaceAll("\t", "");
-
-		System.out.println(json);
-		
-		
-		try {
-			LocalGame localGame = new LocalGame(json, 4, 10);
-			localGame.run();
-		} catch (MapParseException e) {
-			e.printStackTrace();
-		}
+		LocalGame localGame = new LocalGame(4, 10);
+		localGame.run();
 	}
 }
