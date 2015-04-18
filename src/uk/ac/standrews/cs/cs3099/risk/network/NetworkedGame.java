@@ -515,7 +515,6 @@ public class NetworkedGame extends AbstractGame {
 	{
 		Acknowledgement ack = acknowledgements.get(command.getAckId());
 		ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
-		System.out.println("Ack received: player " + command.getPlayerId());
 	}
 
 	/**
