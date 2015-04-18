@@ -5,9 +5,6 @@ import org.junit.Test;
 
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 import com.google.gson.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class MapParserTest {
 
@@ -136,12 +133,12 @@ public class MapParserTest {
 									 "\"country_card\":{\"0\":0}, \"continent_names\":{\"0\":\"aa\"}, \"wildcards\":2}");
 	}
 
-	private static String readFile(String path) throws IOException
-	{
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded);
-	}
-
+/* 	private static String readFile(String path) throws IOException */
+/* 	{ */
+/* 		byte[] encoded = Files.readAllBytes(Paths.get(path)); */
+/* 		return new String(encoded); */
+/* 	} */
+/*  */
 /* 	@Test */
 /* 	public void actualMap() throws IOException, MapParseException */
 /* 	{ */
