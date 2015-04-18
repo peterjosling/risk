@@ -284,16 +284,18 @@ public class NetworkedGame extends AbstractGame {
 				addAcknowledgement(leaveGameCommand);
 
 				// TODO disconnect all clients, shut down the server.
-			} else {
-				Command readyCommand = localPlayer.getCommand(CommandType.READY);
+			} else if (pingTimeoutReached() || playerCount == getPlayers().size()) {
+				int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
+				ReadyCommand readyCommand = new ReadyCommand(playerId, nextAckId());
 				connectionManager.sendCommand(readyCommand);
 				addAcknowledgement(readyCommand);
 
 				while (!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())) {
 					try {
-						wait(100);
+						Thread.currentThread().sleep(100);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						System.err.println("Failed to sleep main thread");
+						System.exit(1);
 					}
 				}
 
