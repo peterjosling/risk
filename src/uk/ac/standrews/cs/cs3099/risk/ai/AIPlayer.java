@@ -230,7 +230,7 @@ public class AIPlayer extends Player {
 
 	public Command getLeaveGameCommand()
 	{
-		return new LeaveGameCommand(this.getId(), lastAckid++, 100, false);
+		return new LeaveGameCommand(this.getId(), lastAckid++, 100, "", false);
 	}
 
 	public Command getAttackCaptureCommand() 
