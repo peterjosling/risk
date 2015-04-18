@@ -40,15 +40,15 @@ public class GameState {
 
 	public void loadMap(String mapJSON)
 	{
-        try {
-            MapParser mp = new MapParser(mapJSON);
+		try {
+			MapParser mp = new MapParser(mapJSON);
 
-            map = new Map(mp);
-            deck = mp.getDeck();
-        } catch (MapParseException e) {
-            Logger.print("ERROR - Problem parsing map, " + e.getMessage());
-            System.exit(-1);
-        }
+			map = new Map(mp);
+			deck = mp.getDeck();
+		} catch (MapParseException e) {
+			Logger.print("ERROR - Problem parsing map, " + e.getMessage());
+			System.exit(-1);
+		}
 	}
 
 	public Map getMap(){
