@@ -18,8 +18,8 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private Date timePingSent;
 	private boolean gameInProgress;
-	private String[] turnRollHashes;
-	private String[] turnRollNumbers;
+	private String[] turnRollHashes = new String[6];
+	private String[] turnRollNumbers = new String[6];
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
@@ -460,7 +460,7 @@ public class NetworkedGame extends AbstractGame {
 		boolean hashesReceived = true;
 
 		for (String hash : turnRollNumbers) {
-			hashesReceived = hashesReceived && hash.length() > 0;
+			hashesReceived = hashesReceived && hash != null;
 		}
 
 		if (hashesReceived) {
