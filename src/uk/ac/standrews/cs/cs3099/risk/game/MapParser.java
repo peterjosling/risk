@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
+
 import com.google.gson.*;
 
 public class MapParser {
@@ -39,22 +40,21 @@ public class MapParser {
 
 	private List<Continent> continents;
 	private List<Territory> territories;
+	private Deck deck;
 
 	public MapParser(String jsonMap) throws MapParseException
 	{
 		boolean b = false;
-		String fuck = "";
 
 		try {
 			parseMapData(jsonMap);
 		} catch (MapParseException e) {
 			b = true;
 			Logger.print(e.getMessage());
-			fuck = e.getMessage();
 		}
 
 		if (b)
-			throw new MapParseException("ok " + fuck);
+			throw new MapParseException("ok");
 	}
 
 	// I like allocating things that won't be used
@@ -79,7 +79,7 @@ public class MapParser {
 	private void parseKeyValArr(JsonElement value, List<KeyValue> value_arr) throws MapParseException
 	{
 		if (!value.isJsonObject())
-			throw new MapParseException("Sub-key is not a JSON object (arr)");
+			throw new MapParseException("Sub-key is not a JSON object");
 
 		JsonObject joo = value.getAsJsonObject();
 		for (Entry<String, JsonElement> je : joo.entrySet()) {
@@ -121,7 +121,7 @@ public class MapParser {
 	private void parseKeyVal(JsonElement value, List<KeyValue> value_arr, boolean isString) throws MapParseException
 	{
 		if (!value.isJsonObject())
-			throw new MapParseException("Sub-key is not a JSON object (keyval)");
+			throw new MapParseException("Sub-key is not a JSON object");
 
 		JsonObject joo = value.getAsJsonObject();
 		for (Entry<String, JsonElement> je : joo.entrySet()) {
@@ -140,7 +140,7 @@ public class MapParser {
 			k.key = ikey;
 
 			if (isString) {
-				k.value_str = value2.getAsString();
+				k.value_str_arr.add(value2.getAsString());
 			} else {
 				try {
 					int valasint = value2.getAsInt();
@@ -148,8 +148,7 @@ public class MapParser {
 					if (valasint < 0)
 						throw new MapParseException("Array sub-entry cannot be less than 0");
 
-					k.value = valasint;
-					Logger.printf(" %d -> %d", ikey, valasint);
+					k.value_arr.add(valasint);
 				} catch (Exception e) {
 					throw new MapParseException("Array sub-entry is not a string");
 				}
@@ -175,7 +174,7 @@ public class MapParser {
 	private void parseArrPair(JsonElement value, List<KeyValue> value_arr) throws MapParseException
 	{
 		if (!value.isJsonArray())
-			throw new MapParseException("Sub-key is not a JSON object (arrpair)");
+			throw new MapParseException("Sub-key is not a JSON object");
 
 		JsonArray joo = value.getAsJsonArray();
 		for (JsonElement je : joo) {
@@ -184,7 +183,7 @@ public class MapParser {
 
 			try {
 				value2 = je.getAsJsonArray();
-			} catch (Exception e)  {
+			} catch (Exception e) {
 				throw new MapParseException("Sub-entry in array is not a JSON array");
 			}
 
@@ -214,7 +213,7 @@ public class MapParser {
 		JsonParser jp = new JsonParser();
 		JsonElement je;
 		JsonObject jo;
-		List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_names", "country_card", "wildcards"));
+		List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_name", "country_card", "wildcards"));
 		boolean[] processed = new boolean[lookup.size()];
 		ParsedJson parsed = new ParsedJson();
 
@@ -260,7 +259,6 @@ public class MapParser {
 						parseArrPair(value, parsed.connections);
 						break;
 					case 3: // continent_values key
-						Logger.print("Getting continent values");
 						parseKeyVal(value, parsed.continent_values, false);
 						break;
 					case 4: // continent_names
@@ -354,7 +352,6 @@ public class MapParser {
 
 				t1.addLink(t2);
 				t2.addLink(t1);
-				Logger.printf("Linking %d and %d", t1.getId(), t2.getId());
 			}
 		}
 
@@ -372,14 +369,13 @@ public class MapParser {
 			if (c == null)
 				throw new MapParseException("Continent not previously found (invalid id)");
 
-			Logger.printf("Setting %d to value %d", c.getId(), pair.value);
 			c.setContinentValue(pair.value);
 		}
 
 		for (KeyValue pair : parsedjson.continent_names) {
 			Continent c = null;
 
-			// Find the continent by id and set its corresponding name
+			// Find the continent by id and set its corresponding value
 			for (Continent c2 : continents) {
 				if (c2.getId() == pair.key) {
 					c = c2;
@@ -390,9 +386,51 @@ public class MapParser {
 			if (c == null)
 				throw new MapParseException("Continent not previously found (invalid id)");
 
-			Logger.printf("Setting %d to name %s", c.getId(), pair.value_str);
-			c.setContinentName(pair.value_str);
+			c.setName(pair.value_str);
 		}
+
+		for (KeyValue pair : parsedjson.country_names) {
+			Territory t = null;
+
+			// Find the continent by id and set its corresponding value
+			for (Territory t2 : territories) {
+				if (t2.getId() == pair.key) {
+					t = t2;
+					break;
+				}
+			}
+
+			if (t == null)
+				throw new MapParseException("Territory not previously found (invalid id)");
+
+			t.setName(pair.value_str);
+		}
+
+		int max_id = 0;
+		Card.CardType[] card_types = {Card.CardType.INFANTRY, Card.CardType.CAVALRY, Card.CardType.ARTILLERY};
+
+		deck = new Deck(parsedjson.country_card.size() + parsedjson.wildcards);
+
+		for (KeyValue pair : parsedjson.country_card) {
+			boolean ok = false;
+
+			// Find the territory by id and set its corresponding value
+			for (Territory t : territories) {
+				if (t.getId() == pair.key) {
+					ok = true;
+					break;
+				}
+			}
+
+			if (!ok)
+				throw new MapParseException("Territory not previously found (invalid id)");
+
+			deck.addCardToDeck(max_id++, pair.key, card_types[pair.value]);
+		}
+
+
+		for (int i = 0; i < parsedjson.wildcards; i++)
+			deck.addCardToDeck(max_id++, -1, Card.CardType.WILD);
 	}
 
 	public List<Continent> getContinents()
@@ -403,5 +441,10 @@ public class MapParser {
 	public List<Territory> getTerritories()
 	{
 		return territories;
+	}
+
+	public Deck getDeck()
+	{
+		return deck;
 	}
 }

@@ -34,15 +34,21 @@ public class GameState {
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
-		deck = new Deck(DECK_SIZE);
-		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
 		playerCards = new ArrayList[getNumberOfPlayers()];
 	}
 
 	public void loadMap(String mapJSON)
 	{
-		map = Map.fromJSON(mapJSON);
+        try {
+            MapParser mp = new MapParser(mapJSON);
+
+            map = new Map(mp);
+            deck = mp.getDeck();
+        } catch (MapParseException e) {
+            Logger.print("ERROR - Problem parsing map, " + e.getMessage());
+            System.exit(-1);
+        }
 	}
 
 	public Map getMap(){
