@@ -271,24 +271,28 @@ public class NetworkedGame extends AbstractGame {
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
 				connectionManager.sendCommand(readyCommand);
 				addAcknowledgement(readyCommand);
-				while(!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())){
+
+				while (!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())) {
 					try {
 						wait(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+
 				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
 				Command initialiseGameCommand = localPlayer.getCommand(CommandType.INITIALISE_GAME);
 				connectionManager.sendCommand(initialiseGameCommand);
 				addAcknowledgement(initialiseGameCommand);
-				while(!timeoutReached(initialiseGameCommand.getAckId())){
+
+				while (!timeoutReached(initialiseGameCommand.getAckId())) {
 					try {
 						wait(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+
 				timeoutPlayersNotAcknowledged(initialiseGameCommand.getAckId());
 			}
 		}

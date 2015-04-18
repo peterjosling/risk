@@ -12,18 +12,18 @@ public class LeaveGameCommand extends Command {
 		payload.receiveUpdates = receiveUpdates;
 	}
 
-	public int getResponse() 
+	public int getResponse()
 	{
 		return payload.response;
 	}
 
-	public boolean isReceiveUpdates() 
+	public boolean isReceiveUpdates()
 	{
 		return payload.receiveUpdates;
 	}
 
 	@Override
-	public CommandType getType() 
+	public CommandType getType()
 	{
 		return CommandType.LEAVE_GAME;
 	}
