@@ -33,7 +33,7 @@ public class LocalPlayer extends Player {
 	}
 
 	public void makeNeutral() {
-		isNeutral = !isNeutral;
+		isNeutral = true;
 	}
 
 	/**
