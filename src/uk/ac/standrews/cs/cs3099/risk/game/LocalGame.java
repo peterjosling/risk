@@ -50,7 +50,7 @@ public class LocalGame extends AbstractGame {
 	{
 		assignTerritories();
 		
-		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED
+		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED FOR EVERYONE...
 		for(Player player : this.getPlayers()){
 			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer());
 		}
