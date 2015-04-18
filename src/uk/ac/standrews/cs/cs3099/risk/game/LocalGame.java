@@ -29,19 +29,19 @@ public class LocalGame extends AbstractGame {
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
-		LocalPlayer localPlayer = new LocalPlayer(0);
-		playerInts.add(localPlayer.getId());
-		addPlayer(new LocalPlayer(0));
+//		LocalPlayer localPlayer = new LocalPlayer(0);
+//		playerInts.add(localPlayer.getId());
+//		addPlayer(new LocalPlayer(0));
 
 		
-		for (int i = 1; i < playerCount; i++) {
+		for (int i = 0; i < playerCount; i++) {
 			Player player = new AIPlayer(i);
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}
 		
 		for(Player player : this.getPlayers()){
-			player.initialiseGameState(playerInts);
+			((AIPlayer) player).initialiseGameState(playerInts);
 		}
 		
 	}
@@ -49,7 +49,11 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		assignTerritories();
-		while(gameState.isGameComplete()){
+		
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer());
+		}
+		while(!gameState.isGameComplete()){
 			Player currentPlayer = nextTurn();
 			playCards(currentPlayer);
 			deploy(currentPlayer);
@@ -63,6 +67,7 @@ public class LocalGame extends AbstractGame {
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
+			// CALCULATE DEPOLOYABLE ARMIES
 		}
 	}
 }

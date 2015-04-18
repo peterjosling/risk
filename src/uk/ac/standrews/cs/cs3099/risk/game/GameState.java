@@ -43,6 +43,7 @@ public class GameState {
 		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
 		playerCards = new ArrayList[getNumberOfPlayers()];
+		playersDeployableArmies = new int[players.size()];
 	}
 
 	public void loadMap(String mapJSON)
@@ -145,28 +146,42 @@ public class GameState {
 		switch(command.getType()){
 			case ASSIGN_ARMY:
 				playCommand((AssignArmyCommand) command);
+				break;
 			case ATTACK:
 				playCommand((AttackCommand) command);
+				break;
 			case FORTIFY:
 				playCommand((FortifyCommand) command);
+				break;
 			case DEPLOY:
 				playCommand((DeployCommand) command);
+				break;
 			case DRAW_CARD:
 				playCommand((DrawCardCommand) command);
+				break;
 			case DEFEND:
 				playCommand((DefendCommand) command);
+				break;
 			case TIMEOUT:
 				playCommand((TimeoutCommand) command);
+				break;
 			case ATTACK_CAPTURE:
 				playCommand((AttackCaptureCommand) command);
+				break;
 			case LEAVE_GAME:
 				playCommand((LeaveGameCommand) command);
+				break;
 			case PLAY_CARDS:
 				playCommand((PlayCardsCommand) command);
+				break;
 			case ROLL_NUMBER:
 				playCommand((RollNumberCommand) command);
+				break;
 			case ROLL_HASH:
 				playCommand((RollHashCommand) command);
+				break;
+		default:
+			break;
 		}
 	}
 
@@ -297,6 +312,9 @@ public class GameState {
 	}
 
 	public void playCommand(PlayCardsCommand command){
+		if(command.getCards() == null){
+			return;
+		}
 		Card[][] cards = command.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(command.getPlayerId());
 		int armies = calculateArmiesFromTradeIn();
@@ -591,6 +609,12 @@ public class GameState {
 	public boolean getLastAttackSuccessful()
 	{
 		return lastAttackSuccessful;
+	}
+	
+	public void setDeployableArmies(int armies){
+		for(int i = 0; i < playersDeployableArmies.length; i ++){
+			playersDeployableArmies[i] = armies;
+		}
 	}
 	
 	public void setAttackSuccessful(boolean attackSuccessful) 

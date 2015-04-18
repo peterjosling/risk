@@ -214,6 +214,11 @@ public abstract class AbstractGame {
 		return players;
 	}
 	
+	public int getArmiesPerPlayer()
+	{
+		return armiesPerPlayer;
+	}
+	
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */

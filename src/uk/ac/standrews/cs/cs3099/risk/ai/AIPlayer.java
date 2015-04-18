@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class AIPlayer extends Player {
 	private GameState gameState;
-	private int ack_id = 0;
+
 	private int attackSourceId;
 	private int attackDestId;
 
@@ -45,10 +45,14 @@ public class AIPlayer extends Player {
 		super(id);
 	}
 
-	public void initialiseGameState(ArrayList<Integer> players)
+	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
-		gameState = new GameState(players);
+		gameState = new GameState(playerInts);
 		gameState.loadDefaultMap();
+	}
+	
+	public GameState getGameState(){
+		return gameState;
 	}
 	
 	@Override
@@ -139,7 +143,7 @@ public class AIPlayer extends Player {
 		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
 		Deployment[] deployments = new Deployment[1];
 		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
-		DeployCommand command = new DeployCommand(getId(), ++ack_id, deployments);
+		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
@@ -153,7 +157,7 @@ public class AIPlayer extends Player {
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
 		Territory territory = freeTerritories[0];
-		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++ack_id, territory.getId());
+		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++lastAckid, territory.getId());
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
@@ -481,6 +485,10 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		if(command.getCards() == null){
+			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
+			return;
+		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
 		for(Card[] cardSet : command.getCards()){

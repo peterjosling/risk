@@ -6,7 +6,6 @@ import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class LocalPlayer extends Player {
 	private GameState gameState;
 	private int attackSourceId;
@@ -26,6 +25,10 @@ public class LocalPlayer extends Player {
 	{
 		gameState = new GameState(playerInts);
 		gameState.loadDefaultMap();
+	}
+	
+	public GameState getGameState(){
+		return gameState;
 	}
 
 	@Override
@@ -305,6 +308,7 @@ public class LocalPlayer extends Player {
 	{
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
+		if(numberOfTradeIns == 0) return new PlayCardsCommand(this.getId(), lastAckid++);
 		List<Card> playersCards = getCards();
 		System.out.println("Your Cards:");
 		for(Card card:playersCards){
@@ -542,6 +546,10 @@ public class LocalPlayer extends Player {
 
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		if(command.getCards() == null){
+			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
+			return;
+		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
 		for(Card[] cardSet : command.getCards()){
