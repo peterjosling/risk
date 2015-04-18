@@ -11,6 +11,12 @@ public class NetworkPlayer extends Player {
 	private ConnectionManager connectionManager;
 	private BlockingQueue<Command> moveQueue = new LinkedBlockingDeque<Command>();
 
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.NETWORK;
+	}
+	
 	public NetworkPlayer(ConnectionManager connectionManager, int id)
 	{
 		super(id);

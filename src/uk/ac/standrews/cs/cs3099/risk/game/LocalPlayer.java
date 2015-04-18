@@ -10,6 +10,12 @@ public class LocalPlayer extends Player {
 	private GameState gameState;
 	private int attackSourceId;
 	private int attackDestId;
+	
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.LOCAL;
+	}
 
 	public LocalPlayer(int id)
 	{

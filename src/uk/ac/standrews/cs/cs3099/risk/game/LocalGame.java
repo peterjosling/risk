@@ -29,19 +29,26 @@ public class LocalGame extends AbstractGame {
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
-//		LocalPlayer localPlayer = new LocalPlayer(0);
-//		playerInts.add(localPlayer.getId());
-//		addPlayer(new LocalPlayer(0));
+		LocalPlayer localPlayer = new LocalPlayer(0);
+		playerInts.add(localPlayer.getId());
+		addPlayer(new LocalPlayer(0));
 
 		
-		for (int i = 0; i < playerCount; i++) {
+		for (int i = 1; i < playerCount; i++) {
 			Player player = new AIPlayer(i);
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}
 		
 		for(Player player : this.getPlayers()){
-			((AIPlayer) player).initialiseGameState(playerInts);
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer) player).initialiseGameState(playerInts);
+				break;
+			case LOCAL:
+				((LocalPlayer) player).initialiseGameState(playerInts);
+				break;				
+			}
 		}
 		
 	}
@@ -78,7 +85,16 @@ public class LocalGame extends AbstractGame {
 	}
 	
 	public boolean canPlayerAttack(Player player){
-		Territory[] territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+		Territory[] territories = null;
+		switch (player.getType()) {
+			case AI:
+				territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+				break;
+			case LOCAL:
+				territories = ((LocalPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+				break;				
+		}
+		
 		for(Territory territory : territories){
 			for(Territory linkedTerritory : territory.getLinkedTerritories()){
 				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){

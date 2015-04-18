@@ -77,7 +77,14 @@ public abstract class AbstractGame {
 	{
 
 		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(1);
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies(1);
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies(1);
+				break;				
+			}
 		}
 		gameState.setDeployableArmies(1);
 		
@@ -96,15 +103,29 @@ public abstract class AbstractGame {
 		}
 		
 		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(0);
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies(0);
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies(0);
+				break;				
+			}
 		}
 		gameState.setDeployableArmies(0);
 	}
 	
 	public void calcDeployable()
 	{
-		for(Player player : players){
-			((AIPlayer)player).getGameState().setDeployableArmies();
+		for(Player player : this.getPlayers()){
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies();
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies();
+				break;				
+			}
 		}
 	}
 	

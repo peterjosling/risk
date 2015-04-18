@@ -35,6 +35,12 @@ public class AIPlayer extends Player {
 	private int attackSourceId;
 	private int attackDestId;
 
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.AI;
+	}
+	
 	public AIPlayer(int id, String name)
 	{
 		super(id, name);

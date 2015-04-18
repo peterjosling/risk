@@ -77,6 +77,8 @@ public abstract class Player {
 //		gameState.loadDefaultMap();
 //	}
 	
+	public abstract PlayerType getType();
+
 	public String genName()
 	{
 		Random r = new Random();
