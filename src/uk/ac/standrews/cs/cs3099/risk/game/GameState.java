@@ -41,8 +41,6 @@ public class GameState {
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
-		deck = new Deck(DECK_SIZE);
-		deck.shuffle(TEMP_SEED);
 		initTradeInValues();
 		playerCards = new ArrayList[getNumberOfPlayers()];
 		playersDeployableArmies = new int[players.size()];
@@ -50,7 +48,15 @@ public class GameState {
 
 	public void loadMap(String mapJSON)
 	{
-		map = Map.fromJSON(mapJSON);
+		try {
+			MapParser mp = new MapParser(mapJSON);
+
+			map = new Map(mp);
+			deck = mp.getDeck();
+		} catch (MapParseException e) {
+			Logger.print("ERROR - Problem parsing map, " + e.getMessage());
+			System.exit(-1);
+		}
 	}
 	
 	public void loadDefaultMap()
@@ -589,25 +595,25 @@ public class GameState {
 	{
 		return true;
 	}
-	
+
 	public boolean isCommandValid(RollNumberCommand command)
 	{
 		// Compare with previous RollHash
 		return true;
 	}
-	
+
 	public boolean isCommandValid(TimeoutCommand command)
 	{
 		// TODO
 		return true;
 	}
-	
+
 	public boolean isCommandValid(LeaveGameCommand command)
 	{
 		// TODO
 		return true;
 	}
-	
+
 	public boolean getLastAttackSuccessful()
 	{
 		return lastAttackSuccessful;

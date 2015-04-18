@@ -20,7 +20,7 @@ public class DieTest {
 	@Test
 	public void correctRoll()
 	{
-		for (int i = 0, rollResult = die1.roll(); i < 12; i++, rollResult = die1.roll()) {
+		for (int i = 0, rollResult = die1.deprecatedroll(); i < 12; i++, rollResult = die1.deprecatedroll()) {
 			assertTrue(rollResult <= 6 && rollResult >= 1); // Asserts if roll is not between 1 and 6
 		}
 	}

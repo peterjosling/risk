@@ -31,9 +31,19 @@ public class Continent {
 		return continentValue;
 	}
 
+	public String getContinentName()
+	{
+		return name;
+	}
+
 	public void setContinentValue(int continentValue)
 	{
 		this.continentValue = continentValue;
+	}
+
+	public void setContinentName(String name)
+	{
+		this.name = name;
 	}
 
 	public void addTerritory(Territory t)

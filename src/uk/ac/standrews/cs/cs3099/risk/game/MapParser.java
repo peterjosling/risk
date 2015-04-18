@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
+
 import com.google.gson.*;
 
 public class MapParser {
@@ -39,6 +40,7 @@ public class MapParser {
 
 	private List<Continent> continents;
 	private List<Territory> territories;
+	private Deck deck;
 
 	public MapParser(String jsonMap) throws MapParseException
 	{
@@ -181,7 +183,7 @@ public class MapParser {
 
 			try {
 				value2 = je.getAsJsonArray();
-			} catch (Exception e)  {
+			} catch (Exception e) {
 				throw new MapParseException("Sub-entry in array is not a JSON array");
 			}
 
@@ -369,6 +371,66 @@ public class MapParser {
 
 			c.setContinentValue(pair.value);
 		}
+
+		for (KeyValue pair : parsedjson.continent_names) {
+			Continent c = null;
+
+			// Find the continent by id and set its corresponding value
+			for (Continent c2 : continents) {
+				if (c2.getId() == pair.key) {
+					c = c2;
+					break;
+				}
+			}
+
+			if (c == null)
+				throw new MapParseException("Continent not previously found (invalid id)");
+
+			c.setName(pair.value_str);
+		}
+
+		for (KeyValue pair : parsedjson.country_names) {
+			Territory t = null;
+
+			// Find the continent by id and set its corresponding value
+			for (Territory t2 : territories) {
+				if (t2.getId() == pair.key) {
+					t = t2;
+					break;
+				}
+			}
+
+			if (t == null)
+				throw new MapParseException("Territory not previously found (invalid id)");
+
+			t.setName(pair.value_str);
+		}
+
+		int max_id = 0;
+		Card.CardType[] card_types = {Card.CardType.INFANTRY, Card.CardType.CAVALRY, Card.CardType.ARTILLERY};
+
+		deck = new Deck(parsedjson.country_card.size() + parsedjson.wildcards);
+
+		for (KeyValue pair : parsedjson.country_card) {
+			boolean ok = false;
+
+			// Find the territory by id and set its corresponding value
+			for (Territory t : territories) {
+				if (t.getId() == pair.key) {
+					ok = true;
+					break;
+				}
+			}
+
+			if (!ok)
+				throw new MapParseException("Territory not previously found (invalid id)");
+
+			deck.addCardToDeck(max_id++, pair.key, card_types[pair.value]);
+		}
+
+
+		for (int i = 0; i < parsedjson.wildcards; i++)
+			deck.addCardToDeck(max_id++, -1, Card.CardType.WILD);
 	}
 
 	public List<Continent> getContinents()
@@ -379,5 +441,10 @@ public class MapParser {
 	public List<Territory> getTerritories()
 	{
 		return territories;
+	}
+
+	public Deck getDeck()
+	{
+		return deck;
 	}
 }
