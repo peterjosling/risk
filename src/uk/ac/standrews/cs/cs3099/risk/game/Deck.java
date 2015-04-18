@@ -12,16 +12,19 @@ public class Deck {
 	private ArrayList<Card> cards;
 	private int topCardIndex = 0;
 
-	public Deck(int size) {
+	public Deck(int size)
+	{
 		cards = new ArrayList<Card>(size);
 		populateDeck();
 	}
 
-	public ArrayList<Card> getDeck() {
+	public ArrayList<Card> getDeck()
+	{
 		return cards;
 	}
 
-	public int getTopCardIndex() {
+	public int getTopCardIndex()
+	{
 		return topCardIndex;
 	}
 
@@ -32,12 +35,14 @@ public class Deck {
 	 * @param territoryId - cards territory id
 	 * @param type        - the cards type i.e. INFANTRY, CAVALRY, ARTILLERY, WILD
 	 */
-	public void addCardToDeck(int id, int territoryId, Card.CardType type) {
+	public void addCardToDeck(int id, int territoryId, Card.CardType type)
+	{
 		cards.add(new Card(id, territoryId, type));
 	}
 
 
-	public void populateDeck() {
+	public void populateDeck()
+	{
 		addCardToDeck(0, 0, Card.CardType.ARTILLERY);
 		addCardToDeck(1, 1, Card.CardType.CAVALRY);
 		addCardToDeck(2, 2, Card.CardType.CAVALRY);
@@ -89,7 +94,8 @@ public class Deck {
 	 * Deals the card on the top of the deck i.e. the card at the front of the array list of
 	 * cards to the specified player.
 	 */
-	public Card dealCard() {
+	public Card dealCard()
+	{
 		Card topCard = cards.get(topCardIndex);
 		topCardIndex++;
 		return topCard;
@@ -100,7 +106,8 @@ public class Deck {
 	 *
 	 * @param seed - seed for random number generator
 	 */
-	public void shuffle(long seed) {
+	public void shuffle(long seed)
+	{
 		Random ranGenerator = new Random();
 		ranGenerator.setSeed(seed);
 		for (int i = 0; i < cards.size(); i++) {
