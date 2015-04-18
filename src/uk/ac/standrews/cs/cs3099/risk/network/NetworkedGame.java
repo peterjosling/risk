@@ -265,12 +265,22 @@ public class NetworkedGame extends AbstractGame {
 		// wait for all acknowledgements, then send initialise game
 		if(connectionManager.isServer()){
 			numberOfPingsReceived++;
-			if(pingTimeoutReached() && numberOfPingsReceived !=getPlayers().size()){
-				Command LeaveGameCommand = localPlayer.getCommand(CommandType.LEAVE_GAME);
-				connectionManager.sendCommand(LeaveGameCommand);
-				addAcknowledgement(LeaveGameCommand);
+
+			// Work out how many players we have in total
+			int playerCount = numberOfPingsReceived;
+
+			if (localPlayer != null) {
+				playerCount++;
 			}
-			if(numberOfPingsReceived == getPlayers().size()){
+
+			// Terminate the game if we don't have enough players for a game.
+			if (pingTimeoutReached() && playerCount < 3) {
+				LeaveGameCommand leaveGameCommand = new LeaveGameCommand(-1, nextAckId(), 404, "Not enough players to start the game", false);
+				connectionManager.sendCommand(leaveGameCommand);
+				addAcknowledgement(leaveGameCommand);
+
+				// TODO disconnect all clients, shut down the server.
+			} else {
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
 				connectionManager.sendCommand(readyCommand);
 				addAcknowledgement(readyCommand);
