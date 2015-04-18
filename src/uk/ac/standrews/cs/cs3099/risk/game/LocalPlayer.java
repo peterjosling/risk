@@ -293,7 +293,7 @@ public class LocalPlayer extends Player {
 				receiveUpdates = false;
 			}
 		}while(updates!="Y" || updates!="N");
-		return new LeaveGameCommand(this.getId(), lastAckid++, response, receiveUpdates);
+		return new LeaveGameCommand(this.getId(), lastAckid++, response, "", receiveUpdates);
 	}
 
 	/**

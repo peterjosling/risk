@@ -4,10 +4,16 @@ import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractGame {
+	private static final String DEFAULT_MAP = "www/default-map.json";
+
 	protected GameState gameState;
 	private int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
@@ -23,19 +29,45 @@ public abstract class AbstractGame {
 		players.add(player);
 	}
 
-	public void loadMap(String jsonMap) throws MapParseException
+	public void loadMap(String jsonMap)
 	{
-		MapParser m = new MapParser(jsonMap);
-		gameState.loadMap(m);
+		gameState.loadMap(jsonMap);
 	}
 
-	public void createGameState()
+	public void loadDefaultMap()
+	{
+		String json = "";
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_MAP));
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				json += line;
+			}
+
+			reader.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("Couldn't find default map JSON file");
+			System.exit(1);
+		} catch (IOException e) {
+			System.err.println("Failed to read from input JSON file");
+			System.exit(1);
+		}
+
+		loadMap(json);
+	}
+
+	public void init()
 	{
 		ArrayList<Integer> playerIds = new ArrayList<Integer>();
+
 		for(Player player: players){
 			playerIds.add(player.getId());
 		}
+
 		gameState = new GameState(playerIds);
+		loadDefaultMap();
 	}
 	/**
 	 * Requests one army assignment from each player in order, until all armies have been assigned.

@@ -6,7 +6,6 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.MapParseException;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
@@ -78,12 +77,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
 		System.out.println("Connecting");
-		NetworkedGame game = null;
-		try {
-			game = new NetworkedGame(24, "");
-		} catch (MapParseException e) {
-			e.printStackTrace();
-		}
+		NetworkedGame game = new NetworkedGame(24);
+
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
@@ -104,12 +99,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
 		Player player = new UIPlayer(ws, 0, "Player names not implemented");
-		NetworkedGame game = null;
-		try {
-			game = new NetworkedGame(24, "jsonMap");
-		} catch (MapParseException e) {
-			e.printStackTrace();
-		}
+		NetworkedGame game = new NetworkedGame(24);
+		game.loadDefaultMap();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 

@@ -17,15 +17,15 @@ public class NetworkedGame extends AbstractGame {
 	private String[] turnRollHashes;
 	private String[] turnRollNumbers;
 	private int numberOfPingsReceived = 0;
+	private int ackId = 0;
 	ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
 
-	public NetworkedGame(int armiesPerPlayer, String jsonMap) throws MapParseException
+	public NetworkedGame(int armiesPerPlayer)
 	{
 		super(armiesPerPlayer);
-		this.loadMap(jsonMap);
 		//TODO stop catching exceptions everywhere
 	}
 
@@ -131,8 +131,10 @@ public class NetworkedGame extends AbstractGame {
 
 		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
 			sendAcknowledgement(ackId);
-		}
 
+			// Update value for next acknowledgement
+			this.ackId = ackId + 1;
+		}
 
 		// TODO Add to correct player's move queue based on player_id field.
 		// TODO forward to all players, if host.
@@ -190,7 +192,8 @@ public class NetworkedGame extends AbstractGame {
 
 		// Issue the ping command if we've reached the maximum number of players.
 		if (id == 5 && accepted) {
-			PingCommand pingCommand = new PingCommand(-1, players.size());
+			int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
+			PingCommand pingCommand = new PingCommand(playerId, players.size());
 			connectionManager.sendCommand(pingCommand);
 		}
 	}
@@ -261,33 +264,49 @@ public class NetworkedGame extends AbstractGame {
 		// wait for all acknowledgements, then send initialise game
 		if(connectionManager.isServer()){
 			numberOfPingsReceived++;
-			if(pingTimeoutReached() && numberOfPingsReceived !=getPlayers().size()){
-				Command LeaveGameCommand = localPlayer.getCommand(CommandType.LEAVE_GAME);
-				connectionManager.sendCommand(LeaveGameCommand);
-				addAcknowledgement(LeaveGameCommand);
+
+			// Work out how many players we have in total
+			int playerCount = numberOfPingsReceived;
+
+			if (localPlayer != null) {
+				playerCount++;
 			}
-			if(numberOfPingsReceived == getPlayers().size()){
+
+			// Terminate the game if we don't have enough players for a game.
+			if (pingTimeoutReached() && playerCount < 3) {
+				LeaveGameCommand leaveGameCommand = new LeaveGameCommand(-1, nextAckId(), 404, "Not enough players to start the game", false);
+				connectionManager.sendCommand(leaveGameCommand);
+				addAcknowledgement(leaveGameCommand);
+
+				// TODO disconnect all clients, shut down the server.
+			} else {
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
 				connectionManager.sendCommand(readyCommand);
 				addAcknowledgement(readyCommand);
-				while(!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())){
+
+				while (!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())) {
 					try {
 						wait(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+
 				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
-				Command initialiseGameCommand = localPlayer.getCommand(CommandType.INITIALISE_GAME);
+
+				// TODO check this is an intersection of compatible versions/features.
+				Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 				connectionManager.sendCommand(initialiseGameCommand);
 				addAcknowledgement(initialiseGameCommand);
-				while(!timeoutReached(initialiseGameCommand.getAckId())){
+
+				while (!timeoutReached(initialiseGameCommand.getAckId())) {
 					try {
 						wait(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+
 				timeoutPlayersNotAcknowledged(initialiseGameCommand.getAckId());
 			}
 		}
@@ -370,6 +389,9 @@ public class NetworkedGame extends AbstractGame {
 	{
 		localPlayer.notifyCommand(command);
 
+		// Initialise the game state and load the map. Players list is finalised.
+		init();
+
 		String hash = "TODO_IMPLEMENT_HASH";
 		RollHashCommand rollHashCommand = new RollHashCommand(localPlayer.getId(), hash);
 		connectionManager.sendCommand(rollHashCommand);
@@ -430,5 +452,15 @@ public class NetworkedGame extends AbstractGame {
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
 		connectionManager.sendCommand(ack);
+	}
+
+	/**
+	 * Get the acknowledgement ID for the next command, and increment it.
+	 *
+	 * @return
+	 */
+	private int nextAckId()
+	{
+		return ackId++;
 	}
 }
