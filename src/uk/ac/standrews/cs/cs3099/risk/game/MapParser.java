@@ -213,7 +213,7 @@ public class MapParser {
 		JsonParser jp = new JsonParser();
 		JsonElement je;
 		JsonObject jo;
-		List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_name", "country_card", "wildcards"));
+		List<String> lookup = new ArrayList<String>(Arrays.asList("data", "continents", "connections", "continent_values", "continent_names", "country_names", "country_card", "wildcards"));
 		boolean[] processed = new boolean[lookup.size()];
 		ParsedJson parsed = new ParsedJson();
 
