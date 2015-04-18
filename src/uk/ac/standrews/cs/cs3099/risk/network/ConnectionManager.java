@@ -54,7 +54,9 @@ public class ConnectionManager {
 		System.out.println("Sending command: " + command.toJSON());
 
 		for (PlayerSocket playerSocket : playerSockets) {
-			playerSocket.sendCommand(command);
+			if(playerSocket.getPlayerId()!=command.getPlayerId()){
+				playerSocket.sendCommand(command);
+			}
 		}
 	}
 
