@@ -294,7 +294,9 @@ public class NetworkedGame extends AbstractGame {
 				}
 
 				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
-				Command initialiseGameCommand = localPlayer.getCommand(CommandType.INITIALISE_GAME);
+
+				// TODO check this is an intersection of compatible versions/features.
+				Command initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 				connectionManager.sendCommand(initialiseGameCommand);
 				addAcknowledgement(initialiseGameCommand);
 
