@@ -14,17 +14,23 @@ class Game extends Model {
 	playerList : Collection<Player>;
 	self : Player;
 	map : Map;
-	_isHost: boolean;
+	_isHost : boolean;
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new Collection<Player>();
 		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
+		this.set('currentPlayer', -1);
 	}
 
 	isHost() : boolean {
 		return this._isHost;
+	}
+
+	getCurrentPlayer() : Player {
+		var playerId : number = this.get('currentPlayer');
+		return this.playerList.get(playerId);
 	}
 
 	connect(host : string, port : number) : Promise<Messages.Message> {
