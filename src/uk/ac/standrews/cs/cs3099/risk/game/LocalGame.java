@@ -15,7 +15,7 @@ public class LocalGame extends AbstractGame {
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
 		for (int i = 1; i < playerCount; i++) {
-			Player player = new LocalPlayer(i);
+			Player player = new AIPlayer(i);
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}

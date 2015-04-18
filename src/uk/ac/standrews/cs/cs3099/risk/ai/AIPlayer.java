@@ -39,6 +39,11 @@ public class AIPlayer extends Player {
 	{
 		super(id, name);
 	}
+	
+	public AIPlayer(int id)
+	{
+		super(id);
+	}
 
 	public void initialiseGameState(ArrayList<Integer> players)
 	{
@@ -197,7 +202,7 @@ public class AIPlayer extends Player {
 		// 3 CARDS OF SAME TYPE
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
-				cards[0] =  (Card[]) (currentType.subList(0, 3)).toArray();
+				cards[0] =  (Card[]) (currentType.subList(0, 2)).toArray();
 				return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
