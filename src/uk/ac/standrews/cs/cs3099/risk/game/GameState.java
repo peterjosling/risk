@@ -540,31 +540,31 @@ public class GameState {
 	{
 		return true;
 	}
-	
+
 	public boolean isCommandValid(RollNumberCommand command)
 	{
 		// Compare with previous RollHash
 		return true;
 	}
-	
+
 	public boolean isCommandValid(TimeoutCommand command)
 	{
 		// TODO
 		return true;
 	}
-	
+
 	public boolean isCommandValid(LeaveGameCommand command)
 	{
 		// TODO
 		return true;
 	}
-	
+
 	public boolean getLastAttackSuccessful()
 	{
 		return lastAttackSuccessful;
 	}
-	
-	public void setAttackSuccessful(boolean attackSuccessful) 
+
+	public void setAttackSuccessful(boolean attackSuccessful)
 	{
 		this.attackSuccessful = attackSuccessful;
 	}

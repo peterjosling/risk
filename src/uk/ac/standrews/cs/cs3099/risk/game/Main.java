@@ -40,15 +40,6 @@ public class Main {
 
 		Random r = new Random();
 
-		for (int i = 0; i < 25; i++)
-			Logger.print(m.getRandomName(r));
-
-		Logger.print("------------------------------------------------------------------------------");
-		Logger.print("Risk - And some player names:");
-
-		for (int i = 0; i < 25; i++)
-			Logger.print(p.genName());
-
 		Logger.print("------------------------------------------------------------------------------");
 		Logger.print("Risk - Some random bytes, generated with seed='Key' - RandomNumbers(\"4B6579\"):");
 

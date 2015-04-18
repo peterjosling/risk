@@ -29,6 +29,26 @@ public class Die {
 
 	private int faceValue = 1;
 
+	/**
+	 * Simple implementation of die roll
+	 * @return die roll
+	 */
+	public int deprecatedroll()
+	{
+		faceValue = rand.nextInt(6) + 1;
+		return faceValue;
+	}
+
+	public int[] rollDice()
+	{
+		int[] diceRolls = new int[numberOfDiceToRoll];
+
+		for(int n = 0; n < numberOfDiceToRoll; n++){
+			diceRolls[n] = deprecatedroll();
+		}
+		return diceRolls;
+	}
+
 	private Map<Integer, byte[]> playerhash = new HashMap<Integer, byte[]>();
 	private Map<Integer, byte[]> playernum = new HashMap<Integer, byte[]>();
 
