@@ -94,7 +94,13 @@ public abstract class AbstractGame {
 
 			notifyPlayers(command);
 		}
+		
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(0);
+		}
+		gameState.setDeployableArmies(0);
 	}
+	
 	
 	public void deploy(Player player)
 	{

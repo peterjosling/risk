@@ -49,15 +49,16 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		assignTerritories();
-		
-		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED FOR EVERYONE...
-		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer()); // PER PLAYER
-		}
+		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
 			Player currentPlayer = nextTurn();
-			playCards(currentPlayer);
-			deploy(currentPlayer);
+			System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
+			if(firstTurn){
+				firstTurn = false;
+			} else {
+				playCards(currentPlayer);
+				deploy(currentPlayer);
+			}
 			String attack;
 			do{
 				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
