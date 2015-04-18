@@ -38,42 +38,12 @@ public class Main {
 
 		System.out.println(json);
 
-		Random r = new Random();
-
-		Logger.print("------------------------------------------------------------------------------");
-		Logger.print("Risk - Some random bytes, generated with seed='Key' - RandomNumbers(\"4B6579\"):");
-
-		RandomNumbers rn = new RandomNumbers("4B6579"); // Seeding with 'Key'
-		for (int i = 0; i < 10; i++)
-			System.out.printf("%02X", rn.getRandomByte() & 0xFFL);
-		System.out.println();
-
-		Logger.print("------------------------------------------------------------------------------");
-		Logger.print("Risk - A random int, generated with seed='Key' - RandomNumbers(\"4B6579\"):");
-
-		rn = new RandomNumbers("4B6579");
-		System.out.printf("%08X\n", rn.getRandomInt() & 0xFFFFFFFFL);
-
 		try {
 			LocalGame localGame = new LocalGame(json, 4, 10);
 			localGame.run();
 		} catch (MapParseException e) {
 			e.printStackTrace();
 		}
-
-		Logger.print("------------------------------------------------------------------------------");
-		Logger.print("Risk - Some random bytes, generated with seed='Key' - RandomNumbers(\"4B6579\"):");
-
-		RandomNumbers rn = new RandomNumbers("4B6579"); // Seeding with 'Key'
-		for (int i = 0; i < 10; i++)
-			System.out.printf("%02X", rn.getRandomByte() & 0xFFL);
-		System.out.println();
-
-		Logger.print("------------------------------------------------------------------------------");
-		Logger.print("Risk - A random int, generated with seed='Key' - RandomNumbers(\"4B6579\"):");
-
-		rn = new RandomNumbers("4B6579");
-		System.out.printf("%08X\n", rn.getRandomInt() & 0xFFFFFFFFL);
 
 		System.exit(0);
 	}
