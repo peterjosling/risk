@@ -133,6 +133,7 @@ public class NetworkedGame extends AbstractGame {
 			sendAcknowledgement(ackId);
 		}
 
+
 		// TODO Add to correct player's move queue based on player_id field.
 		// TODO forward to all players, if host.
 	}
@@ -254,6 +255,7 @@ public class NetworkedGame extends AbstractGame {
 		if (command.getNoOfPlayers() > 0) {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
+			timePingSent = new Date();
 		}
 		//if host check that all pings received, then send ReadyCommand,
 		// wait for all acknowledgements, then send initialise game
@@ -262,10 +264,12 @@ public class NetworkedGame extends AbstractGame {
 			if(pingTimeoutReached() && numberOfPingsReceived !=getPlayers().size()){
 				Command LeaveGameCommand = localPlayer.getCommand(CommandType.LEAVE_GAME);
 				connectionManager.sendCommand(LeaveGameCommand);
+				addAcknowledgement(LeaveGameCommand);
 			}
 			if(numberOfPingsReceived == getPlayers().size()){
 				Command readyCommand = localPlayer.getCommand(CommandType.READY);
 				connectionManager.sendCommand(readyCommand);
+				addAcknowledgement(readyCommand);
 				while(!allAcknowledgementsReceived(readyCommand.getAckId()) || timeoutReached(readyCommand.getAckId())){
 					try {
 						wait(100);
@@ -276,12 +280,13 @@ public class NetworkedGame extends AbstractGame {
 				timeoutPlayersNotAcknowledged(readyCommand.getAckId());
 				Command initialiseGameCommand = localPlayer.getCommand(CommandType.INITIALISE_GAME);
 				connectionManager.sendCommand(initialiseGameCommand);
+				addAcknowledgement(initialiseGameCommand);
 			}
 		}
 	}
 
 	/**
-	 * Timeout players that haven't acknowledged the specified command
+	 * Timeout players that haven't acknowledged the specified commands
 	 * @param ackId the ackId of the command being checked for
 	 */
 	private void timeoutPlayersNotAcknowledged(int ackId) {
@@ -321,6 +326,15 @@ public class NetworkedGame extends AbstractGame {
 		int timePassedInSeconds = (int)timePassedMilliSeconds/1000;
 		if(timePassedInSeconds>acknowledgementTimeout) return true;
 		return false;
+	}
+
+	/**
+	 * Adds an Acknowledgement to the list of acknowledgements for all commands that have been sent
+	 * @param command - the new command created
+	 */
+	public void addAcknowledgement(Command command){
+		Acknowledgement acknowledgement = new Acknowledgement(command.getAckId());
+		acknowledgements.add(command.getAckId(), acknowledgement);
 	}
 
 	/**
