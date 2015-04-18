@@ -38,7 +38,7 @@ public class Die {
 	public int deprecatedroll()
 	{
 		faceValue = rand.nextInt(6) + 1;
-		return faceValue;
+		return 4;
 	}
 
 	public int[] rollDice()

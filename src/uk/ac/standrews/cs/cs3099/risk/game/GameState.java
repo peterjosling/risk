@@ -4,6 +4,10 @@ import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.Card.CardType;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +17,7 @@ import java.util.Arrays;
  * Stores the entire game and controls board movement
  */
 public class GameState {
+	private static final String DEFAULT_MAP = "www/default-map.json";
 
 	private Map map;
 	private Deck deck;
@@ -31,11 +36,14 @@ public class GameState {
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
+	private int defDice;
+
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
 		initTradeInValues();
 		playerCards = new ArrayList[getNumberOfPlayers()];
+		playersDeployableArmies = new int[players.size()];
 	}
 
 	public void loadMap(String mapJSON)
@@ -49,6 +57,30 @@ public class GameState {
 			Logger.print("ERROR - Problem parsing map, " + e.getMessage());
 			System.exit(-1);
 		}
+	}
+	
+	public void loadDefaultMap()
+	{
+		String json = "";
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_MAP));
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				json += line;
+			}
+
+			reader.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("Couldn't find default map JSON file");
+			System.exit(1);
+		} catch (IOException e) {
+			System.err.println("Failed to read from input JSON file");
+			System.exit(1);
+		}
+
+		loadMap(json);
 	}
 
 	public Map getMap(){
@@ -122,28 +154,42 @@ public class GameState {
 		switch(command.getType()){
 			case ASSIGN_ARMY:
 				playCommand((AssignArmyCommand) command);
+				break;
 			case ATTACK:
 				playCommand((AttackCommand) command);
+				break;
 			case FORTIFY:
 				playCommand((FortifyCommand) command);
+				break;
 			case DEPLOY:
 				playCommand((DeployCommand) command);
+				break;
 			case DRAW_CARD:
 				playCommand((DrawCardCommand) command);
+				break;
 			case DEFEND:
 				playCommand((DefendCommand) command);
+				break;
 			case TIMEOUT:
 				playCommand((TimeoutCommand) command);
+				break;
 			case ATTACK_CAPTURE:
 				playCommand((AttackCaptureCommand) command);
+				break;
 			case LEAVE_GAME:
 				playCommand((LeaveGameCommand) command);
+				break;
 			case PLAY_CARDS:
 				playCommand((PlayCardsCommand) command);
+				break;
 			case ROLL_NUMBER:
 				playCommand((RollNumberCommand) command);
+				break;
 			case ROLL_HASH:
 				playCommand((RollHashCommand) command);
+				break;
+		default:
+			break;
 		}
 	}
 
@@ -177,7 +223,7 @@ public class GameState {
 			ArrayList<String> rollNumbers = new ArrayList<String>();
 			int dieFaces = 6;
 			int numberOfAttackingDice = command.getArmies();
-			int numberOfDefendingDice = 0;
+			int numberOfDefendingDice = defDice;
 			for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
 				Command phaseCommand = attackPhaseCommands.get(commandIndex);
 				if(phaseCommand.getType() == CommandType.DEFEND){
@@ -223,22 +269,21 @@ public class GameState {
 		int dRoll = 0;
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
-			while(aRoll<numberOfAttackingDice){
+			
+			if(aRoll<numberOfAttackingDice){
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
-			}
-			while(dRoll<numberOfDefendingDice){
-				defendingRolls[aRoll] = rolls[roll];
+			} else if (dRoll<numberOfDefendingDice){
+				defendingRolls[dRoll] = rolls[roll] - 1;
 				dRoll++;
 			}
 		}
 		Arrays.sort(attackingRolls);
 		Arrays.sort(defendingRolls);
-		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice); i>=0; i--){
-			if(attackingRolls[i] < defendingRolls[i]){
-				losses[0]++;;
-			}
-			if(attackingRolls[i] < defendingRolls[i]){
+		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
+			if(attackingRolls[i] <= defendingRolls[i]){
+				losses[0]++;
+			} else {
 				losses[1]++;
 			}
 		}
@@ -248,6 +293,7 @@ public class GameState {
 	public void playCommand(DefendCommand command){
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
+			defDice = command.getArmies();
 		}
 	}
 
@@ -274,6 +320,9 @@ public class GameState {
 	}
 
 	public void playCommand(PlayCardsCommand command){
+		if(command.getCards() == null){
+			return;
+		}
 		Card[][] cards = command.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(command.getPlayerId());
 		int armies = calculateArmiesFromTradeIn();
@@ -468,7 +517,7 @@ public class GameState {
 			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
 			if(deployTerritory.getOwner() != playerId) return false;
 
-			deployingTroops += deployTerritory.getArmies();
+			deployingTroops += deployment.getArmies();
 		}
 
 		if(deployingTroops != playersDeployableArmies[playerId]) return false;
@@ -569,8 +618,14 @@ public class GameState {
 	{
 		return lastAttackSuccessful;
 	}
-
-	public void setAttackSuccessful(boolean attackSuccessful)
+	
+	public void setDeployableArmies(int armies){
+		for(int i = 0; i < playersDeployableArmies.length; i ++){
+			playersDeployableArmies[i] = armies;
+		}
+	}
+	
+	public void setAttackSuccessful(boolean attackSuccessful) 
 	{
 		this.attackSuccessful = attackSuccessful;
 	}

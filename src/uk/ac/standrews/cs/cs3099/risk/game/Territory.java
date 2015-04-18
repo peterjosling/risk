@@ -78,7 +78,7 @@ public class Territory {
 
 	public boolean removeArmies(int numberOfArmies)
 	{
-		if (numberOfArmies < 0 || numberOfArmies >= armies) {
+		if (numberOfArmies < 0 || numberOfArmies > armies) {
 			return false;
 		} else {
 			armies = armies - numberOfArmies;

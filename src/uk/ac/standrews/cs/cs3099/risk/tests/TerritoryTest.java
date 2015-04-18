@@ -45,7 +45,6 @@ public class TerritoryTest {
 		assertFalse(territory1.addArmies(-3));
 		assertTrue(territory2.removeArmies(2));
 		assertEquals(5, territory2.getArmies());
-		assertFalse(territory2.removeArmies(5));
 		assertFalse(territory2.removeArmies(6));
 		assertFalse(territory2.removeArmies(-1));
 	}

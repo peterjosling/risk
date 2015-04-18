@@ -3,6 +3,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Map.*;
@@ -13,8 +14,8 @@ import java.util.Map.*;
  */
 public class Map {
 
-	private List<Continent> continents;
-	private List<Territory> territories;
+	private List<Continent> continents = new ArrayList<Continent>();
+	private List<Territory> territories = new ArrayList<Territory>();
 
 	private final String[][] territoryNames = {{"Act", "Afr", "Ag", "Agr", "Alb", "Am", "An", "Angl", "Ant", "Aqu", "Ar", "Arc", "As", "Atl", "Austr",
 												"Eb", "Eg", "Eng", "Er", "Esc", "Esp", "Est", "Eth", "Etr", "Eul", "Euph", "Eur", "Ib", "Ind", "It",
@@ -162,7 +163,7 @@ public class Map {
 			}
 
 			// Assign names to territories.
-			JsonObject territoryNames = obj.get("territory_names").getAsJsonObject();
+			JsonObject territoryNames = obj.get("country_names").getAsJsonObject();
 
 			for (Entry<String, JsonElement> nameEntry : territoryNames.entrySet()) {
 				int territoryId = Integer.parseInt(nameEntry.getKey());

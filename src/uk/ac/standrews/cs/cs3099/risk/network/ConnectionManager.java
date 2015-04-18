@@ -54,7 +54,13 @@ public class ConnectionManager {
 		System.out.println("Sending command: " + command.toJSON());
 
 		for (PlayerSocket playerSocket : playerSockets) {
-			playerSocket.sendCommand(command);
+			if (playerSocket.getPlayerId() != command.getPlayerId()) {
+				playerSocket.sendCommand(command);
+			}
+		}
+
+		if (command.getAckId() > -1) {
+			game.addAcknowledgement(command);
 		}
 	}
 
@@ -75,7 +81,8 @@ public class ConnectionManager {
 		}
 	}
 
-	public boolean isServer() {
+	public boolean isServer()
+	{
 		return isServer;
 	}
 }
