@@ -173,6 +173,10 @@ class Game extends Model {
 			case 'deploy':
 				this.deployMessageReceived(<Messages.DeployMessage>message);
 				break;
+
+			case 'roll_result':
+				this.rollResultMessageReceived(<Messages.RollResultMessage>message);
+				break;
 		}
 	}
 
@@ -313,7 +317,14 @@ class Game extends Model {
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
-
+		// Handle first roll to set initial player as a special case.
+		if (!this.getCurrentPlayer()) {
+			this.set('currentPlayer', message.payload);
+			var player = this.getCurrentPlayer();
+			this.showToast(player.name + ' to play first');
+		} else {
+			// TODO
+		}
 	}
 }
 
