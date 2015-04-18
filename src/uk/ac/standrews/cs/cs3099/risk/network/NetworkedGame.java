@@ -194,6 +194,7 @@ public class NetworkedGame extends AbstractGame {
 		if (id == 5 && accepted) {
 			int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
 			PingCommand pingCommand = new PingCommand(playerId, players.size());
+			timePingSent = new Date();
 			connectionManager.sendCommand(pingCommand);
 		}
 	}
@@ -258,11 +259,11 @@ public class NetworkedGame extends AbstractGame {
 		if (command.getNoOfPlayers() > 0) {
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
-			timePingSent = new Date();
 		}
+
 		//if host check that all pings received, then send ReadyCommand,
 		// wait for all acknowledgements, then send initialise game
-		if(connectionManager.isServer()){
+		if (connectionManager.isServer()) {
 			numberOfPingsReceived++;
 
 			// Work out how many players we have in total
