@@ -15,8 +15,6 @@ import static org.junit.Assert.*;
 public class DeckTest {
 
 	Deck deck1;
-	Deck deck2;
-	Deck deck3;
 
 	@Before
 	public void setup()
