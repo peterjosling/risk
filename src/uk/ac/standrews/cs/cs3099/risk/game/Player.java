@@ -70,7 +70,13 @@ public abstract class Player {
 		this.id = id;
 		this.name = name;
 	}
-
+//
+//	public void initialiseGameState(ArrayList<Integer> playerInts)
+//	{
+//		gameState = new GameState(playerInts);
+//		gameState.loadDefaultMap();
+//	}
+	
 	public String genName()
 	{
 		Random r = new Random();

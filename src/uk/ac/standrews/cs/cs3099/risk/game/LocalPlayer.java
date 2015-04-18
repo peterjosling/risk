@@ -6,7 +6,6 @@ import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class LocalPlayer extends Player {
 	private GameState gameState;
 	private int attackSourceId;
@@ -25,6 +24,11 @@ public class LocalPlayer extends Player {
 	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
 		gameState = new GameState(playerInts);
+		gameState.loadDefaultMap();
+	}
+	
+	public GameState getGameState(){
+		return gameState;
 	}
 
 	@Override
@@ -304,6 +308,7 @@ public class LocalPlayer extends Player {
 	{
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
+		if(numberOfTradeIns == 0) return new PlayCardsCommand(this.getId(), lastAckid++);
 		List<Card> playersCards = getCards();
 		System.out.println("Your Cards:");
 		for(Card card:playersCards){
@@ -385,36 +390,52 @@ public class LocalPlayer extends Player {
 		switch(command.getType()) {
 		case ASSIGN_ARMY:
 			notifyCommand((AssignArmyCommand) command);
+			break;
 		case ATTACK:
 			notifyCommand((AttackCommand) command);
+			break;
 		case FORTIFY:
 			notifyCommand((FortifyCommand) command);
+			break;
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
+			break;
 		case DRAW_CARD:
 			notifyCommand((DrawCardCommand) command);
+			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
+			break;
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
+			break;
 		case INITIALISE_GAME:
 //			notifyCommand((InitialiseGameCommand) command);
+			break;
 		case PLAYERS_JOINED:
 			notifyCommand((PlayersJoinedCommand) command);
+			break;
 		case READY:
 			notifyCommand((ReadyCommand) command);
+			break;
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
+			break;
 		case LEAVE_GAME:
 			notifyCommand((LeaveGameCommand) command);
+			break;
 		case PLAY_CARDS:
 			notifyCommand((PlayCardsCommand) command);
+			break;
 		case ROLL_NUMBER:
 			notifyCommand((RollNumberCommand) command);
+			break;
 		case ROLL_HASH:
 			notifyCommand((RollHashCommand) command);
+			break;
 		default:
 			notifyCommand((LeaveGameCommand) command);
+			break;
 		}
 	}
 
@@ -446,10 +467,15 @@ public class LocalPlayer extends Player {
 
 	public void notifyCommand(FortifyCommand command)
 	{
+		if(command.getFortifyDetails()[2] == 0){
+			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
+			return;
+		}
 		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
 		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
 		int armies = command.getFortifyDetails()[2];
 		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
+		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
@@ -525,6 +551,10 @@ public class LocalPlayer extends Player {
 
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		if(command.getCards() == null){
+			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
+			return;
+		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
 		for(Card[] cardSet : command.getCards()){

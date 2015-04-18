@@ -34,7 +34,7 @@ public class AttackCommand extends Command {
 	 */
 	public int getArmies()
 	{
-		return payload[3];
+		return payload[2];
 	}
 
 	@Override

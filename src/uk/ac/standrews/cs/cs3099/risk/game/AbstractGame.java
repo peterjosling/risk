@@ -1,5 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
@@ -74,18 +75,23 @@ public abstract class AbstractGame {
 	 */
 	public void assignTerritories()
 	{
-		int totalArmies = armiesPerPlayer * players.size();
 
-		for (int i = 0; i < totalArmies; i++) {
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(1);
+		}
+		gameState.setDeployableArmies(1);
+		
+		Command command = null;
+
+		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
-			Command command = null;
-
-			command = player.getCommand(CommandType.ASSIGN_ARMY);
-
-			if (command.getType() != CommandType.ASSIGN_ARMY) {
-				terminate();
-				return;
+			if(i < gameState.getMap().getTerritories().size()){
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} else {
+				command = player.getCommand(CommandType.DEPLOY);
 			}
+
 			notifyPlayers(command);
 		}
 	}
@@ -102,14 +108,14 @@ public abstract class AbstractGame {
 	
 	public void attack(Player player)
 	{
-		Command command = player.getCommand(CommandType.ATTACK);
-		if (command.getType() != CommandType.ATTACK) {
+		Command attackCommand = player.getCommand(CommandType.ATTACK);
+		if (attackCommand.getType() != CommandType.ATTACK) {
 			terminate();
 			return;
 		}
-		notifyPlayers(command);
+		notifyPlayers(attackCommand);
 		
-		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) command).getDest());
+		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) attackCommand).getDest());
 		Player defPlayer = getPlayerById(defTerritory.getOwner());
 		Command defCommand = defPlayer.getCommand(CommandType.DEFEND);
 		if (defCommand.getType() != CommandType.DEFEND) {
@@ -126,6 +132,8 @@ public abstract class AbstractGame {
 			notifyPlayers(rollNumber);
 		}
 		
+		notifyPlayers(attackCommand);
+
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
@@ -134,8 +142,8 @@ public abstract class AbstractGame {
 	
 	public void fortify(Player player)
 	{
-		Command command = player.getCommand(CommandType.ATTACK);
-		if (command.getType() != CommandType.ATTACK) {
+		Command command = player.getCommand(CommandType.FORTIFY);
+		if (command.getType() != CommandType.FORTIFY) {
 			terminate();
 			return;
 		}
@@ -212,6 +220,11 @@ public abstract class AbstractGame {
 	public List<Player> getPlayers()
 	{
 		return players;
+	}
+	
+	public int getArmiesPerPlayer()
+	{
+		return armiesPerPlayer;
 	}
 	
 	/**
