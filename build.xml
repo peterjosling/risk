@@ -5,9 +5,10 @@
   <property name="temp" location="temp"/>
   <property name="dist"  location="dist"/>
   <property name="test"  location="src"/>
+  <property name="lib"  location="lib"/>
 
   <path id="class.path">
-    <fileset dir="lib">
+    <fileset dir="${lib}">
       <include name="**/*.jar" />
     </fileset>
   </path>
@@ -33,9 +34,12 @@
     <!-- Put everything in ${build} into the jar file -->
     <manifest file="${build}/MANIFEST.MF">
       <attribute name="Main-Class"
-                 value="uk.ac.standrews.cs.cs3099.risk.game.Main" />
+                 value="uk.ac.standrews.cs.cs3099.risk.ui.WebInterface" />
     </manifest>
-    <jar jarfile="${dist}/lib/Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF"/>
+    <jar jarfile="${dist}/lib/Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF">
+      <fileset dir="${build}" includes="**/*.class" />
+      <zipgroupfileset dir="${lib}" includes="**/*.jar" />
+    </jar>
   </target>
 
   <target name="clean"
