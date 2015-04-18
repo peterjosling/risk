@@ -10,40 +10,66 @@ public class LocalGame extends AbstractGame {
 	{
 		super(armiesPerPlayer);
 		
-		addPlayer(new LocalPlayer(0));
-		
+		initialise(playerCount);
+		this.init();
+//		this.loadMap(jsonMap);
+	}
+	
+	public LocalGame(int playerCount, int armiesPerPlayer)
+	{
+		super(armiesPerPlayer);
+
+		initialise(playerCount);
+		this.init();
+//		loadDefaultMap();
+	}
+	
+	
+	public void initialise(int playerCount)
+	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
-		for (int i = 1; i < playerCount; i++) {
-			Player player = new LocalPlayer(i);
+//		LocalPlayer localPlayer = new LocalPlayer(0);
+//		playerInts.add(localPlayer.getId());
+//		addPlayer(new LocalPlayer(0));
+
+		
+		for (int i = 0; i < playerCount; i++) {
+			Player player = new AIPlayer(i);
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}
 		
 		for(Player player : this.getPlayers()){
-			LocalPlayer localPlayer = (LocalPlayer) player;
-			localPlayer.initialiseGameState(playerInts);
+			((AIPlayer) player).initialiseGameState(playerInts);
 		}
 		
-		this.loadMap(jsonMap);
 	}
 
-	public void run(){
+	public void run()
+	{
 		assignTerritories();
-		while(gameState.isGameComplete()){
+		
+		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED FOR EVERYONE...
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer()); // PER PLAYER
+		}
+		while(!gameState.isGameComplete()){
 			Player currentPlayer = nextTurn();
 			playCards(currentPlayer);
 			deploy(currentPlayer);
 			String attack;
 			do{
+				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
 				System.out.println("Do you wish to make an attack: Y/N");
 				attack = EasyIn.getString();
-				attack(getCurrentTurnPlayer());
-			}while(attack=="Y");
+				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
+			}while(attack.equals("Y"));
 			fortify(currentPlayer);
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
+			// CALCULATE DEPOLOYABLE ARMIES
 		}
 	}
 }

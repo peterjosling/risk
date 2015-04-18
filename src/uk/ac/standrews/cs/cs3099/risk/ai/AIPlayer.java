@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class AIPlayer extends Player {
 	private GameState gameState;
-	private int ack_id = 0;
+
 	private int attackSourceId;
 	private int attackDestId;
 
@@ -39,10 +39,20 @@ public class AIPlayer extends Player {
 	{
 		super(id, name);
 	}
-
-	public void initialiseGameState(ArrayList<Integer> players)
+	
+	public AIPlayer(int id)
 	{
-		gameState = new GameState(players);
+		super(id);
+	}
+
+	public void initialiseGameState(ArrayList<Integer> playerInts)
+	{
+		gameState = new GameState(playerInts);
+		gameState.loadDefaultMap();
+	}
+	
+	public GameState getGameState(){
+		return gameState;
 	}
 	
 	@Override
@@ -133,11 +143,13 @@ public class AIPlayer extends Player {
 		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
 		Deployment[] deployments = new Deployment[1];
 		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
-		DeployCommand command = new DeployCommand(getId(), ++ack_id, deployments);
+		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
+		
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Deploy Command");
+//			getDeployComand();
 		}
 		return null;
 	}
@@ -147,7 +159,7 @@ public class AIPlayer extends Player {
 		// Pick the first free territory to claim.
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
 		Territory territory = freeTerritories[0];
-		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++ack_id, territory.getId());
+		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++lastAckid, territory.getId());
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
@@ -197,7 +209,7 @@ public class AIPlayer extends Player {
 		// 3 CARDS OF SAME TYPE
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
-				cards[0] =  (Card[]) (currentType.subList(0, 3)).toArray();
+				cards[0] =  (Card[]) (currentType.subList(0, 2)).toArray();
 				return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
@@ -286,9 +298,9 @@ public class AIPlayer extends Player {
 	public Command getAttackCommand() 
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-		int sourceId = 1;
-		int destId = 1;
-		int armies = 1;
+		int sourceId = 0;
+		int destId = 0;
+		int armies = 0;
 		for(Territory territory : territories){
 			if(territory.getArmies() > 1){
 				Set<Territory> linkedTerritories = territory.getLinkedTerritories();
@@ -296,13 +308,18 @@ public class AIPlayer extends Player {
 					if(currentLinkedTerr.getOwner() != this.getId()){
 						sourceId = territory.getId();
 						destId = currentLinkedTerr.getId();
-						armies = territory.getArmies() - 1;
+						if(territory.getArmies() > 3){
+							armies = 3;
+						} else {
+							armies = territory.getArmies() - 1;
+						}
 					}
 				}
 			} else {
 				continue;
 			}
 		}
+		System.out.println("Source: " + sourceId + ", dest: " + destId + ", armies: " + armies);
 		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
 		if(gameState.isCommandValid(command)){
 			return command;
@@ -318,28 +335,40 @@ public class AIPlayer extends Player {
 		switch(command.getType()) {
 		case ASSIGN_ARMY:
 			notifyCommand((AssignArmyCommand) command);
+			break;
 		case ATTACK:
 			notifyCommand((AttackCommand) command);
+			break;
 		case FORTIFY:
 			notifyCommand((FortifyCommand) command);
+			break;
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
+			break;
 		case DRAW_CARD:
 			notifyCommand((DrawCardCommand) command);
+			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
+			break;
 		case ATTACK_CAPTURE:
 			notifyCommand((AttackCaptureCommand) command);
+			break;
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
+			break;
 		case LEAVE_GAME:
 			notifyCommand((LeaveGameCommand) command);
+			break;
 		case PLAY_CARDS:
 			notifyCommand((PlayCardsCommand) command);
+			break;
 		case ROLL_NUMBER:
 			notifyCommand((RollNumberCommand) command);
+			break;
 		case ROLL_HASH:
 			notifyCommand((RollHashCommand) command);
+			break;
 		default:
 			notifyCommand((LeaveGameCommand) command);
 		}
@@ -383,6 +412,10 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(FortifyCommand command)
 	{
+		if(command.getFortifyDetails()[2] == 0){
+			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
+			return;
+		}
 		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
 		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
 		int armies = command.getFortifyDetails()[2];
@@ -463,6 +496,10 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		if(command.getCards() == null){
+			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
+			return;
+		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
 		for(Card[] cardSet : command.getCards()){
