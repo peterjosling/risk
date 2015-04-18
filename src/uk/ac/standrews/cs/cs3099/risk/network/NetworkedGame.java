@@ -124,6 +124,10 @@ public class NetworkedGame extends AbstractGame {
 			case ROLL_NUMBER:
 				rollNumberCommand((RollNumberCommand) command);
 				return;
+
+			case ACKNOWLEDGEMENT:
+				acknowledgementReceived((AcknowledgementCommand) command);
+				break;
 		}
 
 		// Send acknowledgement.
@@ -453,6 +457,13 @@ public class NetworkedGame extends AbstractGame {
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
 		connectionManager.sendCommand(ack);
+	}
+
+	private void acknowledgementReceived(AcknowledgementCommand command)
+	{
+		Acknowledgement ack = acknowledgements.get(command.getAckId());
+		ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+		System.out.println("Ack received: player " + command.getPlayerId());
 	}
 
 	/**
