@@ -60,17 +60,32 @@ public class LocalGame extends AbstractGame {
 				deploy(currentPlayer);
 			}
 			String attack;
-			do{
-				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
-				System.out.println("Do you wish to make an attack: Y/N");
-				attack = EasyIn.getString();
-				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
-			}while(attack.equals("Y"));
+			if(canPlayerAttack(currentPlayer)){
+				attack(getCurrentTurnPlayer());
+			}
+//			do{
+//				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
+//				System.out.println("Do you wish to make an attack: Y/N");
+//				attack = EasyIn.getString();
+//				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
+//			}while(attack.equals("Y"));
 			fortify(currentPlayer);
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
 			calcDeployable();
 		}
+	}
+	
+	public boolean canPlayerAttack(Player player){
+		Territory[] territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
