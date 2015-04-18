@@ -74,9 +74,8 @@ public abstract class AbstractGame {
 	 */
 	public void assignTerritories()
 	{
-		int totalArmies = armiesPerPlayer * players.size();
 
-		for (int i = 0; i < totalArmies; i++) {
+		for (int i = 0; i < gameState.getMap().getTerritories().size(); i++) {
 			Player player = nextTurn();
 			Command command = null;
 
@@ -102,14 +101,14 @@ public abstract class AbstractGame {
 	
 	public void attack(Player player)
 	{
-		Command command = player.getCommand(CommandType.ATTACK);
-		if (command.getType() != CommandType.ATTACK) {
+		Command attackCommand = player.getCommand(CommandType.ATTACK);
+		if (attackCommand.getType() != CommandType.ATTACK) {
 			terminate();
 			return;
 		}
-		notifyPlayers(command);
+		notifyPlayers(attackCommand);
 		
-		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) command).getDest());
+		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) attackCommand).getDest());
 		Player defPlayer = getPlayerById(defTerritory.getOwner());
 		Command defCommand = defPlayer.getCommand(CommandType.DEFEND);
 		if (defCommand.getType() != CommandType.DEFEND) {
@@ -126,6 +125,8 @@ public abstract class AbstractGame {
 			notifyPlayers(rollNumber);
 		}
 		
+		notifyPlayers(attackCommand);
+
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);

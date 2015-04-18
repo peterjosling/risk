@@ -36,6 +36,8 @@ public class GameState {
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
 
+	private int defDice;
+
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
@@ -215,7 +217,7 @@ public class GameState {
 			ArrayList<String> rollNumbers = new ArrayList<String>();
 			int dieFaces = 6;
 			int numberOfAttackingDice = command.getArmies();
-			int numberOfDefendingDice = 0;
+			int numberOfDefendingDice = defDice;
 			for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
 				Command phaseCommand = attackPhaseCommands.get(commandIndex);
 				if(phaseCommand.getType() == CommandType.DEFEND){
@@ -261,22 +263,21 @@ public class GameState {
 		int dRoll = 0;
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
-			while(aRoll<numberOfAttackingDice){
+			
+			if(aRoll<numberOfAttackingDice){
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
-			}
-			while(dRoll<numberOfDefendingDice){
-				defendingRolls[dRoll] = rolls[roll];
+			} else if (dRoll<numberOfDefendingDice){
+				defendingRolls[dRoll] = rolls[roll] - 1;
 				dRoll++;
 			}
 		}
 		Arrays.sort(attackingRolls);
 		Arrays.sort(defendingRolls);
 		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
-			if(attackingRolls[i] < defendingRolls[i]){
-				losses[0]++;;
-			}
-			if(attackingRolls[i] < defendingRolls[i]){
+			if(attackingRolls[i] <= defendingRolls[i]){
+				losses[0]++;
+			} else {
 				losses[1]++;
 			}
 		}
@@ -286,6 +287,7 @@ public class GameState {
 	public void playCommand(DefendCommand command){
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
+			defDice = command.getArmies();
 		}
 	}
 

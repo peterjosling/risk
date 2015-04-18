@@ -52,7 +52,7 @@ public class LocalGame extends AbstractGame {
 		
 		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED FOR EVERYONE...
 		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer());
+			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer()); // PER PLAYER
 		}
 		while(!gameState.isGameComplete()){
 			Player currentPlayer = nextTurn();
@@ -60,6 +60,7 @@ public class LocalGame extends AbstractGame {
 			deploy(currentPlayer);
 			String attack;
 			do{
+				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
 				System.out.println("Do you wish to make an attack: Y/N");
 				attack = EasyIn.getString();
 				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
