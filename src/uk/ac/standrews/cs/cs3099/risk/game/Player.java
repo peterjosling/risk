@@ -17,6 +17,7 @@ public abstract class Player {
 	private int id;
 	private String name;
 	protected int lastAckid = 0;
+	protected boolean isNeutral = false;
 
 	// Game state properties
 	private List<Card> usedCards = new ArrayList<Card>();
@@ -129,4 +130,7 @@ public abstract class Player {
 
 	public abstract Command getCommand(CommandType type);
 	public abstract void notifyCommand(Command command);
+
+	public abstract boolean isNeutral();
+	public abstract void makeNeutral();
 }
