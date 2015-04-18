@@ -314,6 +314,9 @@ public class NetworkedGame extends AbstractGame {
 			connectionManager.sendCommand(response);
 		}
 
+		Player player = getPlayerById(command.getPlayerId());
+		player.setNeutral(false);
+
 		// Send ready immediately if we have all pings.
 		if (connectionManager.isServer() && numberOfPingsReceived == getPlayers().size()) {
 			sendReadyCommand();
@@ -344,17 +347,17 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param ackId the ackId of the command being checked for
 	 */
-	private void timeoutPlayersNotAcknowledged(int ackId)
+	public void timeoutPlayersNotAcknowledged(int ackId)
 	{
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
 		for (int i = 0; i < 6; i++) {
 			if (!playersAcks[i] && !players.get(i).isNeutral()) {
-				Command timeoutCommand = localPlayer.getCommand(CommandType.TIMEOUT);
-				connectionManager.sendCommand(timeoutCommand);
-				players.get(i).makeNeutral();
+				players.get(i).setNeutral(true);
 			}
 		}
+		Command timeoutCommand = localPlayer.getCommand(CommandType.TIMEOUT);
+		connectionManager.sendCommand(timeoutCommand);
 	}
 
 	/**
@@ -540,5 +543,9 @@ public class NetworkedGame extends AbstractGame {
 	private int nextAckId()
 	{
 		return ackId++;
+	}
+
+	public ConnectionManager getConnectionManager(){
+		return connectionManager;
 	}
 }
