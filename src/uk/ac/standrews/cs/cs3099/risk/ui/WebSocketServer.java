@@ -100,7 +100,6 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	{
 		Player player = new UIPlayer(ws, 0, "Player names not implemented");
 		NetworkedGame game = new NetworkedGame(24);
-		game.loadDefaultMap();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 

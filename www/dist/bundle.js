@@ -124,7 +124,7 @@
 	    d.prototype = new __();
 	};
 	/// <reference path="../../lib/backbone/backbone.d.ts" />
-	var Backbone = __webpack_require__(24);
+	var Backbone = __webpack_require__(21);
 	var View = (function (_super) {
 	    __extends(View, _super);
 	    function View(options) {
@@ -173,7 +173,7 @@
 	var Collection = __webpack_require__(12);
 	var Player = __webpack_require__(13);
 	var Map = __webpack_require__(14);
-	var defaultMapJson = __webpack_require__(21);
+	var defaultMapJson = __webpack_require__(22);
 	var HOST = 'ws://localhost:7574';
 	var Game = (function (_super) {
 	    __extends(Game, _super);
@@ -430,7 +430,7 @@
 	    __extends(ConnectionView, _super);
 	    function ConnectionView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(15);
+	        this.template = __webpack_require__(16);
 	    }
 	    Object.defineProperty(ConnectionView.prototype, "className", {
 	        get: function () {
@@ -504,7 +504,7 @@
 	    __extends(LobbyView, _super);
 	    function LobbyView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(16);
+	        this.template = __webpack_require__(15);
 	        this.listenTo(this.model.playerList, 'add', this.render);
 	        this.listenTo(this.model, 'playerJoinRequested', this.playerJoinRequested);
 	        this.requestedPlayers = [];
@@ -709,7 +709,7 @@
 	    d.prototype = new __();
 	};
 	/// <reference path="../../lib/backbone/backbone.d.ts" />
-	var Backbone = __webpack_require__(24);
+	var Backbone = __webpack_require__(21);
 	var Model = (function (_super) {
 	    __extends(Model, _super);
 	    function Model() {
@@ -731,7 +731,7 @@
 	    d.prototype = new __();
 	};
 	/// <reference path="../../lib/backbone/backbone.d.ts" />
-	var Backbone = __webpack_require__(24);
+	var Backbone = __webpack_require__(21);
 	var Collection = (function (_super) {
 	    __extends(Collection, _super);
 	    function Collection() {
@@ -840,8 +840,8 @@
 	};
 	var Model = __webpack_require__(11);
 	var Collection = __webpack_require__(12);
-	var Continent = __webpack_require__(22);
-	var Territory = __webpack_require__(23);
+	var Continent = __webpack_require__(23);
+	var Territory = __webpack_require__(24);
 	var Map = (function (_super) {
 	    __extends(Map, _super);
 	    function Map() {
@@ -897,15 +897,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(33);
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-	  return "<form>\n	<h2>Connect to a host</h2>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form>\n	<h2>Start a server</h2>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
-	  },"useData":true});
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Handlebars = __webpack_require__(33);
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(depth0,helpers,partials,data) {
 	  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 	  return "	<div>"
@@ -922,6 +913,15 @@
 	  if (stack1 != null) { buffer += stack1; }
 	  return buffer;
 	},"useData":true});
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(33);
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+	  return "<form>\n	<h2>Connect to a host</h2>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form>\n	<h2>Start a server</h2>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
+	  },"useData":true});
 
 /***/ },
 /* 17 */
@@ -1232,600 +1232,6 @@
 
 /***/ },
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = {
-		"data": "map",
-		"continents": {
-			"0": [
-				"0",
-				"1",
-				"2",
-				"3",
-				"4",
-				"5",
-				"6",
-				"7",
-				"8"
-			],
-			"1": [
-				"9",
-				"10",
-				"11",
-				"12"
-			],
-			"2": [
-				"13",
-				"14",
-				"15",
-				"16",
-				"17",
-				"18",
-				"19"
-			],
-			"3": [
-				"20",
-				"21",
-				"22",
-				"23",
-				"24",
-				"25"
-			],
-			"4": [
-				"26",
-				"27",
-				"28",
-				"29",
-				"30",
-				"31",
-				"32",
-				"33",
-				"34",
-				"35",
-				"36",
-				"37"
-			],
-			"5": [
-				"38",
-				"39",
-				"40",
-				"41"
-			]
-		},
-		"connections": [
-			[
-				0,
-				1
-			],
-			[
-				0,
-				3
-			],
-			[
-				0,
-				29
-			],
-			[
-				1,
-				3
-			],
-			[
-				1,
-				2
-			],
-			[
-				1,
-				4
-			],
-			[
-				2,
-				4
-			],
-			[
-				2,
-				5
-			],
-			[
-				2,
-				13
-			],
-			[
-				3,
-				4
-			],
-			[
-				3,
-				6
-			],
-			[
-				4,
-				5
-			],
-			[
-				4,
-				6
-			],
-			[
-				4,
-				7
-			],
-			[
-				5,
-				7
-			],
-			[
-				6,
-				7
-			],
-			[
-				6,
-				8
-			],
-			[
-				7,
-				8
-			],
-			[
-				8,
-				9
-			],
-			[
-				9,
-				10
-			],
-			[
-				9,
-				11
-			],
-			[
-				10,
-				11
-			],
-			[
-				10,
-				12
-			],
-			[
-				11,
-				12
-			],
-			[
-				11,
-				20
-			],
-			[
-				13,
-				14
-			],
-			[
-				13,
-				16
-			],
-			[
-				14,
-				16
-			],
-			[
-				14,
-				17
-			],
-			[
-				14,
-				15
-			],
-			[
-				15,
-				17
-			],
-			[
-				15,
-				19
-			],
-			[
-				15,
-				26
-			],
-			[
-				15,
-				33
-			],
-			[
-				15,
-				35
-			],
-			[
-				16,
-				17
-			],
-			[
-				16,
-				18
-			],
-			[
-				17,
-				18
-			],
-			[
-				17,
-				19
-			],
-			[
-				18,
-				19
-			],
-			[
-				18,
-				20
-			],
-			[
-				19,
-				20
-			],
-			[
-				19,
-				21
-			],
-			[
-				19,
-				35
-			],
-			[
-				20,
-				21
-			],
-			[
-				20,
-				22
-			],
-			[
-				20,
-				23
-			],
-			[
-				21,
-				23
-			],
-			[
-				21,
-				35
-			],
-			[
-				22,
-				23
-			],
-			[
-				22,
-				24
-			],
-			[
-				23,
-				25
-			],
-			[
-				23,
-				24
-			],
-			[
-				23,
-				35
-			],
-			[
-				24,
-				25
-			],
-			[
-				26,
-				27
-			],
-			[
-				26,
-				34
-			],
-			[
-				26,
-				33
-			],
-			[
-				27,
-				28
-			],
-			[
-				27,
-				30
-			],
-			[
-				27,
-				31
-			],
-			[
-				27,
-				34
-			],
-			[
-				28,
-				29
-			],
-			[
-				28,
-				30
-			],
-			[
-				29,
-				30
-			],
-			[
-				29,
-				32
-			],
-			[
-				29,
-				31
-			],
-			[
-				30,
-				31
-			],
-			[
-				31,
-				32
-			],
-			[
-				31,
-				34
-			],
-			[
-				33,
-				34
-			],
-			[
-				33,
-				35
-			],
-			[
-				33,
-				36
-			],
-			[
-				34,
-				36
-			],
-			[
-				34,
-				37
-			],
-			[
-				35,
-				36
-			],
-			[
-				36,
-				37
-			],
-			[
-				37,
-				38
-			],
-			[
-				38,
-				39
-			],
-			[
-				38,
-				40
-			],
-			[
-				39,
-				40
-			],
-			[
-				39,
-				41
-			],
-			[
-				40,
-				41
-			]
-		],
-		"continent_values": {
-			"0": 5,
-			"1": 2,
-			"2": 5,
-			"3": 3,
-			"4": 7,
-			"5": 2
-		},
-		"country_names": {
-			"0": "Alaska",
-			"1": "Northwest territory",
-			"2": "Greenland",
-			"3": "Alberta",
-			"4": "Ontario",
-			"5": "Quebec",
-			"6": "Western United States",
-			"7": "Eastern United States",
-			"8": "Central America",
-			"9": "Venezuela",
-			"10": "Peru",
-			"11": "Brazil",
-			"12": "Argentina",
-			"13": "Iceland",
-			"14": "Scandinavia",
-			"15": "Ukraine",
-			"16": "Great Britain",
-			"17": "Northern Europe",
-			"18": "Western Europe",
-			"19": "Southern Europe",
-			"20": "North Africa",
-			"21": "Egypt",
-			"22": "Congo",
-			"23": "East Africa",
-			"24": "South Africa",
-			"25": "Madagaskar",
-			"26": "Ural",
-			"27": "Siberia",
-			"28": "Yakutsk",
-			"29": "Kamchatka",
-			"30": "Irkutsk",
-			"31": "Mongolia",
-			"32": "Japan",
-			"33": "Afghanistan",
-			"34": "China",
-			"35": "Middle East",
-			"36": "India",
-			"37": "Siam",
-			"38": "Indonesia",
-			"39": "New Guinea",
-			"40": "Western Australia",
-			"41": "Eastern Australia"
-		},
-		"continent_names": {
-			"0": "North America",
-			"1": "South America",
-			"2": "Europe",
-			"3": "Africa",
-			"4": "Asia",
-			"5": "Australia"
-		},
-		"country_card": {
-			"0": 2,
-			"1": 1,
-			"2": 1,
-			"3": 2,
-			"4": 2,
-			"5": 2,
-			"6": 2,
-			"7": 2,
-			"8": 0,
-			"9": 1,
-			"10": 1,
-			"11": 0,
-			"12": 0,
-			"13": 1,
-			"14": 0,
-			"15": 0,
-			"16": 0,
-			"17": 1,
-			"18": 0,
-			"19": 0,
-			"20": 0,
-			"21": 1,
-			"22": 2,
-			"23": 0,
-			"24": 2,
-			"25": 1,
-			"26": 0,
-			"27": 0,
-			"28": 2,
-			"29": 2,
-			"30": 2,
-			"31": 1,
-			"32": 1,
-			"33": 0,
-			"34": 2,
-			"35": 2,
-			"36": 1,
-			"37": 1,
-			"38": 0,
-			"39": 1,
-			"40": 2,
-			"41": 1
-		},
-		"wildcards": 2
-	}
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(12);
-	var Continent = (function (_super) {
-	    __extends(Continent, _super);
-	    function Continent() {
-	        _super.apply(this, arguments);
-	    }
-	    Continent.prototype.initialize = function (options) {
-	        this.territories = new Collection();
-	    };
-	    Continent.prototype.setValue = function (value) {
-	        this.set('value', value);
-	    };
-	    Continent.prototype.getValue = function () {
-	        return this.get('value');
-	    };
-	    Continent.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Continent.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    return Continent;
-	})(Model);
-	module.exports = Continent;
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(12);
-	var Territory = (function (_super) {
-	    __extends(Territory, _super);
-	    function Territory() {
-	        _super.apply(this, arguments);
-	        this.owner = null;
-	        this.armies = 0;
-	    }
-	    Territory.prototype.initialize = function (options) {
-	        this.connections = new Collection();
-	    };
-	    Territory.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Territory.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    Territory.prototype.setCardType = function (cardType) {
-	        this.set('cardType', cardType);
-	    };
-	    Territory.prototype.getCardType = function () {
-	        return this.get('cardType');
-	    };
-	    Territory.prototype.setOwner = function (player) {
-	        this.owner = player;
-	    };
-	    Territory.prototype.getOwner = function () {
-	        return this.owner;
-	    };
-	    Territory.prototype.setArmies = function (armies) {
-	        this.armies = armies;
-	    };
-	    Territory.prototype.addArmies = function (armies) {
-	        this.armies += armies;
-	    };
-	    Territory.prototype.getArmies = function () {
-	        return this.armies;
-	    };
-	    return Territory;
-	})(Model);
-	module.exports = Territory;
-
-
-/***/ },
-/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.1.2
@@ -3436,6 +2842,600 @@
 	  return Backbone;
 	
 	}));
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = {
+		"data": "map",
+		"continents": {
+			"0": [
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8"
+			],
+			"1": [
+				"9",
+				"10",
+				"11",
+				"12"
+			],
+			"2": [
+				"13",
+				"14",
+				"15",
+				"16",
+				"17",
+				"18",
+				"19"
+			],
+			"3": [
+				"20",
+				"21",
+				"22",
+				"23",
+				"24",
+				"25"
+			],
+			"4": [
+				"26",
+				"27",
+				"28",
+				"29",
+				"30",
+				"31",
+				"32",
+				"33",
+				"34",
+				"35",
+				"36",
+				"37"
+			],
+			"5": [
+				"38",
+				"39",
+				"40",
+				"41"
+			]
+		},
+		"connections": [
+			[
+				0,
+				1
+			],
+			[
+				0,
+				3
+			],
+			[
+				0,
+				29
+			],
+			[
+				1,
+				3
+			],
+			[
+				1,
+				2
+			],
+			[
+				1,
+				4
+			],
+			[
+				2,
+				4
+			],
+			[
+				2,
+				5
+			],
+			[
+				2,
+				13
+			],
+			[
+				3,
+				4
+			],
+			[
+				3,
+				6
+			],
+			[
+				4,
+				5
+			],
+			[
+				4,
+				6
+			],
+			[
+				4,
+				7
+			],
+			[
+				5,
+				7
+			],
+			[
+				6,
+				7
+			],
+			[
+				6,
+				8
+			],
+			[
+				7,
+				8
+			],
+			[
+				8,
+				9
+			],
+			[
+				9,
+				10
+			],
+			[
+				9,
+				11
+			],
+			[
+				10,
+				11
+			],
+			[
+				10,
+				12
+			],
+			[
+				11,
+				12
+			],
+			[
+				11,
+				20
+			],
+			[
+				13,
+				14
+			],
+			[
+				13,
+				16
+			],
+			[
+				14,
+				16
+			],
+			[
+				14,
+				17
+			],
+			[
+				14,
+				15
+			],
+			[
+				15,
+				17
+			],
+			[
+				15,
+				19
+			],
+			[
+				15,
+				26
+			],
+			[
+				15,
+				33
+			],
+			[
+				15,
+				35
+			],
+			[
+				16,
+				17
+			],
+			[
+				16,
+				18
+			],
+			[
+				17,
+				18
+			],
+			[
+				17,
+				19
+			],
+			[
+				18,
+				19
+			],
+			[
+				18,
+				20
+			],
+			[
+				19,
+				20
+			],
+			[
+				19,
+				21
+			],
+			[
+				19,
+				35
+			],
+			[
+				20,
+				21
+			],
+			[
+				20,
+				22
+			],
+			[
+				20,
+				23
+			],
+			[
+				21,
+				23
+			],
+			[
+				21,
+				35
+			],
+			[
+				22,
+				23
+			],
+			[
+				22,
+				24
+			],
+			[
+				23,
+				25
+			],
+			[
+				23,
+				24
+			],
+			[
+				23,
+				35
+			],
+			[
+				24,
+				25
+			],
+			[
+				26,
+				27
+			],
+			[
+				26,
+				34
+			],
+			[
+				26,
+				33
+			],
+			[
+				27,
+				28
+			],
+			[
+				27,
+				30
+			],
+			[
+				27,
+				31
+			],
+			[
+				27,
+				34
+			],
+			[
+				28,
+				29
+			],
+			[
+				28,
+				30
+			],
+			[
+				29,
+				30
+			],
+			[
+				29,
+				32
+			],
+			[
+				29,
+				31
+			],
+			[
+				30,
+				31
+			],
+			[
+				31,
+				32
+			],
+			[
+				31,
+				34
+			],
+			[
+				33,
+				34
+			],
+			[
+				33,
+				35
+			],
+			[
+				33,
+				36
+			],
+			[
+				34,
+				36
+			],
+			[
+				34,
+				37
+			],
+			[
+				35,
+				36
+			],
+			[
+				36,
+				37
+			],
+			[
+				37,
+				38
+			],
+			[
+				38,
+				39
+			],
+			[
+				38,
+				40
+			],
+			[
+				39,
+				40
+			],
+			[
+				39,
+				41
+			],
+			[
+				40,
+				41
+			]
+		],
+		"continent_values": {
+			"0": 5,
+			"1": 2,
+			"2": 5,
+			"3": 3,
+			"4": 7,
+			"5": 2
+		},
+		"country_names": {
+			"0": "Alaska",
+			"1": "Northwest territory",
+			"2": "Greenland",
+			"3": "Alberta",
+			"4": "Ontario",
+			"5": "Quebec",
+			"6": "Western United States",
+			"7": "Eastern United States",
+			"8": "Central America",
+			"9": "Venezuela",
+			"10": "Peru",
+			"11": "Brazil",
+			"12": "Argentina",
+			"13": "Iceland",
+			"14": "Scandinavia",
+			"15": "Ukraine",
+			"16": "Great Britain",
+			"17": "Northern Europe",
+			"18": "Western Europe",
+			"19": "Southern Europe",
+			"20": "North Africa",
+			"21": "Egypt",
+			"22": "Congo",
+			"23": "East Africa",
+			"24": "South Africa",
+			"25": "Madagaskar",
+			"26": "Ural",
+			"27": "Siberia",
+			"28": "Yakutsk",
+			"29": "Kamchatka",
+			"30": "Irkutsk",
+			"31": "Mongolia",
+			"32": "Japan",
+			"33": "Afghanistan",
+			"34": "China",
+			"35": "Middle East",
+			"36": "India",
+			"37": "Siam",
+			"38": "Indonesia",
+			"39": "New Guinea",
+			"40": "Western Australia",
+			"41": "Eastern Australia"
+		},
+		"continent_names": {
+			"0": "North America",
+			"1": "South America",
+			"2": "Europe",
+			"3": "Africa",
+			"4": "Asia",
+			"5": "Australia"
+		},
+		"country_card": {
+			"0": 2,
+			"1": 1,
+			"2": 1,
+			"3": 2,
+			"4": 2,
+			"5": 2,
+			"6": 2,
+			"7": 2,
+			"8": 0,
+			"9": 1,
+			"10": 1,
+			"11": 0,
+			"12": 0,
+			"13": 1,
+			"14": 0,
+			"15": 0,
+			"16": 0,
+			"17": 1,
+			"18": 0,
+			"19": 0,
+			"20": 0,
+			"21": 1,
+			"22": 2,
+			"23": 0,
+			"24": 2,
+			"25": 1,
+			"26": 0,
+			"27": 0,
+			"28": 2,
+			"29": 2,
+			"30": 2,
+			"31": 1,
+			"32": 1,
+			"33": 0,
+			"34": 2,
+			"35": 2,
+			"36": 1,
+			"37": 1,
+			"38": 0,
+			"39": 1,
+			"40": 2,
+			"41": 1
+		},
+		"wildcards": 2
+	}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(12);
+	var Continent = (function (_super) {
+	    __extends(Continent, _super);
+	    function Continent() {
+	        _super.apply(this, arguments);
+	    }
+	    Continent.prototype.initialize = function (options) {
+	        this.territories = new Collection();
+	    };
+	    Continent.prototype.setValue = function (value) {
+	        this.set('value', value);
+	    };
+	    Continent.prototype.getValue = function () {
+	        return this.get('value');
+	    };
+	    Continent.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Continent.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    return Continent;
+	})(Model);
+	module.exports = Continent;
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(12);
+	var Territory = (function (_super) {
+	    __extends(Territory, _super);
+	    function Territory() {
+	        _super.apply(this, arguments);
+	        this.owner = null;
+	        this.armies = 0;
+	    }
+	    Territory.prototype.initialize = function (options) {
+	        this.connections = new Collection();
+	    };
+	    Territory.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Territory.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    Territory.prototype.setCardType = function (cardType) {
+	        this.set('cardType', cardType);
+	    };
+	    Territory.prototype.getCardType = function () {
+	        return this.get('cardType');
+	    };
+	    Territory.prototype.setOwner = function (player) {
+	        this.owner = player;
+	    };
+	    Territory.prototype.getOwner = function () {
+	        return this.owner;
+	    };
+	    Territory.prototype.setArmies = function (armies) {
+	        this.armies = armies;
+	    };
+	    Territory.prototype.addArmies = function (armies) {
+	        this.armies += armies;
+	    };
+	    Territory.prototype.getArmies = function () {
+	        return this.armies;
+	    };
+	    return Territory;
+	})(Model);
+	module.exports = Territory;
 
 
 /***/ },
