@@ -111,7 +111,7 @@ public class MapParserTest {
 									 "\"continent_values\":{\"0\":0}, \"country_names\":{\"0\":\"a\"}}");
 	}
 
-	//@Test(expected=MapParseException.class)
+	@Test(expected=MapParseException.class)
 	public void everythingElse3() throws MapParseException
 	{
 		MapParser m = new MapParser("{\"data\":\"map\", \"continents\":{\"0\":[0, 1]}, \"connections\":[[0,1]]," +
@@ -119,7 +119,7 @@ public class MapParserTest {
 									 "\"country_card\":{\"0\":0}}");
 	}
 
-	//@Test(expected=MapParseException.class)
+	@Test(expected=MapParseException.class)
 	public void everythingElse4() throws MapParseException
 	{
 		MapParser m = new MapParser("{\"data\":\"map\", \"continents\":{\"0\":[0, 1]}, \"connections\":[[0,1]]," +
