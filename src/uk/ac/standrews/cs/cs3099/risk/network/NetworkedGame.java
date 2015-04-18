@@ -489,14 +489,17 @@ public class NetworkedGame extends AbstractGame {
 
 		for (Player player : getPlayers()) {
 			if (!player.isNeutral()) {
-				String number = turnRollHashes[player.getId()];
+				String number = turnRollNumbers[player.getId()];
 				rollsReceived = rollsReceived && number != null;
 			}
 		}
 
-		if (rollsReceived) {
+		if (rollsReceived && localPlayer != null) {
 			// TODO roll die, get first player.
-			// TODO create roll_result command and forward to the UI.
+
+			// Send the computed result of the dice roll to the interface.
+			RollResultCommand rollResult = new RollResultCommand(0);
+			localPlayer.notifyCommand(rollResult);
 		}
 	}
 
