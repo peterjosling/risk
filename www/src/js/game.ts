@@ -4,6 +4,7 @@ import Player = require('./player');
 import PlayerList = require('./player-list');
 import Messages = require('./messages');
 import Map = require('./map');
+import CardList = require('./card-list');
 
 var defaultMapJson = require('../../default-map.json');
 
@@ -14,14 +15,14 @@ class Game extends Model {
 
 	playerList : PlayerList;
 	self : Player;
-	map : Map;
+	map : Map = new Map();
+	playerCards : CardList = new CardList();
 	_isHost : boolean;
 	_phase : string = 'setup';
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new PlayerList();
-		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
 		this.set('currentPlayer', -1);
 	}
@@ -45,6 +46,17 @@ class Game extends Model {
 	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
 	getPhase() : string {
 		return this._phase;
+	}
+
+	// Set the current game phase.
+	setPhase(phase : string) {
+		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+
+		if (validPhases.indexOf('phase') === -1) {
+			throw new Error('Invalid phase specified');
+		}
+
+		this._phase = phase;
 	}
 
 	// Advance to the next (active) player's turn.
@@ -117,6 +129,7 @@ class Game extends Model {
 
 		this.self = new Player({
 			player_id: 0,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 
@@ -240,6 +253,7 @@ class Game extends Model {
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
 		this.self = new Player({
 			player_id: message.payload.player_id,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 

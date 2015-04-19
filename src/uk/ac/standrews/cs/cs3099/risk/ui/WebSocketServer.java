@@ -12,7 +12,6 @@ import uk.ac.standrews.cs.cs3099.risk.network.HostServer;
 import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 import uk.ac.standrews.cs.cs3099.risk.network.PlayerSocket;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,11 +115,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
-		try {
-			game.connectToServer(command.getHostname(), command.getPort());
-		} catch (IOException e) {
-			System.err.println("Failed to connect to remote host.");
-		}
+		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getHostname(), command.getPort());
+		new Thread(networkedGameThread).start();
 	}
 
 	/**
@@ -136,10 +132,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
-		try {
-			game.startServer(command.getPort());
-		} catch (IOException e) {
-			System.err.println("Couldn't start host server on port " + command.getPort());
-		}
+		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getPort());
+		new Thread(networkedGameThread).start();
 	}
 }

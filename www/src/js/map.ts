@@ -2,14 +2,18 @@ import Model = require('./model');
 import Collection = require('./collection');
 import Continent = require('./continent');
 import Territory = require('./territory');
+import CardList = require('./card-list');
+import Card = require('./card');
 
 class Map extends Model {
 	continents : Collection<Continent>;
 	territories : Collection<Territory>;
+	deck : CardList;
 
 	initialize(options) {
 		this.continents = new Collection<Continent>();
 		this.territories = new Collection<Territory>();
+		this.deck = new CardList();
 	}
 
 	fromJSON(json) {
@@ -53,13 +57,30 @@ class Map extends Model {
 			continent.setName(json.continent_names[i]);
 		}
 
-		// Set territory card types.
+		var cardTypes = [
+			'infantry',
+			'cavalry',
+			'artillery'
+		];
+
+		// Set territory card types, populate deck.
 		for (var i in json.country_card) {
+			var cardType = cardTypes[json.country_card[i]];
 			var territory = this.territories.get(+i);
-			territory.setCardType(json.country_card[i]);
+			territory.setCardType(cardType);
+
+			var card = new Card({
+				type: cardType,
+				territory: territory
+			});
+
+			this.deck.add(card);
 		}
 
-		// TODO do something with number of wildcards.
+		// Add wildcards to the deck.
+		for (var j = 0; j < json.wildcards; j++) {
+			this.deck.add(new Card({type: 'wildcard'}));
+		}
 	}
 }
 
