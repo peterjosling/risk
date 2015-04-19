@@ -85,6 +85,15 @@ public class NetworkedGame extends AbstractGame {
 		addPlayer(player);
 	}
 
+	/**
+	 * Get the player local to this machine.
+	 * @return A Player instance, or null if this is a non-playing host.
+	 */
+	public Player getLocalPlayer()
+	{
+		return localPlayer;
+	}
+
 	public int getMoveTimeout()
 	{
 		return moveTimeout;

@@ -5,7 +5,6 @@ import org.java_websocket.handshake.ClientHandshake;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
@@ -15,7 +14,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 
 public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
-	HashMap<InetSocketAddress, AbstractGame> games = new HashMap<InetSocketAddress, AbstractGame>();
+	HashMap<InetSocketAddress, NetworkedGame> games = new HashMap<InetSocketAddress, NetworkedGame>();
 
 	public WebSocketServer(InetSocketAddress address)
 	{
@@ -59,7 +58,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 				return;
 		}
 
-		// TODO Parse command, push onto player's queue.
+		// TODO add ack_id value, if required.
+
+		// Add the move to the local player's queue.
+		NetworkedGame game = games.get(webSocket);
+		Player player = game.getLocalPlayer();
+
+		if (player != null && player instanceof UIPlayer) {
+			((UIPlayer) player).queueCommand(command);
+		}
 	}
 
 	@Override

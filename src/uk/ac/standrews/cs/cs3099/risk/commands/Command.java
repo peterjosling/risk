@@ -78,7 +78,7 @@ public abstract class Command {
 		classMap.put("fortify", FortifyCommand.class);
 		classMap.put("deploy", DeployCommand.class);
 		classMap.put("draw_card", DrawCardCommand.class);
-		classMap.put("assign_army", AssignArmyCommand.class);
+		classMap.put("setup", AssignArmyCommand.class);
 		classMap.put("defend", DefendCommand.class);
 		classMap.put("join_game", JoinGameCommand.class);
 		classMap.put("accept_join_game", AcceptJoinGameCommand.class);
