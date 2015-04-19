@@ -112,6 +112,7 @@ public class LocalPlayer extends Player {
 		int territoryID = EasyIn.getInt();
 		AssignArmyCommand command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
 		if(gameState.isCommandValid(command)){
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -136,6 +137,7 @@ public class LocalPlayer extends Player {
 		int armies = EasyIn.getInt();
 		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -158,6 +160,7 @@ public class LocalPlayer extends Player {
 		int[] details = {sourceID, destinationID, armies};
 		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++, details);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -185,6 +188,7 @@ public class LocalPlayer extends Player {
 		}
 		DeployCommand command = new DeployCommand(this.getId(), lastAckid++, deployments);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -200,6 +204,7 @@ public class LocalPlayer extends Player {
 	{
 		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -218,6 +223,7 @@ public class LocalPlayer extends Player {
 		int armies = EasyIn.getInt();
 		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, armies);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -233,7 +239,9 @@ public class LocalPlayer extends Player {
 	{
 		float[] supportedVersions = {1};
 		String[] supportedFeatures = {};
-		return new JoinGameCommand(supportedVersions, supportedFeatures);
+		JoinGameCommand command = new JoinGameCommand(supportedVersions, supportedFeatures);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -244,7 +252,9 @@ public class LocalPlayer extends Player {
 	{
 		int ackTimeout = 4; //Check these values
 		int moveTimeout = 30;
-		return new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
+		AcceptJoinGameCommand command = new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -254,7 +264,9 @@ public class LocalPlayer extends Player {
 	public Command getRejectJoinGameCommand()
 	{
 		String message = "Game in progress";
-		return new RejectJoinGameCommand(message);
+		RejectJoinGameCommand command = new RejectJoinGameCommand(message);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -262,7 +274,9 @@ public class LocalPlayer extends Player {
 	 * @return the new AcknowledgementCommand
 	 */
 	public Command getAcknowledgementCommand(){
-		return new AcknowledgementCommand(this.getId(), lastAckid++);
+		AcknowledgementCommand command = new AcknowledgementCommand(this.getId(), lastAckid++);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -272,7 +286,9 @@ public class LocalPlayer extends Player {
 	public Command getTimeoutCommand()
 	{
 		int timedOutPlayerId = EasyIn.getInt();
-		return new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+		TimeoutCommand command = new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -285,6 +301,7 @@ public class LocalPlayer extends Player {
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -310,7 +327,9 @@ public class LocalPlayer extends Player {
 				receiveUpdates = false;
 			}
 		}while(updates!="Y" || updates!="N");
-		return new LeaveGameCommand(this.getId(), lastAckid++, response, "", receiveUpdates);
+		LeaveGameCommand command = new LeaveGameCommand(this.getId(), lastAckid++, response, "", receiveUpdates);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -345,6 +364,7 @@ public class LocalPlayer extends Player {
 		}
 		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -359,7 +379,9 @@ public class LocalPlayer extends Player {
 	public Command getRollNumberCommand()
 	{
 		String hash = "";
-		return new RollNumberCommand(this.getId(), hash);
+		RollNumberCommand command = new RollNumberCommand(this.getId(), hash);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -369,7 +391,9 @@ public class LocalPlayer extends Player {
 	public Command getRollHashCommand()
 	{
 		String hash = "";
-		return new RollHashCommand(this.getId(), hash);
+		RollHashCommand command = new RollHashCommand(this.getId(), hash);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -378,7 +402,9 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getPingCommand() 
 	{
-		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
+		PingCommand command = new PingCommand(this.getId(), gameState.getNumberOfPlayers());
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -387,7 +413,9 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getReadyCommand() 
 	{
-		return new ReadyCommand(this.getId(), lastAckid++);
+		ReadyCommand command = new ReadyCommand(this.getId(), lastAckid++);
+		notifyCommand(command);
+		return command;
 	}
 
 	/**
@@ -398,7 +426,9 @@ public class LocalPlayer extends Player {
 	{
 		int version = 1;
 		String[] supportedFeatures = {};
-		return new InitialiseGameCommand(version, supportedFeatures);
+		InitialiseGameCommand command = new InitialiseGameCommand(version, supportedFeatures);
+		notifyCommand(command);
+		return command;
 	}
 	
 	@Override
