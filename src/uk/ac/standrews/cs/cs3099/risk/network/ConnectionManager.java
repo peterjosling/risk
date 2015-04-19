@@ -85,4 +85,19 @@ public class ConnectionManager {
 	{
 		return isServer;
 	}
+
+	/**
+	 * Returns a socket for a specified player
+	 * @param playerID - the id of the player who's socket you want
+	 * @return the PlayerSocket of that player
+	 */
+	public PlayerSocket getSocketById(int playerID) {
+		for(PlayerSocket socket: playerSockets){
+			if (socket.getPlayerId()==playerID){
+				return socket;
+			}
+		}
+		return null;
+	}
 }
+

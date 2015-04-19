@@ -2,6 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
+import uk.ac.standrews.cs.cs3099.risk.game.Die;
 import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 
@@ -275,7 +276,9 @@ public class NetworkedGame extends AbstractGame {
 	private void joinRejected(RejectJoinGameCommand command)
 	{
 		localPlayer.notifyCommand(command);
-		// TODO disconnect.
+		// disconnect.
+		PlayerSocket socket = connectionManager.getSocketById(command.getPlayerId());
+		socket.disconnect();
 	}
 
 	/**
@@ -497,6 +500,7 @@ public class NetworkedGame extends AbstractGame {
 		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
 		// TODO verify number/hash match.
 
+
 		boolean rollsReceived = true;
 
 		for (Player player : getPlayers()) {
@@ -508,6 +512,7 @@ public class NetworkedGame extends AbstractGame {
 
 		if (rollsReceived && localPlayer != null) {
 			// TODO roll die, get first player.
+
 
 			// Send the computed result of the dice roll to the interface.
 			RollResultCommand rollResult = new RollResultCommand(0);
