@@ -62,7 +62,6 @@ public class LocalGame extends AbstractGame {
 	 */
 	public void assignTerritories()
 	{
-
 		for(Player player : this.getPlayers()){
 			switch (player.getType()) {
 			case AI:
@@ -104,9 +103,15 @@ public class LocalGame extends AbstractGame {
 	
 	public void run()
 	{
+		int noOfTurns = 0;
 		assignTerritories();
 		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
+			if(noOfTurns%5 == 0){
+				printMap();
+				System.out.println("Enter anything to continue.");
+				String cont = EasyIn.getString();
+			}
 			Player currentPlayer = nextTurn();
 			System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 			if(firstTurn){
@@ -116,21 +121,27 @@ public class LocalGame extends AbstractGame {
 				deploy(currentPlayer);
 			}
 			String attack;
-			if(canPlayerAttack(currentPlayer)){
-				attack(getCurrentTurnPlayer());
+			boolean attackPhase = true;
+			while(canPlayerAttack(currentPlayer) && attackPhase){
+				attackPhase = attack(getCurrentTurnPlayer());
 			}
-//			do{
-//				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
-//				System.out.println("Do you wish to make an attack: Y/N");
-//				attack = EasyIn.getString();
-//				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
-//			}while(attack.equals("Y"));
+
 			fortify(currentPlayer);
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
 			calcDeployable();
+			noOfTurns++;
 		}
+	}
+	
+	public void printMap(){
+		Map map = this.gameState.getMap();
+		System.out.println(map.findTerritoryById(0).getOwner() + ", " + map.findTerritoryById(1).getOwner() + ", " + map.findTerritoryById(2).getOwner());
+		System.out.println(map.findTerritoryById(3).getOwner() + ", " + map.findTerritoryById(4).getOwner() + ", " + map.findTerritoryById(5).getOwner());
+		System.out.println(map.findTerritoryById(6).getOwner() + ", " + map.findTerritoryById(7).getOwner());
+
+
 	}
 	
 	public boolean canPlayerAttack(Player player){

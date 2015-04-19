@@ -96,12 +96,15 @@ public abstract class AbstractGame {
 		notifyPlayers(command);
 	}
 	
-	public void attack(Player player)
+	public boolean attack(Player player)
 	{
 		Command attackCommand = player.getCommand(CommandType.ATTACK);
 		if (attackCommand.getType() != CommandType.ATTACK) {
-			terminate();
-			return;
+			if( attackCommand.getType() == CommandType.FORTIFY){
+				notifyPlayers(attackCommand);
+				return false;
+			}
+			return false;
 		}
 		notifyPlayers(attackCommand);
 		
@@ -109,8 +112,7 @@ public abstract class AbstractGame {
 		Player defPlayer = getPlayerById(defTerritory.getOwner());
 		Command defCommand = defPlayer.getCommand(CommandType.DEFEND);
 		if (defCommand.getType() != CommandType.DEFEND) {
-			terminate();
-			return;
+			return false;
 		}
 		notifyPlayers(defCommand);
 		
@@ -128,13 +130,13 @@ public abstract class AbstractGame {
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
 		}
+		return true;
 	}
 	
 	public void fortify(Player player)
 	{
 		Command command = player.getCommand(CommandType.FORTIFY);
 		if (command.getType() != CommandType.FORTIFY) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);
@@ -144,7 +146,6 @@ public abstract class AbstractGame {
 	{
 		Command command = player.getCommand(CommandType.DRAW_CARD);
 		if (command.getType() != CommandType.DRAW_CARD) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);
@@ -153,7 +154,6 @@ public abstract class AbstractGame {
 	public void playCards(Player player){
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
 		if (command.getType() != CommandType.PLAY_CARDS) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);

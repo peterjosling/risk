@@ -121,6 +121,9 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCommand()
 	{
+		System.out.println("Do you desire to make an attack? (Y/N)");
+		String response = EasyIn.getString();
+		if(response.equals("N")) return getFortifyCommand();
 		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
 		int sourceID = EasyIn.getInt();
 		System.out.println("Choose Territory to Attack. Enter Territory ID:");

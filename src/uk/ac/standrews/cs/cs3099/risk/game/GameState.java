@@ -638,5 +638,9 @@ public class GameState {
 	public boolean getAttackSuccessful(){
 		return attackSuccessful;
 	}
+	
+	public int getRemainingArmies(){
+		return remainingArmies;
+	}
 }
 
