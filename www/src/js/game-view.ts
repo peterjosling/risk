@@ -65,7 +65,8 @@ class GameView extends View<Game> {
 	}
 
 	territorySelected(id : number) {
-		// TODO check this territory can be selected.
+		var territory = this.model.map.territories.get(id);
+
 		// Only perform an action on the correct turn.
 		// TODO also allow actions to be performed when defending.
 		if (this.model.getCurrentPlayer() !== this.model.self) {
@@ -73,6 +74,20 @@ class GameView extends View<Game> {
 		}
 
 		if (this.model.getPhase() === 'setup') {
+			// Check this territory can be selected.
+			var allTerritoriesClaimed = this.model.map.territories.every(territory => {
+				return territory.getOwner() !== null;
+			});
+
+			// Check this territory can be selected.
+			if (!allTerritoriesClaimed && territory.getOwner() !== null) {
+				this.model.showToast('This territory has already been claimed.');
+				return;
+			} else if (allTerritoriesClaimed && territory.getOwner() !== this.model.self) {
+				this.model.showToast('You do not own this territory.');
+				return;
+			}
+
 			var message : Messages.SetupMessage = {
 				command: 'setup',
 				payload: id,
