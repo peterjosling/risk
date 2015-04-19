@@ -41,6 +41,8 @@ public class GameState {
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
+		//deck = new Deck(DECK_SIZE);
+		//deck.shuffle(TEMP_SEED);
 		initTradeInValues();
 		playerCards = new ArrayList[getNumberOfPlayers()];
 		playersDeployableArmies = new int[players.size()];
@@ -58,7 +60,7 @@ public class GameState {
 			System.exit(-1);
 		}
 	}
-	
+
 	public void loadDefaultMap()
 	{
 		String json = "";
@@ -188,8 +190,8 @@ public class GameState {
 			case ROLL_HASH:
 				playCommand((RollHashCommand) command);
 				break;
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 
@@ -218,39 +220,52 @@ public class GameState {
 	public void playCommand(AttackCommand command){
 		lastAttackSuccessful = false;
 		inAttackPhase = true;
-		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
-			ArrayList<String> rollHashes = new ArrayList<String>();
-			ArrayList<String> rollNumbers = new ArrayList<String>();
-			int dieFaces = 6;
-			int numberOfAttackingDice = command.getArmies();
-			int numberOfDefendingDice = defDice;
-			for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
-				Command phaseCommand = attackPhaseCommands.get(commandIndex);
-				if(phaseCommand.getType() == CommandType.DEFEND){
-					numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+
+		try {
+			if (attackPhaseCommands.size() == (1 + getNumberOfPlayers() * 2)) {
+				Die die = new Die();
+				byte[] num = die.generateNumber();
+				byte[] numhash = die.hashByteArr(num);
+				//ArrayList<String> rollHashes = new ArrayList<String>();
+				//ArrayList<String> rollNumbers = new ArrayList<String>();
+
+				int dieFaces = 6;
+				int numberOfAttackingDice = command.getArmies();
+				int numberOfDefendingDice = defDice;
+				for (int commandIndex = 0; commandIndex < attackPhaseCommands.size(); commandIndex++) {
+					Command phaseCommand = attackPhaseCommands.get(commandIndex);
+					if (phaseCommand.getType() == CommandType.DEFEND) {
+						numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+					}
+					if (phaseCommand.getType() == CommandType.ROLL_HASH) {
+						// SEND OUR HASH HERE
+						String hash = ((RollHashCommand) phaseCommand).getHash();
+						//rollHashes.add(hash);
+						die.addHash(phaseCommand.getPlayerId(), hash);
+					}
+					if (phaseCommand.getType() == CommandType.ROLL_NUMBER) {
+						// SEND OUR NUMBER HERE
+						String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex(); // not a hash
+						//rollNumbers.add(rollNumberHash);
+						die.addNumber(phaseCommand.getPlayerId(), rollNumberHash);
+					}
 				}
-				if(phaseCommand.getType() == CommandType.ROLL_HASH){
-					String hash = ((RollHashCommand) phaseCommand).getHash();
-					rollHashes.add(hash);
+				//Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
+				int[] resultingRolls = die.rollDiceNetwork(numberOfAttackingDice + numberOfDefendingDice);
+				int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
+				//apply result to board
+				removeArmiesForTerritory(command.getSource(), result[0]);
+				removeArmiesForTerritory(command.getDest(), result[1]);
+				if (map.findTerritoryById(command.getDest()).getArmies() == 0) {
+					attackSuccessful = true;
+					lastAttackSuccessful = true;
+					remainingArmies = numberOfAttackingDice - result[0];
 				}
-				if(phaseCommand.getType() == CommandType.ROLL_NUMBER){
-					String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
-					rollNumbers.add(rollNumberHash);
-				}
+				attackPhaseCommands.clear();
+				inAttackPhase = false;
 			}
-			Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
-			int[] resultingRolls = die.rollDice();
-			int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
-			//apply result to board
-			removeArmiesForTerritory(command.getSource(), result[0]);
-			removeArmiesForTerritory(command.getDest(), result[1]);
-			if(map.findTerritoryById(command.getDest()).getArmies() == 0){
-				attackSuccessful = true;
-				lastAttackSuccessful = true;
-				remainingArmies = numberOfAttackingDice-result[0];
-			}
-			attackPhaseCommands.clear();
-			inAttackPhase = false;
+		} catch (HashMismatchException e) {
+			Logger.print("ERROR - Encountered error during distributed dice roll: " + e.getMessage());
 		}
 	}
 
@@ -269,7 +284,7 @@ public class GameState {
 		int dRoll = 0;
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
-			
+
 			if(aRoll<numberOfAttackingDice){
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
@@ -347,11 +362,11 @@ public class GameState {
 	}
 
 	public void playCommand(LeaveGameCommand command){
-			playerIDs.remove(command.getPlayerId());
+		playerIDs.remove(command.getPlayerId());
 	}
 
 	public void playCommand(TimeoutCommand command){
-			playerIDs.remove(command.getPlayerId());
+		playerIDs.remove(command.getPlayerId());
 	}
 
 	public int calculateArmiesFromTradeIn(){
@@ -618,14 +633,14 @@ public class GameState {
 	{
 		return lastAttackSuccessful;
 	}
-	
+
 	public void setDeployableArmies(int armies){
 		for(int i = 0; i < playersDeployableArmies.length; i ++){
 			playersDeployableArmies[i] = armies;
 		}
 	}
-	
-	public void setAttackSuccessful(boolean attackSuccessful) 
+
+	public void setAttackSuccessful(boolean attackSuccessful)
 	{
 		this.attackSuccessful = attackSuccessful;
 	}
@@ -634,4 +649,3 @@ public class GameState {
 		return attackSuccessful;
 	}
 }
-
