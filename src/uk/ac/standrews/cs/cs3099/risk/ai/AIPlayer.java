@@ -122,6 +122,7 @@ public class AIPlayer extends Player {
 		int ackTimeout = 4; //Check these values
 		int moveTimeout = 30;
 		AcceptJoinGameCommand command = new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
+		notifyCommand(command);
 		return command;
 	}
 
@@ -338,9 +339,9 @@ public class AIPlayer extends Player {
 			notifyCommand(command);
 			return command;
 		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getDefendCommand();	
+			System.out.println("Invalid Defend Command, please try again.");
 		}
+		return null;
 	}
 
 	public Command getDrawCardCommand()
@@ -350,79 +351,79 @@ public class AIPlayer extends Player {
 			notifyCommand(command);
 			return command;
 		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getDrawCardCommand();	
+			System.out.println("Invalid Draw Card Command, please try again.");
 		}	
+		return null;
 	}
 
 	public Command getFortifyCommand() 
 	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-		int[] details = new int[3];
-		boolean fortifyFound = false;
-		for(Territory territory : territories){
-			if(territory.getArmies() > 1){
-				for(Territory nextTerritory : territories){
-					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
-						boolean territoryFrozen = true;
-						for(Territory linkedTerritory : territory.getLinkedTerritories()){
-							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
-						}
-						boolean territoryFree = false;
-						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
-							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
-						}
-						if(territoryFrozen && territoryFree) {
-							details[0] = territory.getId();
-							details[1] = nextTerritory.getId();
-							details[2] = territory.getArmies() - 1;
-							fortifyFound = true;
-						}
-					}
-				}
-			}
-		}
-		
-		for(Territory territory : territories){
-			if(territory.getArmies() > 1){
-				for(Territory nextTerritory : territories){
-					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
-						boolean territoryFrozen = true;
-						for(Territory linkedTerritory : territory.getLinkedTerritories()){
-							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
-						}
-						boolean territoryFree = false;
-						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
-							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
-						}
-						if(territoryFrozen && territoryFree) {
-							details[0] = territory.getId();
-							details[1] = nextTerritory.getId();
-							details[2] = territory.getArmies() - 1;
-							fortifyFound = true;
-						}
-					}
-				}
-			}
-		}
-		
-		// Find max frozen territory.
-		// If an adjacent territory is Free, create command.
-		// If not, move closer.
-		FortifyCommand command = null;
-		if(fortifyFound){
-			command = new FortifyCommand(this.getId(), lastAckid++, details);
-		} else {
-			command = new FortifyCommand(this.getId(), lastAckid++);
-		}
-		
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
-		} else {
-			System.out.println("Invalid Command, please try again.");
-		}
-		return null;
+//		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+//		int[] details = new int[3];
+//		boolean fortifyFound = false;
+//		for(Territory territory : territories){
+//			if(territory.getArmies() > 1){
+//				for(Territory nextTerritory : territories){
+//					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
+//						boolean territoryFrozen = true;
+//						for(Territory linkedTerritory : territory.getLinkedTerritories()){
+//							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+//						}
+//						boolean territoryFree = false;
+//						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
+//							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
+//						}
+//						if(territoryFrozen && territoryFree) {
+//							details[0] = territory.getId();
+//							details[1] = nextTerritory.getId();
+//							details[2] = territory.getArmies() - 1;
+//							fortifyFound = true;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		for(Territory territory : territories){
+//			if(territory.getArmies() > 1){
+//				for(Territory nextTerritory : territories){
+//					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
+//						boolean territoryFrozen = true;
+//						for(Territory linkedTerritory : territory.getLinkedTerritories()){
+//							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+//						}
+//						boolean territoryFree = false;
+//						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
+//							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
+//						}
+//						if(territoryFrozen && territoryFree) {
+//							details[0] = territory.getId();
+//							details[1] = nextTerritory.getId();
+//							details[2] = territory.getArmies() - 1;
+//							fortifyFound = true;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		
+//		// Find max frozen territory.
+//		// If an adjacent territory is Free, create command.
+//		// If not, move closer.
+//		FortifyCommand command = null;
+//		if(fortifyFound){
+//			command = new FortifyCommand(this.getId(), lastAckid++, details);
+//		} else {
+//			command = new FortifyCommand(this.getId(), lastAckid++);
+//		}
+//		
+//		if(gameState.isCommandValid(command)) {
+//			notifyCommand(command);
+//			return command;
+//		} else {
+//			System.out.println("Invalid Command, please try again.");
+//		}
+		return new FortifyCommand(this.getId(), lastAckid++);
 	}
 
 	public Command getAttackCommand() 
