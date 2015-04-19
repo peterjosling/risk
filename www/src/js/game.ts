@@ -48,6 +48,17 @@ class Game extends Model {
 		return this._phase;
 	}
 
+	// Set the current game phase.
+	setPhase(phase : string) {
+		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+
+		if (validPhases.indexOf('phase') === -1) {
+			throw new Error('Invalid phase specified');
+		}
+
+		this._phase = phase;
+	}
+
 	// Advance to the next (active) player's turn.
 	nextTurn() {
 		var player;
