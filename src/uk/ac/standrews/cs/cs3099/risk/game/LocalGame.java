@@ -160,13 +160,27 @@ public class LocalGame extends AbstractGame {
 				+ map.findTerritoryById(33).getOwner() + ",    "
 				+ map.findTerritoryById(31).getOwner() + ", "
 				+ map.findTerritoryById(32).getOwner());
-;
-		System.out.println(" " + map.findTerritoryById(8).getOwner());
-		System.out.println();
-		System.out.println(" " + map.findTerritoryById(9).getOwner());
+
+		System.out.println(" " + map.findTerritoryById(8).getOwner() + ",                "
+				+ map.findTerritoryById(35).getOwner() + ",  "
+				+ map.findTerritoryById(36).getOwner() + ",  "
+				+ map.findTerritoryById(34).getOwner());
+		System.out.println("            " + 
+				+ map.findTerritoryById(20).getOwner() + ", "
+				+ map.findTerritoryById(21).getOwner() + "       "
+				+ map.findTerritoryById(37).getOwner());
+		System.out.println(" " + map.findTerritoryById(9).getOwner() + "           "
+				+ map.findTerritoryById(22).getOwner() + ", "
+				+ map.findTerritoryById(23).getOwner());
 		System.out.println(map.findTerritoryById(8).getOwner() + ", "
-				+ map.findTerritoryById(8).getOwner());
-		System.out.println(" " + map.findTerritoryById(12).getOwner());
+				+ map.findTerritoryById(8).getOwner() + "         "
+				+ map.findTerritoryById(24).getOwner() + ",  "
+				+ map.findTerritoryById(25).getOwner() + ",    "
+				+ map.findTerritoryById(38).getOwner() + ", "
+				+ map.findTerritoryById(39).getOwner());
+		System.out.println(" " + map.findTerritoryById(12).getOwner() + "                     "
+				+ map.findTerritoryById(40).getOwner() + ", "
+				+ map.findTerritoryById(41).getOwner());
 
 
 
