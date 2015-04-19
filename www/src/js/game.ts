@@ -16,6 +16,7 @@ class Game extends Model {
 	self : Player;
 	map : Map;
 	_isHost : boolean;
+	_phase : string = 'setup';
 
 	constructor(options?) {
 		super(options);
@@ -39,6 +40,11 @@ class Game extends Model {
 	// Get the ID of the player whose turn it currently is.
 	getCurrentPlayerId() : number {
 		return this.get('currentPlayer');
+	}
+
+	// Get the current game phase. 'setup', 'attack' or 'defend'.
+	getPhase() : string {
+		return this._phase;
 	}
 
 	// Connect to a host server on the specified host and port.
