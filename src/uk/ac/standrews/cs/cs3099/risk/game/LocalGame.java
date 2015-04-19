@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 public class LocalGame extends AbstractGame {
 	public LocalGame(String jsonMap, int playerCount, int armiesPerPlayer) throws MapParseException
@@ -45,6 +47,34 @@ public class LocalGame extends AbstractGame {
 		}
 		
 	}
+
+	/**
+	 * Requests one army assignment from each player in order, until all armies have been assigned.
+	 */
+	@Override
+	public void assignTerritories()
+	{
+
+		for(Player player : this.getPlayers()){
+			((AIPlayer)player).getGameState().setDeployableArmies(1);
+		}
+		gameState.setDeployableArmies(1);
+
+		Command command = null;
+
+		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		for(int i = 0; i < totalTurns; i ++){
+			Player player = nextTurn();
+			if(i < gameState.getMap().getTerritories().size()){
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} else {
+				command = player.getCommand(CommandType.DEPLOY);
+			}
+
+			notifyPlayers(command);
+		}
+	}
+
 
 	public void run()
 	{

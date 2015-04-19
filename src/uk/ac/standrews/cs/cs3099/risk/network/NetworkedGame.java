@@ -1,10 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.Die;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -348,6 +345,7 @@ public class NetworkedGame extends AbstractGame {
 		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
 		initialiseGameCommand(initialiseGameCommand);
+
 	}
 
 	/**
@@ -408,7 +406,8 @@ public class NetworkedGame extends AbstractGame {
 		int ackId = command.getAckId();
 
 		Acknowledgement acknowledgement = new Acknowledgement(ackId);
-		acknowledgements.add(ackId, acknowledgement);
+		acknowledgements.add(acknowledgement);
+//		if(acknowledgements.get(ackId)!=)
 
 		// Mark the sending player as having already acknowledged.
 		int playerId = command.getPlayerId();
@@ -558,4 +557,49 @@ public class NetworkedGame extends AbstractGame {
 	public ConnectionManager getConnectionManager(){
 		return connectionManager;
 	}
+
+	/**
+	 * Requests one army assignment from each player in order, until all armies have been assigned.
+	 */
+	@Override
+	public void assignTerritories()
+	{
+		gameState.setDeployableArmies(1);
+
+		Command command = null;
+
+		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		for(int i = 0; i < totalTurns; i ++){
+			Player player = nextTurn();
+			if(i < gameState.getMap().getTerritories().size()){
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} else {
+				command = player.getCommand(CommandType.DEPLOY);
+			}
+
+			notifyPlayers(command);
+		}
+	}
+
+	public void run(){
+		assignTerritories();
+		while(!gameState.isGameComplete()) {
+			Player currentPlayer = nextTurn();
+			playCards(currentPlayer);
+			deploy(currentPlayer);
+			String attack;
+			do {
+				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
+				System.out.println("Do you wish to make an attack: Y/N");
+				attack = EasyIn.getString();
+				if (attack.equals("Y")) attack(getCurrentTurnPlayer());
+			} while (attack.equals("Y"));
+			fortify(currentPlayer);
+			if (gameState.getAttackSuccessful()) {
+				drawCard(currentPlayer);
+			}
+		}
+	}
+
+
 }
