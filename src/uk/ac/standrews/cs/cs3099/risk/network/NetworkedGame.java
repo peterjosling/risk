@@ -345,7 +345,6 @@ public class NetworkedGame extends AbstractGame {
 		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
 		initialiseGameCommand(initialiseGameCommand);
-		run();
 	}
 
 	/**
@@ -521,6 +520,10 @@ public class NetworkedGame extends AbstractGame {
 			// Send the computed result of the dice roll to the interface.
 			RollResultCommand rollResult = new RollResultCommand(0);
 			localPlayer.notifyCommand(rollResult);
+		}
+
+		if (rollsReceived) {
+			run();
 		}
 	}
 
