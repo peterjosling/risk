@@ -2,6 +2,7 @@ import View = require('./view');
 import Game = require('./game');
 import PlayerListView = require('./player-list-view');
 import MapView = require('./map-view');
+import Messages = require('./messages');
 
 class GameView extends View<Game> {
 	template = <Function>require('../hbs/game-view.hbs');
@@ -16,6 +17,7 @@ class GameView extends View<Game> {
 		var playerListView = new PlayerListView({ model: this.model });
 		var mapView = new MapView({model: this.model});
 
+		this.listenTo(mapView, 'territorySelect', this.territorySelected);
 		this.listenTo(this.model, 'change:currentPlayer', this.currentPlayerChange);
 
 		this.childViews = [
@@ -60,6 +62,25 @@ class GameView extends View<Game> {
 		this.model.showToast(toastMessage);
 
 		// TODO highlight territories which can be selected.
+	}
+
+	territorySelected(id : number) {
+		// TODO check it's the player's turn OR defending.
+		// TODO check this territory can be selected.
+
+		if (this.model.getPhase() === 'setup') {
+			var message : Messages.SetupMessage = {
+				command: 'setup',
+				payload: id,
+				player_id: <number>this.model.self.id
+			};
+
+			this.model.handleSetupMessage(message);
+			this.model.sendMessage(message);
+
+			// Turn complete.
+			this.model.nextTurn();
+		}
 	}
 }
 
