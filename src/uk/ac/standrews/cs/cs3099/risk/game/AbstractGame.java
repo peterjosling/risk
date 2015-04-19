@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
@@ -152,7 +151,9 @@ public abstract class AbstractGame {
 	public void notifyPlayers(Command command)
 	{
 		for(Player player: players){
-			player.notifyCommand(command);
+			if (player.getId() != command.getPlayerId()) {
+				player.notifyCommand(command);
+			}
 		}
 		gameState.playCommand(command);
 	}
