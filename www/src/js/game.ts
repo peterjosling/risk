@@ -47,6 +47,17 @@ class Game extends Model {
 		return this._phase;
 	}
 
+	// Advance to the next player's turn.
+	nextTurn() {
+		var id = this.getCurrentPlayerId() + 1;
+
+		if (id === this.playerList.length) {
+			id = 0;
+		}
+
+		this.set('currentPlayer', id);
+	}
+
 	// Connect to a host server on the specified host and port.
 	connect(host : string, port : number) : Promise<Messages.Message> {
 		this._isHost = false;
