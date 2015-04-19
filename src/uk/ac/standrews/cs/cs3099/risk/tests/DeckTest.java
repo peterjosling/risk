@@ -14,8 +14,9 @@ import static org.junit.Assert.*;
 
 public class DeckTest {
 
-	Deck deck1;
+	//Deck deck1;
 
+	/*
 	@Before
 	public void setup()
 	{
@@ -33,6 +34,7 @@ public class DeckTest {
 		assertEquals(1, deck1.getTopCardIndex());
 		assertTrue(cards.get(deck1.getTopCardIndex()).getId() == 1);
 	}
+	*/
 
 	/*
 	@Test
