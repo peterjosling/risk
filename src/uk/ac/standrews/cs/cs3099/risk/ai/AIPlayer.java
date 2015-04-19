@@ -345,11 +345,18 @@ public class AIPlayer extends Player {
 		}
 		
 		fortifyFound = true;
+		FortifyCommand command = null;
 		if(fortifyFound){
-			return new FortifyCommand(this.getId(), lastAckid++, details);
+			command = new FortifyCommand(this.getId(), lastAckid++, details);
 		} else {
-			return new FortifyCommand(this.getId(), lastAckid++);
+			command = new FortifyCommand(this.getId(), lastAckid++);
 		}
+		
+		if(gameState.isCommandValid(command)) {
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+		}	
 	}
 
 	public Command getAttackCommand() 
