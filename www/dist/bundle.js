@@ -169,11 +169,11 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
-	var Player = __webpack_require__(12);
-	var PlayerList = __webpack_require__(13);
-	var Map = __webpack_require__(14);
-	var CardList = __webpack_require__(15);
+	var Model = __webpack_require__(12);
+	var Player = __webpack_require__(13);
+	var PlayerList = __webpack_require__(14);
+	var Map = __webpack_require__(15);
+	var CardList = __webpack_require__(16);
 	var defaultMapJson = __webpack_require__(23);
 	var HOST = 'ws://localhost:7574';
 	var Game = (function (_super) {
@@ -497,7 +497,7 @@
 	    __extends(ConnectionView, _super);
 	    function ConnectionView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(16);
+	        this.template = __webpack_require__(11);
 	    }
 	    Object.defineProperty(ConnectionView.prototype, "className", {
 	        get: function () {
@@ -566,7 +566,7 @@
 	    d.prototype = new __();
 	};
 	var View = __webpack_require__(2);
-	var Player = __webpack_require__(12);
+	var Player = __webpack_require__(13);
 	var LobbyView = (function (_super) {
 	    __extends(LobbyView, _super);
 	    function LobbyView(options) {
@@ -820,6 +820,15 @@
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Handlebars = __webpack_require__(36);
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+	  return "<form>\n	<h2>Connect to a host</h2>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form>\n	<h2>Start a server</h2>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
+	  },"useData":true});
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __extends = this.__extends || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
@@ -839,7 +848,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = this.__extends || function (d, b) {
@@ -848,7 +857,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
+	var Model = __webpack_require__(12);
 	var colours = [
 	    '#FF2B2B',
 	    '#2BE0FF',
@@ -925,7 +934,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = this.__extends || function (d, b) {
@@ -954,7 +963,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = this.__extends || function (d, b) {
@@ -963,11 +972,11 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
+	var Model = __webpack_require__(12);
 	var Collection = __webpack_require__(24);
 	var Continent = __webpack_require__(25);
 	var Territory = __webpack_require__(26);
-	var CardList = __webpack_require__(15);
+	var CardList = __webpack_require__(16);
 	var Card = __webpack_require__(27);
 	var Map = (function (_super) {
 	    __extends(Map, _super);
@@ -1034,7 +1043,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = this.__extends || function (d, b) {
@@ -1061,15 +1070,6 @@
 	})(Collection);
 	module.exports = CardList;
 
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Handlebars = __webpack_require__(36);
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-	  return "<form>\n	<h2>Connect to a host</h2>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form>\n	<h2>Start a server</h2>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
-	  },"useData":true});
 
 /***/ },
 /* 17 */
@@ -3554,7 +3554,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
+	var Model = __webpack_require__(12);
 	var Collection = __webpack_require__(24);
 	var Continent = (function (_super) {
 	    __extends(Continent, _super);
@@ -3591,7 +3591,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
+	var Model = __webpack_require__(12);
 	var Collection = __webpack_require__(24);
 	var Territory = (function (_super) {
 	    __extends(Territory, _super);
@@ -3645,7 +3645,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Model = __webpack_require__(11);
+	var Model = __webpack_require__(12);
 	var Card = (function (_super) {
 	    __extends(Card, _super);
 	    function Card() {
