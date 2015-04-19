@@ -1,13 +1,17 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.*;
+import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
+import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
+import uk.ac.standrews.cs.cs3099.risk.game.Player;
+import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 
 public class NetworkedGame extends AbstractGame {
 	private ConnectionManager connectionManager;
@@ -22,6 +26,7 @@ public class NetworkedGame extends AbstractGame {
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 	private float highestMutuallySupportedVersion;
+	private Semaphore gameStart = new Semaphore(0);
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -48,6 +53,15 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		connectionManager = new ConnectionManager(this, port);
+
+		// TODO put this in a shared function.
+		try {
+			gameStart.acquire();
+			run();
+		} catch (InterruptedException e) {
+			System.err.println("Failed to wait on game start.");
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -66,6 +80,15 @@ public class NetworkedGame extends AbstractGame {
 		JoinGameCommand joinGameCommand = new JoinGameCommand(SUPPORTED_VERSIONS, SUPPORTED_FEATURES);
 		connectionManager = new ConnectionManager(this, hostname, port);
 		connectionManager.sendCommand(joinGameCommand);
+
+		// TODO put this in a shared function.
+		try {
+			gameStart.acquire();
+			run();
+		} catch (InterruptedException e) {
+			System.err.println("Failed to wait on game start.");
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -174,6 +197,10 @@ public class NetworkedGame extends AbstractGame {
 		if (connectionManager.isServer()) {
 			connectionManager.sendCommand(command);
 		}
+
+		if (localPlayer != null && !connectionManager.isServer()) {
+			localPlayer.notifyCommand(command);
+		}
 	}
 
 	/**
@@ -236,7 +263,7 @@ public class NetworkedGame extends AbstractGame {
 			}
 
 			// Issue the ping command if we've reached the maximum number of players.
-			if (id == 5 && accepted) {
+			if (id == 1 && accepted) {
 				int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
 				PingCommand pingCommand = new PingCommand(playerId, players.size());
 				timePingSent = new Date();
@@ -526,7 +553,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		if (rollsReceived) {
-			run();
+			gameStart.release();
 		}
 	}
 
