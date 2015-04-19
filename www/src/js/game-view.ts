@@ -65,8 +65,12 @@ class GameView extends View<Game> {
 	}
 
 	territorySelected(id : number) {
-		// TODO check it's the player's turn OR defending.
 		// TODO check this territory can be selected.
+		// Only perform an action on the correct turn.
+		// TODO also allow actions to be performed when defending.
+		if (this.model.getCurrentPlayer() !== this.model.self) {
+			return;
+		}
 
 		if (this.model.getPhase() === 'setup') {
 			var message : Messages.SetupMessage = {
