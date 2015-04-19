@@ -113,6 +113,7 @@ public class AIPlayer extends Player {
 		float[] supportedVersions = {1};
 		String[] supportedFeatures = {};
 		JoinGameCommand command = new JoinGameCommand(supportedVersions, supportedFeatures);
+		notifyCommand(command);
 		return command;
 	}
 	
@@ -121,7 +122,6 @@ public class AIPlayer extends Player {
 		int ackTimeout = 4; //Check these values
 		int moveTimeout = 30;
 		AcceptJoinGameCommand command = new AcceptJoinGameCommand(this.getId(), ackTimeout, moveTimeout);
-		notifyCommand(command);
 		return command;
 	}
 
@@ -289,7 +289,7 @@ public class AIPlayer extends Player {
 			notifyCommand(command);
 			return command;
 		} else {
-			System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+			System.out.println("Player: " + this.getId() + " created an invalid Play Cards Command");
 		}
 		return null;
 	}
@@ -306,11 +306,11 @@ public class AIPlayer extends Player {
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
 		
 		
-		int armies = (source.getArmies() - 1)/2;
+		int armies = source.getArmies() - 1;
 		
-		if(armies < gameState.getRemainingArmies()){
-			armies = gameState.getRemainingArmies();
-		}
+//		if(armies < gameState.getRemainingArmies()){
+//			armies = gameState.getRemainingArmies();
+//		}
 
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		
