@@ -48,15 +48,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		connectionManager = new ConnectionManager(this, port);
-
-		// TODO put this in a shared function.
-		try {
-			gameStart.acquire();
-			run();
-		} catch (InterruptedException e) {
-			System.err.println("Failed to wait on game start.");
-			System.exit(1);
-		}
+		threadSafeRunGame();
 	}
 
 	/**
@@ -75,8 +67,11 @@ public class NetworkedGame extends AbstractGame {
 		JoinGameCommand joinGameCommand = new JoinGameCommand(SUPPORTED_VERSIONS, SUPPORTED_FEATURES);
 		connectionManager = new ConnectionManager(this, hostname, port);
 		connectionManager.sendCommand(joinGameCommand);
+		threadSafeRunGame();
+	}
 
-		// TODO put this in a shared function.
+	public void threadSafeRunGame()
+	{
 		try {
 			gameStart.acquire();
 			run();
@@ -183,12 +178,12 @@ public class NetworkedGame extends AbstractGame {
 			sendAcknowledgement(ackId);
 		}
 
-		// TODO Add to correct player's move queue based on player_id field.
+		// Add to correct player's move queue based on player_id field.
 		NetworkPlayer player = (NetworkPlayer) getPlayerById(command.getPlayerId());
 		BlockingQueue moveQueue = player.getMoveQueue();
 		moveQueue.add(command);
 
-		// TODO forward to all players, if host.
+		// forward to all players, if host.
 		if (connectionManager.isServer()) {
 			connectionManager.sendCommand(command);
 		}
