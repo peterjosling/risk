@@ -58,12 +58,14 @@ public class AIPlayer extends Player {
 		gameState.loadDefaultMap();
 	}
 	
-	public GameState getGameState(){
+	public GameState getGameState()
+	{
 		return gameState;
 	}
 	
 	@Override
-	public Command getCommand(CommandType type) {
+	public Command getCommand(CommandType type) 
+	{
 		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
@@ -126,19 +128,23 @@ public class AIPlayer extends Player {
 		return new RejectJoinGameCommand(message);
 	}
 
-	public Command getAcknowledgementCommand(){
+	public Command getAcknowledgementCommand()
+	{
 		return new AcknowledgementCommand(this.getId(), lastAckid++);
 	}
 
-	public Command getPingCommand() {
+	public Command getPingCommand() 
+	{
 		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
 	}
 
-	public Command getReadyCommand() {
+	public Command getReadyCommand() 
+	{
 		return new ReadyCommand(this.getId(), lastAckid++);
 	}
 
-	public Command getInitialiseGameCommand(){
+	public Command getInitialiseGameCommand()
+	{
 		int version = 1;
 		String[] supportedFeatures = {};
 		return new InitialiseGameCommand(version, supportedFeatures);
@@ -164,7 +170,6 @@ public class AIPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Deploy Command");
-//			getDeployComand();
 		}
 		return null;
 	}
@@ -396,7 +401,8 @@ public class AIPlayer extends Player {
 	}
 
 	@Override
-	public boolean isNeutral() {
+	public boolean isNeutral() 
+	{
 		return isNeutral;
 	}
 

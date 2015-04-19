@@ -14,7 +14,6 @@ public class LocalGame extends AbstractGame {
 		
 		initialise(playerCount);
 		this.init();
-//		this.loadMap(jsonMap);
 	}
 	
 	public LocalGame(int playerCount, int armiesPerPlayer)
@@ -23,7 +22,6 @@ public class LocalGame extends AbstractGame {
 
 		initialise(playerCount);
 		this.init();
-//		loadDefaultMap();
 	}
 	
 	
@@ -136,10 +134,10 @@ public class LocalGame extends AbstractGame {
 			}
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
-		
 	}
 	
-	public void printMap(){
+	public void printMap()
+	{
 		Map map = this.gameState.getMap();
 		System.out.println(map.findTerritoryById(0).getOwner() + ", "
 				+ map.findTerritoryById(1).getOwner() + ", "
@@ -220,7 +218,8 @@ public class LocalGame extends AbstractGame {
 		}
 	}
 	
-	public int getWinner(){
+	public int getWinner()
+	{
 		for(Player player : this.getPlayers()){
 			if(!gameState.isPlayerDead(player.getId())) return player.getId();
 		}
@@ -230,14 +229,6 @@ public class LocalGame extends AbstractGame {
 	public boolean canPlayerAttack(Player player)
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
-//		switch (player.getType()) {
-//			case AI:
-//				territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
-//				break;
-//			case LOCAL:
-//				territories = ((LocalPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
-//				break;				
-//		}
 		
 		for(Territory territory : territories){
 			for(Territory linkedTerritory : territory.getLinkedTerritories()){

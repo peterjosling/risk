@@ -141,7 +141,8 @@ public abstract class AbstractGame {
 		notifyPlayers(command);
 	}
 
-	public void playCards(Player player){
+	public void playCards(Player player)
+	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
 		if (command.getType() != CommandType.PLAY_CARDS) {
 			return;
@@ -162,7 +163,8 @@ public abstract class AbstractGame {
 	 *
 	 * @return Index of the current player, relative to the list of players sorted by ascending ID.
 	 */
-	public int getCurrentTurn() {
+	public int getCurrentTurn() 
+	{
 		return currentTurn;
 	}
 
