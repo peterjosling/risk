@@ -172,7 +172,13 @@ public abstract class AbstractGame {
 	 */
 	public Player getCurrentTurnPlayer()
 	{
-		return players.get(currentTurn);
+		for (Player player : players) {
+			if (player.getId() == currentTurn) {
+				return player;
+			}
+		}
+
+		return null;
 	}
 
 	/**
