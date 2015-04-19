@@ -121,7 +121,8 @@ public class LocalGame extends AbstractGame {
 				}
 				boolean attackPhase = true;
 				while(canPlayerAttack(currentPlayer) && attackPhase){
-					attackPhase = attack(getCurrentTurnPlayer());
+					//TODO fix now attack no longer returns boolean
+					attack(getCurrentTurnPlayer());
 				}
 	
 				fortify(currentPlayer);
@@ -226,18 +227,5 @@ public class LocalGame extends AbstractGame {
 		}
 		return -1;
 	}
-	
-	public boolean canPlayerAttack(Player player)
-	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
-		
-		for(Territory territory : territories){
-			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+
 }

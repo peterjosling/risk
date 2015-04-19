@@ -605,10 +605,25 @@ public class NetworkedGame extends AbstractGame {
 		assignTerritories();
 		while(!gameState.isGameComplete()) {
 			Player currentPlayer = nextTurn();
-			playCards(currentPlayer);
-			deploy(currentPlayer);
-			attack(getCurrentTurnPlayer());
-			fortify(currentPlayer);
+			int phase = 0;
+			while(phase != 4) {
+				Command command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
+					playCards(currentPlayer);
+					phase = 1;
+				}else if(command.getType()==CommandType.DEPLOY && phase < 2) {
+					deploy(currentPlayer);
+					phase = 2;
+				}else if(command.getType()==CommandType.ATTACK && phase == 2) {
+					while(canPlayerAttack(currentPlayer)){
+						attack(currentPlayer);
+					}
+					phase = 3;
+				}else if(command.getType()==CommandType.FORTIFY && phase<4){
+					fortify(currentPlayer);
+					phase = 4;
+				}
+			}
 			if (gameState.getAttackSuccessful()) {
 				drawCard(currentPlayer);
 			}

@@ -431,7 +431,12 @@ public class LocalPlayer extends Player {
 		notifyCommand(command);
 		return command;
 	}
-	
+
+	/**
+	 * Calls appropriate notify method for each command, which updates the players game state and informs the user
+	 * via the command line of commands that have been actioned
+	 * @param command the command to notify
+	 */
 	@Override
 	public void notifyCommand(Command command)
 	{

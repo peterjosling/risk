@@ -80,15 +80,11 @@ public abstract class AbstractGame {
 		notifyPlayers(command);
 	}
 	
-	public boolean attack(Player player)
+	public void attack(Player player)
 	{
 		Command attackCommand = player.getCommand(CommandType.ATTACK);
 		if (attackCommand.getType() != CommandType.ATTACK) {
-			if( attackCommand.getType() == CommandType.FORTIFY){
-				notifyPlayers(attackCommand);
-				return false;
-			}
-			return false;
+			return;
 		}
 		notifyPlayers(attackCommand);
 		
@@ -96,7 +92,7 @@ public abstract class AbstractGame {
 		Player defPlayer = getPlayerById(defTerritory.getOwner());
 		Command defCommand = defPlayer.getCommand(CommandType.DEFEND);
 		if (defCommand.getType() != CommandType.DEFEND) {
-			return false;
+			return;
 		}
 		notifyPlayers(defCommand);
 		
@@ -115,7 +111,6 @@ public abstract class AbstractGame {
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
 		}
-		return true;
 	}
 	
 	public void fortify(Player player)
@@ -212,7 +207,21 @@ public abstract class AbstractGame {
 	{
 		return armiesPerPlayer;
 	}
-	
+
+	public boolean canPlayerAttack(Player player)
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */
@@ -220,4 +229,5 @@ public abstract class AbstractGame {
 	{
 
 	}
+
 }
