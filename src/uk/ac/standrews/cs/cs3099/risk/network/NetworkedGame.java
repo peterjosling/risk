@@ -244,14 +244,12 @@ public class NetworkedGame extends AbstractGame {
 				PlayersJoinedCommand newPlayerJoinedCommand = new PlayersJoinedCommand();
 				newPlayerJoinedCommand.addPlayer(id, name);
 
-				// TODO send to all players except {player}
-				connectionManager.sendCommand(newPlayerJoinedCommand);
-
 				PlayersJoinedCommand currentPlayers = new PlayersJoinedCommand();
 
 				for (Player player : players) {
 					if (player.getId() != id) {
 						currentPlayers.addPlayer(player.getId(), player.getName());
+						player.notifyCommand(newPlayerJoinedCommand);
 					}
 				}
 
