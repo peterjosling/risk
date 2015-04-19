@@ -25,19 +25,23 @@ class Game extends Model {
 		this.set('currentPlayer', -1);
 	}
 
+	// Whether the game is running as a host or not.
 	isHost() : boolean {
 		return this._isHost;
 	}
 
+	// Get the Player instance whose turn it currently is.
 	getCurrentPlayer() : Player {
 		var playerId : number = this.get('currentPlayer');
 		return this.playerList.get(playerId);
 	}
 
+	// Get the ID of the player whose turn it currently is.
 	getCurrentPlayerId() : number {
 		return this.get('currentPlayer');
 	}
 
+	// Connect to a host server on the specified host and port.
 	connect(host : string, port : number) : Promise<Messages.Message> {
 		this._isHost = false;
 
@@ -72,6 +76,7 @@ class Game extends Model {
 		});
 	}
 
+	// Start a host server on the specified port.
 	startServer(port : number) : Promise<Messages.Message> {
 		this._isHost = true;
 
@@ -104,10 +109,12 @@ class Game extends Model {
 		});
 	}
 
+	// Show a toast-style text message to the user.
 	showToast(message : string) {
 		this.trigger('toast', message);
 	}
 
+	// Read army/territory counts from every territory and update each player's count.
 	updateArmyCounts() : void {
 		// Initialise array of army/territory counts to 0.
 		var armyCounts = this.playerList.map(function(player) {
@@ -135,6 +142,7 @@ class Game extends Model {
 		});
 	}
 
+	// Handle a message received from the websocket.
 	private messageReceived(event : MessageEvent) {
 		var message : Messages.Message = JSON.parse(event.data);
 
@@ -185,6 +193,7 @@ class Game extends Model {
 		}
 	}
 
+	// Send a message down the websocket.
 	sendMessage(json : Messages.Message) {
 		this.socket.send(JSON.stringify(json));
 	}
