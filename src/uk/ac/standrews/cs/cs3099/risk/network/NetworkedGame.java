@@ -1,9 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +21,7 @@ public class NetworkedGame extends AbstractGame {
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
+	private float highestMutuallySupportedVersion;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -127,7 +126,7 @@ public class NetworkedGame extends AbstractGame {
 				return;
 
 			case REJECT_JOIN_GAME:
-				joinRejected((RejectJoinGameCommand) command);
+				joinRejected((RejectJoinGameCommand) command, playerSocket);
 				return;
 
 			case PLAYERS_JOINED:
@@ -197,11 +196,15 @@ public class NetworkedGame extends AbstractGame {
 			Command command;
 			int id = players.size();
 			String name = joinCommand.getName();
+			float[] versions = joinCommand.getSupported_versions();
 			boolean accepted = false;
-
-			if (id > 5) {
+			if(versions[0]!=1.0){
+				command = new RejectJoinGameCommand("Must support version 1");
+			}
+			else if (id > 5) {
 				command = new RejectJoinGameCommand("Game full");
-			} else {
+			}
+			else {
 				command = new AcceptJoinGameCommand(id, acknowledgementTimeout, moveTimeout);
 				NetworkPlayer player = new NetworkPlayer(connectionManager, id, name);
 				addPlayer(player);
@@ -272,10 +275,12 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param command Details of the rejection.
 	 */
-	private void joinRejected(RejectJoinGameCommand command)
+	private void joinRejected(RejectJoinGameCommand command, PlayerSocket playerSocket)
 	{
 		localPlayer.notifyCommand(command);
-		// TODO disconnect.
+		// disconnect.
+		playerSocket.disconnect();
+		connectionManager.removePlayerSocket(playerSocket);
 	}
 
 	/**
@@ -314,6 +319,9 @@ public class NetworkedGame extends AbstractGame {
 			connectionManager.sendCommand(response);
 		}
 
+		Player player = getPlayerById(command.getPlayerId());
+		player.setNeutral(false);
+
 		// Send ready immediately if we have all pings.
 		if (connectionManager.isServer() && numberOfPingsReceived == getPlayers().size()) {
 			sendReadyCommand();
@@ -337,6 +345,7 @@ public class NetworkedGame extends AbstractGame {
 		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
 		initialiseGameCommand(initialiseGameCommand);
+		run();
 	}
 
 	/**
@@ -344,17 +353,17 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param ackId the ackId of the command being checked for
 	 */
-	private void timeoutPlayersNotAcknowledged(int ackId)
+	public void timeoutPlayersNotAcknowledged(int ackId)
 	{
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < players.size(); i++) {
 			if (!playersAcks[i] && !players.get(i).isNeutral()) {
-				Command timeoutCommand = localPlayer.getCommand(CommandType.TIMEOUT);
-				connectionManager.sendCommand(timeoutCommand);
-				players.get(i).makeNeutral();
+				players.get(i).setNeutral(true);
 			}
 		}
+		Command timeoutCommand = localPlayer.getCommand(CommandType.TIMEOUT);
+		connectionManager.sendCommand(timeoutCommand);
 	}
 
 	/**
@@ -397,7 +406,8 @@ public class NetworkedGame extends AbstractGame {
 		int ackId = command.getAckId();
 
 		Acknowledgement acknowledgement = new Acknowledgement(ackId);
-		acknowledgements.add(ackId, acknowledgement);
+		acknowledgements.add(acknowledgement);
+//		if(acknowledgements.get(ackId)!=)
 
 		// Mark the sending player as having already acknowledged.
 		int playerId = command.getPlayerId();
@@ -418,7 +428,7 @@ public class NetworkedGame extends AbstractGame {
 	{
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < players.size(); i++) {
 			if (!playersAcks[i] && !players.get(i).isNeutral()) {
 				return false;
 			}
@@ -494,6 +504,7 @@ public class NetworkedGame extends AbstractGame {
 		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
 		// TODO verify number/hash match.
 
+
 		boolean rollsReceived = true;
 
 		for (Player player : getPlayers()) {
@@ -505,6 +516,7 @@ public class NetworkedGame extends AbstractGame {
 
 		if (rollsReceived && localPlayer != null) {
 			// TODO roll die, get first player.
+
 
 			// Send the computed result of the dice roll to the interface.
 			RollResultCommand rollResult = new RollResultCommand(0);
@@ -528,8 +540,10 @@ public class NetworkedGame extends AbstractGame {
 
 	private void acknowledgementReceived(AcknowledgementCommand command)
 	{
-		Acknowledgement ack = acknowledgements.get(command.getAckId());
-		ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+		if(connectionManager.isServer()) {
+			Acknowledgement ack = acknowledgements.get(command.getAckId());
+			ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+		}
 	}
 
 	/**
@@ -541,4 +555,47 @@ public class NetworkedGame extends AbstractGame {
 	{
 		return ackId++;
 	}
+
+	public ConnectionManager getConnectionManager(){
+		return connectionManager;
+	}
+
+	/**
+	 * Requests one army assignment from each player in order, until all armies have been assigned.
+	 */
+	@Override
+	public void assignTerritories()
+	{
+		gameState.setDeployableArmies(1);
+
+		Command command = null;
+
+		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		for(int i = 0; i < totalTurns; i ++){
+			Player player = nextTurn();
+			if(i < gameState.getMap().getTerritories().size()){
+				command = player.getCommand(CommandType.ASSIGN_ARMY);
+			} else {
+				command = player.getCommand(CommandType.DEPLOY);
+			}
+
+			notifyPlayers(command);
+		}
+	}
+
+	public void run(){
+		assignTerritories();
+		while(!gameState.isGameComplete()) {
+			Player currentPlayer = nextTurn();
+			playCards(currentPlayer);
+			deploy(currentPlayer);
+			attack(getCurrentTurnPlayer());
+			fortify(currentPlayer);
+			if (gameState.getAttackSuccessful()) {
+				drawCard(currentPlayer);
+			}
+		}
+	}
+
+
 }

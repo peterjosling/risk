@@ -17,13 +17,21 @@ public class HostServer implements Runnable {
 	@Override
 	public void run()
 	{
-		while (true) {
+		while (!serverSocket.isClosed()) {
 			try {
 				Socket socket = serverSocket.accept();
 				connectionManager.clientConnected(socket);
 			} catch (IOException e) {
 				System.out.println("Failed to accept new client connection.");
 			}
+		}
+	}
+
+	public void terminate(){
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

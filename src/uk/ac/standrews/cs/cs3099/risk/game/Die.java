@@ -153,7 +153,7 @@ public class Die {
      *
      * @param playerid
      *            The player id sending the number
-     * @param number
+     * @param hash
      *            The number itself
      */
     public synchronized void addHash(int playerid, String hash)

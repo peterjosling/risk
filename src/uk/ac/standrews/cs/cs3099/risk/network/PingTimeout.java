@@ -16,8 +16,6 @@ public class PingTimeout implements Runnable {
 
 			if (game.getNumberOfPingsReceived() < game.getPlayers().size()) {
 				game.sendReadyCommand();
-
-				// TODO remove all dead players.
 			}
 		} catch (InterruptedException e) {
 			System.err.println("Failed to sleep child thread.");

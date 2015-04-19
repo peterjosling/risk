@@ -380,8 +380,9 @@ public class AIPlayer extends Player {
 	}
 
 	@Override
-	public void makeNeutral() {
-		isNeutral = true;
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
 	}
 
 	public void notifyCommand(AssignArmyCommand command)
