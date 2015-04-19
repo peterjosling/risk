@@ -42,8 +42,10 @@ public class LocalPlayer extends Player {
 		return isNeutral;
 	}
 
-	public void makeNeutral() {
-		isNeutral = true;
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
 	}
 
 	/**

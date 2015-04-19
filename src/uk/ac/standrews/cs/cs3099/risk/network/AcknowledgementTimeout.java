@@ -1,5 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
+import uk.ac.standrews.cs.cs3099.risk.commands.TimeoutCommand;
+
 public class AcknowledgementTimeout implements Runnable {
 	private NetworkedGame game;
 	private int ackId;
@@ -17,7 +19,11 @@ public class AcknowledgementTimeout implements Runnable {
 			Thread.sleep(game.getAcknowledgementTimeout() * 1000);
 
 			if (!game.allAcknowledgementsReceived(ackId)) {
-				// TODO send timeout for all dead players.
+				//send timeout for all dead players.
+				ConnectionManager connectionManager = game.getConnectionManager();
+				if (connectionManager.isServer()) {
+					game.timeoutPlayersNotAcknowledged(ackId);
+				}
 			}
 
 			callback();

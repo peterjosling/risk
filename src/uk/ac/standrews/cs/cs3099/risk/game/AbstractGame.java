@@ -16,7 +16,7 @@ public abstract class AbstractGame {
 	private static final String DEFAULT_MAP = "www/default-map.json";
 
 	protected GameState gameState;
-	private int armiesPerPlayer;
+	protected int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
 
@@ -70,21 +70,11 @@ public abstract class AbstractGame {
 		gameState = new GameState(playerIds);
 		loadDefaultMap();
 	}
-
 	
-	public void calcDeployable()
-	{
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies();
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies();
-				break;				
-			}
-		}
-	}
+	/**
+	 * Requests one army assignment from each player in order, until all armies have been assigned.
+	 */
+	public abstract void assignTerritories();
 	
 	public void deploy(Player player)
 	{
@@ -158,6 +148,7 @@ public abstract class AbstractGame {
 		}
 		notifyPlayers(command);
 	}
+
 	public void notifyPlayers(Command command)
 	{
 		for(Player player: players){

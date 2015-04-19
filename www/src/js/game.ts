@@ -1,6 +1,7 @@
 import Model = require('./model');
 import Collection = require('./collection');
 import Player = require('./player');
+import PlayerList = require('./player-list');
 import Messages = require('./messages');
 import Map = require('./map');
 
@@ -11,22 +12,71 @@ var HOST : string = 'ws://localhost:7574';
 class Game extends Model {
 	private socket : WebSocket;
 
-	playerList : Collection<Player>;
+	playerList : PlayerList;
 	self : Player;
 	map : Map;
-	_isHost: boolean;
+	_isHost : boolean;
+	_phase : string = 'setup';
 
 	constructor(options?) {
 		super(options);
-		this.playerList = new Collection<Player>();
+		this.playerList = new PlayerList();
 		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
+		this.set('currentPlayer', -1);
 	}
 
+	// Whether the game is running as a host or not.
 	isHost() : boolean {
 		return this._isHost;
 	}
 
+	// Get the Player instance whose turn it currently is.
+	getCurrentPlayer() : Player {
+		var playerId : number = this.get('currentPlayer');
+		return this.playerList.get(playerId);
+	}
+
+	// Get the ID of the player whose turn it currently is.
+	getCurrentPlayerId() : number {
+		return this.get('currentPlayer');
+	}
+
+	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
+	getPhase() : string {
+		return this._phase;
+	}
+
+	// Advance to the next (active) player's turn.
+	nextTurn() {
+		var player;
+
+		do {
+			var id = this.getCurrentPlayerId() + 1;
+
+			if (id === this.playerList.length) {
+				id = 0;
+			}
+
+			player = this.playerList.get(id);
+		} while (!player.isActive);
+
+		// Exit the setup phase if all armies have been assigned.
+		if (this._phase === 'setup') {
+			var activePlayers = this.playerList.getActivePlayerCount();
+			var armyCount = 50 - activePlayers * 5;
+
+			var allArmiesAssigned = this.playerList.every(player => player.getArmies() === armyCount);
+
+			if (allArmiesAssigned) {
+				this._phase = 'cards';
+			}
+		}
+
+		this.set('currentPlayer', id);
+	}
+
+	// Connect to a host server on the specified host and port.
 	connect(host : string, port : number) : Promise<Messages.Message> {
 		this._isHost = false;
 
@@ -61,6 +111,7 @@ class Game extends Model {
 		});
 	}
 
+	// Start a host server on the specified port.
 	startServer(port : number) : Promise<Messages.Message> {
 		this._isHost = true;
 
@@ -93,10 +144,12 @@ class Game extends Model {
 		});
 	}
 
+	// Show a toast-style text message to the user.
 	showToast(message : string) {
 		this.trigger('toast', message);
 	}
 
+	// Read army/territory counts from every territory and update each player's count.
 	updateArmyCounts() : void {
 		// Initialise array of army/territory counts to 0.
 		var armyCounts = this.playerList.map(function(player) {
@@ -124,6 +177,7 @@ class Game extends Model {
 		});
 	}
 
+	// Handle a message received from the websocket.
 	private messageReceived(event : MessageEvent) {
 		var message : Messages.Message = JSON.parse(event.data);
 
@@ -167,9 +221,14 @@ class Game extends Model {
 			case 'deploy':
 				this.deployMessageReceived(<Messages.DeployMessage>message);
 				break;
+
+			case 'roll_result':
+				this.rollResultMessageReceived(<Messages.RollResultMessage>message);
+				break;
 		}
 	}
 
+	// Send a message down the websocket.
 	sendMessage(json : Messages.Message) {
 		this.socket.send(JSON.stringify(json));
 	}
@@ -234,8 +293,8 @@ class Game extends Model {
 		}
 
 		this.showToast(toast);
-
 		this.handleSetupMessage(message);
+		this.nextTurn();
 	}
 
 	public handleSetupMessage(message : Messages.SetupMessage) {
@@ -307,7 +366,14 @@ class Game extends Model {
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
-
+		// Handle first roll to set initial player as a special case.
+		if (!this.getCurrentPlayer()) {
+			this.set('currentPlayer', message.payload);
+			var player = this.getCurrentPlayer();
+			this.showToast(player.name + ' to play first');
+		} else {
+			// TODO
+		}
 	}
 }
 
