@@ -155,7 +155,7 @@ public class NetworkedGame extends AbstractGame {
 
 			case ACKNOWLEDGEMENT:
 				acknowledgementReceived((AcknowledgementCommand) command);
-				break;
+				return;
 		}
 
 		// Send acknowledgement.
@@ -543,9 +543,10 @@ public class NetworkedGame extends AbstractGame {
 
 	private void acknowledgementReceived(AcknowledgementCommand command)
 	{
-		if(connectionManager.isServer()) {
+		if (connectionManager.isServer()) {
 			Acknowledgement ack = acknowledgements.get(command.getAckId());
 			ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+			connectionManager.sendCommand(command);
 		}
 	}
 
