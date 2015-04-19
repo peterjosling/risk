@@ -19,11 +19,6 @@ public abstract class AbstractGame {
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
 
-	public AbstractGame(int armiesPerPlayer)
-	{
-		this.armiesPerPlayer = armiesPerPlayer;
-	}
-
 	public void addPlayer(Player player)
 	{
 		players.add(player);
@@ -65,7 +60,7 @@ public abstract class AbstractGame {
 		for(Player player: players){
 			playerIds.add(player.getId());
 		}
-
+		armiesPerPlayer = 50-5*players.size();
 		gameState = new GameState(playerIds);
 		loadDefaultMap();
 	}

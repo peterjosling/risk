@@ -8,18 +8,14 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 public class LocalGame extends AbstractGame {
-	public LocalGame(String jsonMap, int playerCount, int armiesPerPlayer) throws MapParseException
+	public LocalGame(String jsonMap, int playerCount) throws MapParseException
 	{
-		super(armiesPerPlayer);
-		
 		initialise(playerCount);
 		this.init();
 	}
 	
-	public LocalGame(int playerCount, int armiesPerPlayer)
+	public LocalGame(int playerCount)
 	{
-		super(armiesPerPlayer);
-
 		initialise(playerCount);
 		this.init();
 	}

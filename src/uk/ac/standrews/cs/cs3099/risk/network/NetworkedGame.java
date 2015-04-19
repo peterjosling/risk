@@ -31,12 +31,7 @@ public class NetworkedGame extends AbstractGame {
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
 
-	public NetworkedGame(int armiesPerPlayer)
-	{
-		super(armiesPerPlayer);
-		//TODO stop catching exceptions everywhere
-	}
-
+	
 	/**
 	 * Start a new host server.
 	 *
