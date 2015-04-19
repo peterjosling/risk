@@ -275,8 +275,8 @@ class Game extends Model {
 		}
 
 		this.showToast(toast);
-
 		this.handleSetupMessage(message);
+		this.nextTurn();
 	}
 
 	public handleSetupMessage(message : Messages.SetupMessage) {
