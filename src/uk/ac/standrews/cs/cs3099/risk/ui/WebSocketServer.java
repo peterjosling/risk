@@ -59,7 +59,8 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 				return;
 		}
 
-		// TODO Parse command, push onto player's queue.
+		// TODO add ack_id value, if required.
+		// TODO Push onto player's queue.
 	}
 
 	@Override
