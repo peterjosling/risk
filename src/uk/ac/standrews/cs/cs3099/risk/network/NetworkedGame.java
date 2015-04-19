@@ -186,10 +186,14 @@ public class NetworkedGame extends AbstractGame {
 	{
 		List<Player> players = getPlayers();
 
-		// TODO get a response from the UIPlayer.
 		if (!gameInProgress) {
 
 			localPlayer.notifyCommand(joinCommand);
+
+			// TODO Use response from the UIPlayer.
+			if (localPlayer instanceof UIPlayer) {
+				localPlayer.getCommand(CommandType.ACCEPT_JOIN_GAME);
+			}
 
 			// Automatically accept players up until the limit.
 			Command command;
