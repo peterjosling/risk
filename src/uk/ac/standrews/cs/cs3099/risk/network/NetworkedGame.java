@@ -126,7 +126,7 @@ public class NetworkedGame extends AbstractGame {
 				return;
 
 			case REJECT_JOIN_GAME:
-				joinRejected((RejectJoinGameCommand) command);
+				joinRejected((RejectJoinGameCommand) command, playerSocket);
 				return;
 
 			case PLAYERS_JOINED:
@@ -275,12 +275,12 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param command Details of the rejection.
 	 */
-	private void joinRejected(RejectJoinGameCommand command)
+	private void joinRejected(RejectJoinGameCommand command, PlayerSocket playerSocket)
 	{
 		localPlayer.notifyCommand(command);
 		// disconnect.
-		PlayerSocket socket = connectionManager.getSocketById(command.getPlayerId());
-		socket.disconnect();
+		playerSocket.disconnect();
+		connectionManager.removePlayerSocket(playerSocket);
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class NetworkedGame extends AbstractGame {
 		InitialiseGameCommand initialiseGameCommand = new InitialiseGameCommand(1, new String[0]);
 		connectionManager.sendCommand(initialiseGameCommand);
 		initialiseGameCommand(initialiseGameCommand);
-
+		run();
 	}
 
 	/**
@@ -357,7 +357,7 @@ public class NetworkedGame extends AbstractGame {
 	{
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < players.size(); i++) {
 			if (!playersAcks[i] && !players.get(i).isNeutral()) {
 				players.get(i).setNeutral(true);
 			}
@@ -428,7 +428,7 @@ public class NetworkedGame extends AbstractGame {
 	{
 		boolean[] playersAcks = acknowledgements.get(ackId).getPlayersAcknowledged();
 		List<Player> players = getPlayers();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < players.size(); i++) {
 			if (!playersAcks[i] && !players.get(i).isNeutral()) {
 				return false;
 			}
@@ -540,8 +540,10 @@ public class NetworkedGame extends AbstractGame {
 
 	private void acknowledgementReceived(AcknowledgementCommand command)
 	{
-		Acknowledgement ack = acknowledgements.get(command.getAckId());
-		ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+		if(connectionManager.isServer()) {
+			Acknowledgement ack = acknowledgements.get(command.getAckId());
+			ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
+		}
 	}
 
 	/**
@@ -587,13 +589,7 @@ public class NetworkedGame extends AbstractGame {
 			Player currentPlayer = nextTurn();
 			playCards(currentPlayer);
 			deploy(currentPlayer);
-			String attack;
-			do {
-				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
-				System.out.println("Do you wish to make an attack: Y/N");
-				attack = EasyIn.getString();
-				if (attack.equals("Y")) attack(getCurrentTurnPlayer());
-			} while (attack.equals("Y"));
+			attack(getCurrentTurnPlayer());
 			fortify(currentPlayer);
 			if (gameState.getAttackSuccessful()) {
 				drawCard(currentPlayer);
