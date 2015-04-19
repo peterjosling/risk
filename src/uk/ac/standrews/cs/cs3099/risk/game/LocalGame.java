@@ -43,26 +43,38 @@ public class LocalGame extends AbstractGame {
 		}
 		
 		for(Player player : this.getPlayers()){
-			((AIPlayer) player).initialiseGameState(playerInts);
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer) player).initialiseGameState(playerInts);
+				break;
+			case LOCAL:
+				((LocalPlayer) player).initialiseGameState(playerInts);
+				break;				
+			}
 		}
-		
 	}
 
 	/**
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */
 	@Override
-	public void assignTerritories()
+	public void assignTerritories()	
 	{
-
 		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(1);
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies(1);
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies(1);
+				break;				
+			}
 		}
 		gameState.setDeployableArmies(1);
-
+		
 		Command command = null;
 
-		int totalTurns = armiesPerPlayer * this.getPlayers().size();
+		int totalTurns = this.getArmiesPerPlayer() * this.getPlayers().size();
 		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
 			if(i < gameState.getMap().getTerritories().size()){
@@ -73,33 +85,134 @@ public class LocalGame extends AbstractGame {
 
 			notifyPlayers(command);
 		}
+		
+		for(Player player : this.getPlayers()){
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies(0);
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies(0);
+				break;				
+			}
+		}
+		gameState.setDeployableArmies(0);
 	}
-
-
+	
 	public void run()
 	{
+		int noOfTurns = 0;
 		assignTerritories();
-		
-		// INITIAL DEPLOYMENT = STARTING ARMIES - TERRITORIES CAPTURED FOR EVERYONE...
-		for(Player player : this.getPlayers()){
-			((AIPlayer)player).getGameState().setDeployableArmies(this.getArmiesPerPlayer()); // PER PLAYER
-		}
+		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
+			if(noOfTurns%5 == 0){
+				printMap();
+				System.out.println("Enter anything to continue.");
+				String cont = EasyIn.getString();
+			}
 			Player currentPlayer = nextTurn();
-			playCards(currentPlayer);
-			deploy(currentPlayer);
+			System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
+			if(firstTurn){
+				firstTurn = false;
+			} else {
+				playCards(currentPlayer);
+				deploy(currentPlayer);
+			}
 			String attack;
-			do{
-				// IF PLAYER CAN MAKE AN ATTACK THEN ASK...
-				System.out.println("Do you wish to make an attack: Y/N");
-				attack = EasyIn.getString();
-				if(attack.equals("Y")) attack(getCurrentTurnPlayer());
-			}while(attack.equals("Y"));
+			boolean attackPhase = true;
+			while(canPlayerAttack(currentPlayer) && attackPhase){
+				attackPhase = attack(getCurrentTurnPlayer());
+			}
+
 			fortify(currentPlayer);
 			if(gameState.getAttackSuccessful()){
 				drawCard(currentPlayer);
 			}
-			// CALCULATE DEPOLOYABLE ARMIES
+			calcDeployable();
+			noOfTurns++;
 		}
+	}
+	
+	public void printMap(){
+		Map map = this.gameState.getMap();
+		System.out.println(map.findTerritoryById(0).getOwner() + ", "
+				+ map.findTerritoryById(1).getOwner() + ", "
+				+ map.findTerritoryById(2).getOwner() + "    "
+				+ map.findTerritoryById(13).getOwner() + ", "
+				+ map.findTerritoryById(14).getOwner() + ",    "
+				+ map.findTerritoryById(26).getOwner() + ", "
+				+ map.findTerritoryById(27).getOwner() + ", "
+				+ map.findTerritoryById(28).getOwner() + ", "
+				+ map.findTerritoryById(29).getOwner());
+		System.out.println(map.findTerritoryById(3).getOwner() + ", "
+				+ map.findTerritoryById(4).getOwner() + ", "
+				+ map.findTerritoryById(5).getOwner() + ",   "
+				+ map.findTerritoryById(16).getOwner() + ", "
+				+ map.findTerritoryById(17).getOwner() + ", "
+				+ map.findTerritoryById(15).getOwner() + ",       "
+				+ map.findTerritoryById(30).getOwner());
+		System.out.println(map.findTerritoryById(6).getOwner() + ", "
+				+ map.findTerritoryById(7).getOwner() + ",      "
+				+ map.findTerritoryById(18).getOwner() + ", "
+				+ map.findTerritoryById(19).getOwner() + ",    "
+				+ map.findTerritoryById(33).getOwner() + ",    "
+				+ map.findTerritoryById(31).getOwner() + ", "
+				+ map.findTerritoryById(32).getOwner());
+
+		System.out.println(" " + map.findTerritoryById(8).getOwner() + ",                "
+				+ map.findTerritoryById(35).getOwner() + ",  "
+				+ map.findTerritoryById(36).getOwner() + ",  "
+				+ map.findTerritoryById(34).getOwner());
+		System.out.println("            " + 
+				+ map.findTerritoryById(20).getOwner() + ", "
+				+ map.findTerritoryById(21).getOwner() + "       "
+				+ map.findTerritoryById(37).getOwner());
+		System.out.println(" " + map.findTerritoryById(9).getOwner() + "           "
+				+ map.findTerritoryById(22).getOwner() + ", "
+				+ map.findTerritoryById(23).getOwner());
+		System.out.println(map.findTerritoryById(8).getOwner() + ", "
+				+ map.findTerritoryById(8).getOwner() + "         "
+				+ map.findTerritoryById(24).getOwner() + ",  "
+				+ map.findTerritoryById(25).getOwner() + ",    "
+				+ map.findTerritoryById(38).getOwner() + ", "
+				+ map.findTerritoryById(39).getOwner());
+		System.out.println(" " + map.findTerritoryById(12).getOwner() + "                     "
+				+ map.findTerritoryById(40).getOwner() + ", "
+				+ map.findTerritoryById(41).getOwner());
+	}
+
+	public void calcDeployable()
+	{
+		for(Player player : this.getPlayers()){
+			switch (player.getType()) {
+			case AI:
+				((AIPlayer)player).getGameState().setDeployableArmies();
+				break;
+			case LOCAL:
+				((LocalPlayer)player).getGameState().setDeployableArmies();
+				break;				
+			}
+		}
+	}
+	
+	public boolean canPlayerAttack(Player player){
+		Territory[] territories = null;
+		switch (player.getType()) {
+			case AI:
+				territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+				break;
+			case LOCAL:
+				territories = ((LocalPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
+				break;				
+		}
+		
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

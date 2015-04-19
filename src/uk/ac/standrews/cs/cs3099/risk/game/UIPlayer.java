@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 import org.java_websocket.WebSocket;
+
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
@@ -17,6 +18,12 @@ public class UIPlayer extends Player {
 		webSocket = ws;
 	}
 
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.UI;
+	}
+	
 	public void queueCommand(Command command)
 	{
 		moveQueue.add(command);

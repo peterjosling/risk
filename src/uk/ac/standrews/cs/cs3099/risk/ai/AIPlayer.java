@@ -35,6 +35,12 @@ public class AIPlayer extends Player {
 	private int attackSourceId;
 	private int attackDestId;
 
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.AI;
+	}
+	
 	public AIPlayer(int id, String name)
 	{
 		super(id, name);
@@ -249,7 +255,13 @@ public class AIPlayer extends Player {
 	{	
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
 		
-		int armies = source.getArmies() - 1;
+		
+		int armies = (source.getArmies() - 1)/2;
+		
+		if(armies < gameState.getRemainingArmies()){
+			armies = gameState.getRemainingArmies();
+		}
+
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
@@ -533,4 +545,5 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid RollHashCommand.");
 		}	
 	}
+	
 }

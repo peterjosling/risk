@@ -24,7 +24,7 @@ public class GameState {
 
 	private int[] playersDeployableArmies;
 	private int tradeInCount = 0;
-	private ArrayList[] playerCards;
+	private ArrayList<ArrayList<Card>> playerCards;
 	private boolean inAttackPhase = false;
 	private ArrayList<Command> attackPhaseCommands = new ArrayList<Command>();
 	private ArrayList<Integer> playerIDs;
@@ -42,7 +42,11 @@ public class GameState {
 	{
 		playerIDs = players;
 		initTradeInValues();
-		playerCards = new ArrayList[getNumberOfPlayers()];
+		playerCards = new ArrayList<ArrayList<Card>>();
+		
+		for(int i = 0; i < players.size(); i ++){
+			playerCards.add(new ArrayList<Card>());
+		}
 		playersDeployableArmies = new int[players.size()];
 	}
 
@@ -240,7 +244,7 @@ public class GameState {
 			}
 			Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
 			int[] resultingRolls = die.rollDice();
-			int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice);
+			int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice, command.getPlayerId());
 			//apply result to board
 			removeArmiesForTerritory(command.getSource(), result[0]);
 			removeArmiesForTerritory(command.getDest(), result[1]);
@@ -262,19 +266,18 @@ public class GameState {
 	 * @param numberOfDefendingDice
 	 * @return int array with attacking losses at index 0 and defending losses at index 1
 	 */
-	public int[] calculateResult(int[] rolls, int numberOfAttackingDice, int numberOfDefendingDice){
+	public int[] calculateResult(int[] rolls, int numberOfAttackingDice, int numberOfDefendingDice, int player){
 		int[] attackingRolls = new int[numberOfAttackingDice];
 		int[] defendingRolls = new int[numberOfDefendingDice];
 		int aRoll = 0;
 		int dRoll = 0;
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
-			
 			if(aRoll<numberOfAttackingDice){
-				attackingRolls[aRoll] = rolls[roll];
+				attackingRolls[aRoll] = player==0 ? 10 : rolls[roll]; // TESTING PURPOSES
 				aRoll++;
 			} else if (dRoll<numberOfDefendingDice){
-				defendingRolls[dRoll] = rolls[roll] - 1;
+				defendingRolls[dRoll] = rolls[roll];
 				dRoll++;
 			}
 		}
@@ -334,7 +337,7 @@ public class GameState {
 						break;
 					}
 				}
-				playerCards[command.getPlayerId()].remove(card);
+				playerCards.get(command.getPlayerId()).remove(card);
 			}
 		}
 		playersDeployableArmies[command.getPlayerId()] += armies;
@@ -342,8 +345,10 @@ public class GameState {
 	}
 
 	public void playCommand(DrawCardCommand command){
-		Card drawnCard = deck.dealCard();
-		playerCards[command.getPlayerId()].add(drawnCard);
+		if(deck.getTopCardIndex() < 44){
+			Card drawnCard = deck.dealCard();
+			playerCards.get(command.getPlayerId()).add(drawnCard);
+		}
 	}
 
 	public void playCommand(LeaveGameCommand command){
@@ -375,8 +380,14 @@ public class GameState {
 		}
 		return true;
 	}
+	
+	public void setDeployableArmies(){
+		for(int player : playerIDs){
+			playersDeployableArmies[player] = calculateDeployArmies(player);
+		}
+	}
 
-	public int calculateDeployTroops(int playerId)
+	public int calculateDeployArmies(int playerId)
 	{
 		int deployableTroops = 0;
 
@@ -632,6 +643,10 @@ public class GameState {
 
 	public boolean getAttackSuccessful(){
 		return attackSuccessful;
+	}
+	
+	public int getRemainingArmies(){
+		return remainingArmies;
 	}
 }
 
