@@ -21,8 +21,7 @@ public class Main {
 		System.out.println("How many AI?");
 		int ai = sc.nextInt();
 
-		int armies = 20 + ((6-players)*5);
-		LocalGame localGame = new LocalGame(players, ai, armies);
+		LocalGame localGame = new LocalGame(players, ai);
 		localGame.run();
 	}
 }

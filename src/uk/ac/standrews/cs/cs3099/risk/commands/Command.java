@@ -62,6 +62,11 @@ public abstract class Command {
 		return ack_id;
 	}
 
+	public void setAckId(int ack_id)
+	{
+		this.ack_id = ack_id;
+	}
+
 	public abstract CommandType getType();
 
 	public String toJSON()

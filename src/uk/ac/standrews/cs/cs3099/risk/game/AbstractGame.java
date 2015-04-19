@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
@@ -19,11 +18,6 @@ public abstract class AbstractGame {
 	protected int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
-
-	public AbstractGame(int armiesPerPlayer)
-	{
-		this.armiesPerPlayer = armiesPerPlayer;
-	}
 
 	public void addPlayer(Player player)
 	{
@@ -66,7 +60,7 @@ public abstract class AbstractGame {
 		for(Player player: players){
 			playerIds.add(player.getId());
 		}
-
+		armiesPerPlayer = 50-5*players.size();
 		gameState = new GameState(playerIds);
 		loadDefaultMap();
 	}
@@ -153,7 +147,9 @@ public abstract class AbstractGame {
 	public void notifyPlayers(Command command)
 	{
 		for(Player player: players){
-			player.notifyCommand(command);
+			if (player.getId() != command.getPlayerId()) {
+				player.notifyCommand(command);
+			}
 		}
 		gameState.playCommand(command);
 	}
@@ -173,7 +169,13 @@ public abstract class AbstractGame {
 	 */
 	public Player getCurrentTurnPlayer()
 	{
-		return players.get(currentTurn);
+		for (Player player : players) {
+			if (player.getId() == currentTurn) {
+				return player;
+			}
+		}
+
+		return null;
 	}
 
 	/**

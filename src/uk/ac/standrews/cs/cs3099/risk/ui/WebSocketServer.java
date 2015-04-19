@@ -2,9 +2,7 @@ package uk.ac.standrews.cs.cs3099.risk.ui;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.network.ConnectionManager;
@@ -12,7 +10,6 @@ import uk.ac.standrews.cs.cs3099.risk.network.HostServer;
 import uk.ac.standrews.cs.cs3099.risk.network.NetworkedGame;
 import uk.ac.standrews.cs.cs3099.risk.network.PlayerSocket;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,29 +33,26 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	{
 		System.out.println("Client disconnected: " + webSocket);
 
-		// TODO terminate game
+		// terminate game
 		NetworkedGame game = games.get(webSocket.getRemoteSocketAddress());
 		ConnectionManager cm = game.getConnectionManager();
-		if(cm.isServer()) {
+		if (cm.isServer()) {
 			for (int playerId = 0; playerId < 6; playerId++) {
 				PlayerSocket playerSocket = cm.getSocketById(playerId);
-				if(playerSocket!=null) {
+				if (playerSocket != null) {
 					playerSocket.disconnect();
 					cm.removePlayerSocket(playerSocket);
 				}
 			}
 			HostServer hostServer = cm.getHostServer();
 			hostServer.terminate();
-		}else{
+		} else {
 			// terminate host connection
 			ArrayList<PlayerSocket> playerSockets = cm.getPlayerSockets();
 			playerSockets.get(0).disconnect();
 			playerSockets.remove(0);
 
 		}
-
-		//shutdown sockets in connecion manager
-
 	}
 
 	@Override
@@ -84,10 +78,19 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 				return;
 		}
 
-		// TODO add ack_id value, if required.
+		// add ack_id value, if required.
 
 		// Add the move to the local player's queue.
 		NetworkedGame game = games.get(webSocket.getRemoteSocketAddress());
+		CommandType type = command.getType();
+		if (type != CommandType.ACCEPT_JOIN_GAME && type != CommandType.JOIN_GAME &&
+				type != CommandType.REJECT_JOIN_GAME && type != CommandType.PING && type != CommandType.ACKNOWLEDGEMENT &&
+				type != CommandType.ROLL_HASH && type != CommandType.ROLL_NUMBER) {
+
+			int ackId = game.nextAckId();
+			command.setAckId(ackId);
+		}
+
 		Player player = game.getLocalPlayer();
 
 		if (player != null && player instanceof UIPlayer) {
@@ -110,17 +113,14 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
 		System.out.println("Connecting");
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame();
 
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
-		try {
-			game.connectToServer(command.getHostname(), command.getPort());
-		} catch (IOException e) {
-			System.err.println("Failed to connect to remote host.");
-		}
+		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getHostname(), command.getPort());
+		new Thread(networkedGameThread).start();
 	}
 
 	/**
@@ -132,14 +132,11 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
 		Player player = new UIPlayer(ws, 0, "Player names not implemented");
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
-		try {
-			game.startServer(command.getPort());
-		} catch (IOException e) {
-			System.err.println("Couldn't start host server on port " + command.getPort());
-		}
+		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getPort());
+		new Thread(networkedGameThread).start();
 	}
 }
