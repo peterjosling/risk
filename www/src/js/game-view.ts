@@ -13,7 +13,7 @@ class GameView extends View<Game> {
 	constructor(options?) {
 		super(options);
 
-		var playerListView = new PlayerListView({ collection: this.model.playerList });
+		var playerListView = new PlayerListView({ model: this.model });
 		var mapView = new MapView({model: this.model});
 
 		this.childViews = [

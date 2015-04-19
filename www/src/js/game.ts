@@ -33,6 +33,10 @@ class Game extends Model {
 		return this.playerList.get(playerId);
 	}
 
+	getCurrentPlayerId() : number {
+		return this.get('currentPlayer');
+	}
+
 	connect(host : string, port : number) : Promise<Messages.Message> {
 		this._isHost = false;
 
