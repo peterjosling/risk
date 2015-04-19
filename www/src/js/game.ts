@@ -1,6 +1,7 @@
 import Model = require('./model');
 import Collection = require('./collection');
 import Player = require('./player');
+import PlayerList = require('./player-list');
 import Messages = require('./messages');
 import Map = require('./map');
 
@@ -11,14 +12,14 @@ var HOST : string = 'ws://localhost:7574';
 class Game extends Model {
 	private socket : WebSocket;
 
-	playerList : Collection<Player>;
+	playerList : PlayerList;
 	self : Player;
 	map : Map;
 	_isHost : boolean;
 
 	constructor(options?) {
 		super(options);
-		this.playerList = new Collection<Player>();
+		this.playerList = new PlayerList();
 		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
 		this.set('currentPlayer', -1);
