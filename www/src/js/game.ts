@@ -129,6 +129,7 @@ class Game extends Model {
 
 		this.self = new Player({
 			player_id: 0,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 
@@ -252,6 +253,7 @@ class Game extends Model {
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
 		this.self = new Player({
 			player_id: message.payload.player_id,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 
