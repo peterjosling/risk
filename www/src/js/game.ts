@@ -52,7 +52,7 @@ class Game extends Model {
 	setPhase(phase : string) {
 		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
 
-		if (validPhases.indexOf('phase') === -1) {
+		if (validPhases.indexOf(phase) === -1) {
 			throw new Error('Invalid phase specified');
 		}
 
