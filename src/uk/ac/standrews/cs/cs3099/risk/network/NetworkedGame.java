@@ -24,6 +24,7 @@ public class NetworkedGame extends AbstractGame {
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
+	private float highestMutuallySupportedVersion;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -198,11 +199,15 @@ public class NetworkedGame extends AbstractGame {
 			Command command;
 			int id = players.size();
 			String name = joinCommand.getName();
+			float[] versions = joinCommand.getSupported_versions();
 			boolean accepted = false;
-
-			if (id > 5) {
+			if(versions[0]!=1.0){
+				command = new RejectJoinGameCommand("Must support version 1");
+			}
+			else if (id > 5) {
 				command = new RejectJoinGameCommand("Game full");
-			} else {
+			}
+			else {
 				command = new AcceptJoinGameCommand(id, acknowledgementTimeout, moveTimeout);
 				NetworkPlayer player = new NetworkPlayer(connectionManager, id, name);
 				addPlayer(player);
