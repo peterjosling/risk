@@ -19,7 +19,7 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		int players = sc.nextInt();
 		int armies = 20 + ((6-players)*5);
-		LocalGame localGame = new LocalGame(players, armies);
+		LocalGame localGame = new LocalGame(players);
 		localGame.run();
 	}
 }

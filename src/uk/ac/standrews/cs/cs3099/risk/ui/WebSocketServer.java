@@ -113,7 +113,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void connectToServer(WebSocket ws, ServerConnectCommand command)
 	{
 		System.out.println("Connecting");
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame();
 
 		Player player = new UIPlayer(ws, 0, "Test player");
 		game.setLocalPlayer(player);
@@ -132,7 +132,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
 		Player player = new UIPlayer(ws, 0, "Player names not implemented");
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
