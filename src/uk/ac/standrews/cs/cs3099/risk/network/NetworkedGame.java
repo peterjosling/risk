@@ -197,10 +197,6 @@ public class NetworkedGame extends AbstractGame {
 		if (connectionManager.isServer()) {
 			connectionManager.sendCommand(command);
 		}
-
-		if (localPlayer != null && !connectionManager.isServer()) {
-			localPlayer.notifyCommand(command);
-		}
 	}
 
 	/**
@@ -630,6 +626,4 @@ public class NetworkedGame extends AbstractGame {
 			}
 		}
 	}
-
-
 }
