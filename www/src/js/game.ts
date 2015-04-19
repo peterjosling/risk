@@ -42,7 +42,7 @@ class Game extends Model {
 		return this.get('currentPlayer');
 	}
 
-	// Get the current game phase. 'setup', 'attack' or 'defend'.
+	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
 	getPhase() : string {
 		return this._phase;
 	}
@@ -60,6 +60,18 @@ class Game extends Model {
 
 			player = this.playerList.get(id);
 		} while (!player.isActive);
+
+		// Exit the setup phase if all armies have been assigned.
+		if (this._phase === 'setup') {
+			var activePlayers = this.playerList.getActivePlayerCount();
+			var armyCount = 50 - activePlayers * 5;
+
+			var allArmiesAssigned = this.playerList.every(player => player.getArmies() === armyCount);
+
+			if (allArmiesAssigned) {
+				this._phase = 'cards';
+			}
+		}
 
 		this.set('currentPlayer', id);
 	}
