@@ -78,7 +78,7 @@ public abstract class Command {
 		classMap.put("fortify", FortifyCommand.class);
 		classMap.put("deploy", DeployCommand.class);
 		classMap.put("draw_card", DrawCardCommand.class);
-		classMap.put("assign_army", AssignArmyCommand.class);
+		classMap.put("setup", AssignArmyCommand.class);
 		classMap.put("defend", DefendCommand.class);
 		classMap.put("join_game", JoinGameCommand.class);
 		classMap.put("accept_join_game", AcceptJoinGameCommand.class);
@@ -89,6 +89,7 @@ public abstract class Command {
 		classMap.put("leave_game", LeaveGameCommand.class);
 		classMap.put("roll_number", RollNumberCommand.class);
 		classMap.put("roll_hash", RollHashCommand.class);
+		classMap.put("roll_result", RollResultCommand.class);
 		classMap.put("play_cards", PlayCardsCommand.class);
 		classMap.put("ping", PingCommand.class);
 		classMap.put("ready", ReadyCommand.class);

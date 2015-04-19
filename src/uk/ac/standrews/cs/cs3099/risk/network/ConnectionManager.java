@@ -12,6 +12,7 @@ public class ConnectionManager {
 	private final ArrayList<PlayerSocket> playerSockets = new ArrayList<PlayerSocket>();
 
 	private NetworkedGame game;
+	private HostServer hostServer;
 
 	/**
 	 * Create a new server instance, listening on the specified port.
@@ -23,7 +24,7 @@ public class ConnectionManager {
 		this.game = game;
 		this.isServer = true;
 		ServerSocket socket = new ServerSocket(port);
-		HostServer hostServer = new HostServer(this, socket);
+		hostServer = new HostServer(this, socket);
 		new Thread(hostServer).start();
 	}
 
@@ -85,4 +86,32 @@ public class ConnectionManager {
 	{
 		return isServer;
 	}
+
+	/**
+	 * Returns a socket for a specified player
+	 * @param playerID - the id of the player who's socket you want
+	 * @return the PlayerSocket of that player
+	 */
+	public PlayerSocket getSocketById(int playerID) {
+		for(PlayerSocket socket: playerSockets){
+			if (socket.getPlayerId()==playerID){
+				return socket;
+			}
+		}
+		return null;
+	}
+
+	public void removePlayerSocket(PlayerSocket socket){
+		playerSockets.remove(socket);
+	}
+
+	public ArrayList<PlayerSocket> getPlayerSockets(){
+		return playerSockets;
+	}
+
+	public HostServer getHostServer(){
+		return hostServer;
+	}
+
 }
+

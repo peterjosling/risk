@@ -301,5 +301,4 @@ public class Die {
 		}
 		return diceRolls;
 	}
-
 }

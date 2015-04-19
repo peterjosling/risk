@@ -51,7 +51,9 @@ public class NetworkPlayer extends Player {
 		return isNeutral;
 	}
 
-	public void makeNeutral() {
-		isNeutral = !isNeutral;
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
 	}
 }

@@ -63,7 +63,6 @@ public class PlayerSocket implements Runnable {
 				game.messageReceived(command, this);
 			} catch (IOException e) {
 				System.err.println("Failed to read from client socket.");
-				e.printStackTrace();
 			}
 		}
 	}
@@ -71,6 +70,14 @@ public class PlayerSocket implements Runnable {
 	public int getPlayerId()
 	{
 		return playerId;
+	}
+
+	public void disconnect(){
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

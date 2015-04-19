@@ -46,7 +46,7 @@ public class UIPlayer extends Player {
 		return isNeutral;
 	}
 
-	public void makeNeutral() {
-		isNeutral = true;
+	public void setNeutral(boolean neutral) {
+		isNeutral = neutral;
 	}
 }
