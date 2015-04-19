@@ -437,14 +437,7 @@ public class GameState {
 	public boolean areOwnedTerritoriesConnected(int playerId, Territory source, Territory dest)
 	{
 		if(source == null || dest == null) return false;
-		if(source.isLinkedTo(dest)) return true;
-		
-		for(Territory linkedTerritory : source.getLinkedTerritories()){
-			if(linkedTerritory.getOwner() == playerId){
-				System.out.println(playerId + ", " + source.getId() + ", " + dest.getId());
-				return areOwnedTerritoriesConnected(playerId, linkedTerritory, dest);
-			}
-		}
+		if(source.isLinkedTo(dest) && (source.getId() == playerId) && (dest.getId() == playerId)) return true;
 
 		return false;
 	}
