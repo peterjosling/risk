@@ -8,34 +8,35 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 public class LocalGame extends AbstractGame {
-	public LocalGame(String jsonMap, int playerCount, int armiesPerPlayer) throws MapParseException
+	public LocalGame(String jsonMap, int playerCount, int aiCount, int armiesPerPlayer) throws MapParseException
 	{
 		super(armiesPerPlayer);
 		
-		initialise(playerCount);
+		initialise(playerCount, aiCount);
 		this.init();
 	}
 	
-	public LocalGame(int playerCount, int armiesPerPlayer)
+	public LocalGame(int playerCount, int aiCount, int armiesPerPlayer)
 	{
 		super(armiesPerPlayer);
 
-		initialise(playerCount);
+		initialise(playerCount, aiCount);
 		this.init();
 	}
 	
 	
-	public void initialise(int playerCount)
+	public void initialise(int playerCount, int aiCount)
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
-//		LocalPlayer localPlayer = new LocalPlayer(0);
-//		playerInts.add(localPlayer.getId());
-//		addPlayer(new LocalPlayer(0));
+		for (int i = 0; i < playerCount; i++){
+			Player player = new LocalPlayer(i);
+			playerInts.add(player.getId());
+			addPlayer(player);
+		}
 
-		
-		for (int i = 0; i < playerCount; i++) {
-			Player player = new AIPlayer(i);
+		for (int i = 0; i < aiCount; i++) {
+			Player player = new AIPlayer(playerInts.size());
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}
@@ -100,10 +101,11 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		int noOfTurns = 0;
+		printMap();
 		assignTerritories();
 		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
-			if(noOfTurns%5 == 0){
+			if(noOfTurns%2 == 0){
 				printMap();
 				System.out.println("Enter anything to continue.");
 				String cont = EasyIn.getString();

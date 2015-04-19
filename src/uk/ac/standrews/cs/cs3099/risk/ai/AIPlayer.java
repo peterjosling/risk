@@ -318,7 +318,38 @@ public class AIPlayer extends Player {
 
 	public Command getFortifyCommand() 
 	{
-		return new FortifyCommand(this.getId(), lastAckid++);
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+		int[] details = new int[3];
+		boolean fortifyFound = false;
+		for(Territory territory : territories){
+			if(territory.getArmies() > 1){
+				boolean territoryFrozen = true;
+				for(Territory linkedTerritory : territory.getLinkedTerritories()){
+					if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+				}
+				if(territoryFrozen) {
+					details[0] = territory.getId();
+					details[2] = territory.getArmies() - 1;
+				}
+			}
+		}
+		
+		for(Territory territory : territories){
+			boolean territoryFree = false;
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if(linkedTerritory.getId() != this.getId()) territoryFree = true;
+			}
+			if(territoryFree && (gameState.areOwnedTerritoriesConnected(this.getId(), gameState.getMap().findTerritoryById(details[0]), territory))){
+				details[1] = territory.getId();
+			}
+		}
+		
+		fortifyFound = true;
+		if(fortifyFound){
+			return new FortifyCommand(this.getId(), lastAckid++, details);
+		} else {
+			return new FortifyCommand(this.getId(), lastAckid++);
+		}
 	}
 
 	public Command getAttackCommand() 

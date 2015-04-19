@@ -289,10 +289,11 @@ public class GameState {
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
 			if(aRoll<numberOfAttackingDice){
-				attackingRolls[aRoll] = player==0 ? 10 : rolls[roll]; // TESTING PURPOSES
+//				attackingRolls[aRoll] = player==0 ? 10 : rolls[roll]; // TESTING PURPOSES
+				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
 			} else if (dRoll<numberOfDefendingDice){
-				defendingRolls[dRoll] = rolls[roll];
+				defendingRolls[dRoll] = rolls[roll] - 1;
 				dRoll++;
 			}
 		}
