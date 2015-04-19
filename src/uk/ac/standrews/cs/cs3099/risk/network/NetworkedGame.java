@@ -171,10 +171,9 @@ public class NetworkedGame extends AbstractGame {
 		moveQueue.add(command);
 
 		// TODO forward to all players, if host.
-		if(connectionManager.isServer()){
+		if (connectionManager.isServer()) {
 			connectionManager.sendCommand(command);
 		}
-
 	}
 
 	/**
