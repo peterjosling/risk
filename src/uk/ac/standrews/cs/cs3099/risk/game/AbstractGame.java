@@ -70,50 +70,7 @@ public abstract class AbstractGame {
 		gameState = new GameState(playerIds);
 		loadDefaultMap();
 	}
-	/**
-	 * Requests one army assignment from each player in order, until all armies have been assigned.
-	 */
-	public void assignTerritories()
-	{
 
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies(1);
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies(1);
-				break;				
-			}
-		}
-		gameState.setDeployableArmies(1);
-		
-		Command command = null;
-
-		int totalTurns = armiesPerPlayer * this.getPlayers().size();
-		for(int i = 0; i < totalTurns; i ++){
-			Player player = nextTurn();
-			if(i < gameState.getMap().getTerritories().size()){
-				command = player.getCommand(CommandType.ASSIGN_ARMY);
-			} else {
-				command = player.getCommand(CommandType.DEPLOY);
-			}
-
-			notifyPlayers(command);
-		}
-		
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies(0);
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies(0);
-				break;				
-			}
-		}
-		gameState.setDeployableArmies(0);
-	}
 	
 	public void calcDeployable()
 	{
