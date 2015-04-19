@@ -27,6 +27,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class AIPlayer extends Player {
@@ -57,12 +58,14 @@ public class AIPlayer extends Player {
 		gameState.loadDefaultMap();
 	}
 	
-	public GameState getGameState(){
+	public GameState getGameState()
+	{
 		return gameState;
 	}
 	
 	@Override
-	public Command getCommand(CommandType type) {
+	public Command getCommand(CommandType type) 
+	{
 		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
@@ -125,19 +128,23 @@ public class AIPlayer extends Player {
 		return new RejectJoinGameCommand(message);
 	}
 
-	public Command getAcknowledgementCommand(){
+	public Command getAcknowledgementCommand()
+	{
 		return new AcknowledgementCommand(this.getId(), lastAckid++);
 	}
 
-	public Command getPingCommand() {
+	public Command getPingCommand() 
+	{
 		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
 	}
 
-	public Command getReadyCommand() {
+	public Command getReadyCommand() 
+	{
 		return new ReadyCommand(this.getId(), lastAckid++);
 	}
 
-	public Command getInitialiseGameCommand(){
+	public Command getInitialiseGameCommand()
+	{
 		int version = 1;
 		String[] supportedFeatures = {};
 		return new InitialiseGameCommand(version, supportedFeatures);
@@ -145,17 +152,24 @@ public class AIPlayer extends Player {
 
 	public DeployCommand getDeployCommand() 
 	{
+		int deployableArmies = gameState.getDeployableArmies(this.getId());
+		Deployment[] deployments = new Deployment[deployableArmies];
+
+		Territory[] playerTerritories = gameState.getTerritoriesForPlayer(this.getId());
+		for(int i = 0; i < deployableArmies; i ++){
+			Random rnd = new Random();
+			int nextRandom = rnd.nextInt(playerTerritories.length);
+			Territory deployTerritory = playerTerritories[nextRandom];
+			deployments[i] = new Deployment(deployTerritory.getId(), 1);
+		}
+		
 		// Deploys all troops to first owned territory.
-		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
-		Deployment[] deployments = new Deployment[1];
-		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
 		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
 		
 		if(gameState.isCommandValid(command)){
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Deploy Command");
-//			getDeployComand();
 		}
 		return null;
 	}
@@ -387,7 +401,8 @@ public class AIPlayer extends Player {
 	}
 
 	@Override
-	public boolean isNeutral() {
+	public boolean isNeutral() 
+	{
 		return isNeutral;
 	}
 

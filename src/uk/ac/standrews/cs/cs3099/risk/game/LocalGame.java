@@ -14,7 +14,6 @@ public class LocalGame extends AbstractGame {
 		
 		initialise(playerCount);
 		this.init();
-//		this.loadMap(jsonMap);
 	}
 	
 	public LocalGame(int playerCount, int armiesPerPlayer)
@@ -23,7 +22,6 @@ public class LocalGame extends AbstractGame {
 
 		initialise(playerCount);
 		this.init();
-//		loadDefaultMap();
 	}
 	
 	
@@ -111,29 +109,35 @@ public class LocalGame extends AbstractGame {
 				String cont = EasyIn.getString();
 			}
 			Player currentPlayer = nextTurn();
-			System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
-			if(firstTurn){
-				firstTurn = false;
-			} else {
-				playCards(currentPlayer);
-				deploy(currentPlayer);
-			}
-			String attack;
-			boolean attackPhase = true;
-			while(canPlayerAttack(currentPlayer) && attackPhase){
-				attackPhase = attack(getCurrentTurnPlayer());
-			}
+			
+			if(!gameState.isPlayerDead(currentPlayer.getId())){
+				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
+				if(firstTurn){
+					firstTurn = false;
+				} else {
+					playCards(currentPlayer);
+					deploy(currentPlayer);
+				}
+				boolean attackPhase = true;
+				while(canPlayerAttack(currentPlayer) && attackPhase){
+					attackPhase = attack(getCurrentTurnPlayer());
+				}
+	
+				fortify(currentPlayer);
+				if(gameState.getAttackSuccessful()){
+					drawCard(currentPlayer);
 
-			fortify(currentPlayer);
-			if(gameState.getAttackSuccessful()){
-				drawCard(currentPlayer);
+				}
+				checkDeadPlayers();
+				calcDeployable();
+				noOfTurns++;
 			}
-			calcDeployable();
-			noOfTurns++;
 		}
+		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
 	
-	public void printMap(){
+	public void printMap()
+	{
 		Map map = this.gameState.getMap();
 		System.out.println(map.findTerritoryById(0).getOwner() + ", "
 				+ map.findTerritoryById(1).getOwner() + ", "
@@ -158,7 +162,6 @@ public class LocalGame extends AbstractGame {
 				+ map.findTerritoryById(33).getOwner() + ",    "
 				+ map.findTerritoryById(31).getOwner() + ", "
 				+ map.findTerritoryById(32).getOwner());
-
 		System.out.println(" " + map.findTerritoryById(8).getOwner() + ",                "
 				+ map.findTerritoryById(35).getOwner() + ",  "
 				+ map.findTerritoryById(36).getOwner() + ",  "
@@ -193,18 +196,39 @@ public class LocalGame extends AbstractGame {
 				break;				
 			}
 		}
+		gameState.setDeployableArmies();
 	}
 	
-	public boolean canPlayerAttack(Player player){
-		Territory[] territories = null;
-		switch (player.getType()) {
-			case AI:
-				territories = ((AIPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
-				break;
-			case LOCAL:
-				territories = ((LocalPlayer)player).getGameState().getTerritoriesForPlayer(player.getId());
-				break;				
+	public void checkDeadPlayers()
+	{
+		for(Player player : this.getPlayers()){
+			if(gameState.getTerritoriesForPlayer(player.getId()).length == 0){
+				for(Player updatePlayer : this.getPlayers()){
+					switch (updatePlayer.getType()) {
+					case AI:
+						((AIPlayer)updatePlayer).getGameState().addDeadPlayer(player.getId());
+						break;
+					case LOCAL:
+						((LocalPlayer)updatePlayer).getGameState().addDeadPlayer(player.getId());
+						break;				
+					}
+				}
+				gameState.addDeadPlayer(player.getId());
+			}
 		}
+	}
+	
+	public int getWinner()
+	{
+		for(Player player : this.getPlayers()){
+			if(!gameState.isPlayerDead(player.getId())) return player.getId();
+		}
+		return -1;
+	}
+	
+	public boolean canPlayerAttack(Player player)
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
 		
 		for(Territory territory : territories){
 			for(Territory linkedTerritory : territory.getLinkedTerritories()){

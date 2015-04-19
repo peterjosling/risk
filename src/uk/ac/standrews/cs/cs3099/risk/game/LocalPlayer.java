@@ -33,7 +33,8 @@ public class LocalPlayer extends Player {
 		gameState.loadDefaultMap();
 	}
 	
-	public GameState getGameState(){
+	public GameState getGameState()
+	{
 		return gameState;
 	}
 
@@ -55,7 +56,8 @@ public class LocalPlayer extends Player {
 	 * @return - the newly created command
 	 */
 	@Override
-	public Command getCommand(CommandType type) {
+	public Command getCommand(CommandType type) 
+	{
 		switch (type) {
 			case ASSIGN_ARMY:
 				return getAssignArmyCommand();
@@ -364,7 +366,8 @@ public class LocalPlayer extends Player {
 	 * Creates a roll hash command
 	 * @return the new RollHashCommand
 	 */
-	public Command getRollHashCommand(){
+	public Command getRollHashCommand()
+	{
 		String hash = "";
 		return new RollHashCommand(this.getId(), hash);
 	}
@@ -373,7 +376,8 @@ public class LocalPlayer extends Player {
 	 * Creates a ping command
 	 * @return the new ping command
 	 */
-	public Command getPingCommand() {
+	public Command getPingCommand() 
+	{
 		return new PingCommand(this.getId(), gameState.getNumberOfPlayers());
 	}
 
@@ -381,7 +385,8 @@ public class LocalPlayer extends Player {
 	 * Creates a ready command
 	 * @return the new ReadyCommand
 	 */
-	public Command getReadyCommand() {
+	public Command getReadyCommand() 
+	{
 		return new ReadyCommand(this.getId(), lastAckid++);
 	}
 
@@ -389,7 +394,8 @@ public class LocalPlayer extends Player {
 	 * Creates an initialise game command
 	 * @return the new InitialiseGameCommand
 	 */
-	public Command getInitialiseGameCommand(){
+	public Command getInitialiseGameCommand()
+	{
 		int version = 1;
 		String[] supportedFeatures = {};
 		return new InitialiseGameCommand(version, supportedFeatures);
