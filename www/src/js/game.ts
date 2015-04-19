@@ -47,13 +47,19 @@ class Game extends Model {
 		return this._phase;
 	}
 
-	// Advance to the next player's turn.
+	// Advance to the next (active) player's turn.
 	nextTurn() {
-		var id = this.getCurrentPlayerId() + 1;
+		var player;
 
-		if (id === this.playerList.length) {
-			id = 0;
-		}
+		do {
+			var id = this.getCurrentPlayerId() + 1;
+
+			if (id === this.playerList.length) {
+				id = 0;
+			}
+
+			player = this.playerList.get(id);
+		} while (!player.isActive);
 
 		this.set('currentPlayer', id);
 	}
