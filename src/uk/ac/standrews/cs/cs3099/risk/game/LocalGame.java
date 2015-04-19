@@ -21,7 +21,6 @@ public class LocalGame extends AbstractGame {
 		this.init();
 	}
 	
-	
 	public void initialise(int playerCount, int aiCount)
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
@@ -98,15 +97,17 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		int noOfTurns = 0;
+	
 		printMap();
+
 		assignTerritories();
 		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
-			if(noOfTurns%2 == 0){
-				printMap();
-				System.out.println("Enter anything to continue.");
-				String cont = EasyIn.getString();
-			}
+//			if(noOfTurns%2 == 0){
+//				printMap();
+//				System.out.println("Enter anything to continue.");
+//				String cont = EasyIn.getString();
+//			}
 			Player currentPlayer = nextTurn();
 			
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
@@ -137,7 +138,7 @@ public class LocalGame extends AbstractGame {
 	
 	public void printMap()
 	{
-		Map map = this.gameState.getMap();
+		Map map = gameState.getMap();
 		System.out.println(map.findTerritoryById(0).getOwner() + ", "
 				+ map.findTerritoryById(1).getOwner() + ", "
 				+ map.findTerritoryById(2).getOwner() + "    "
