@@ -49,6 +49,8 @@ class GameView extends View<Game> {
 	}
 
 	currentPlayerChange() {
+		this.clearHighlightedTerritories();
+
 		var player = this.model.getCurrentPlayer();
 
 		if (player === this.model.self) {
@@ -88,7 +90,7 @@ class GameView extends View<Game> {
 			}
 		}
 
-		// TODO highlight territories which can be selected.
+		this.highlightSelectableTerritories();
 	}
 
 	territorySelected(id : number) {
@@ -228,6 +230,65 @@ class GameView extends View<Game> {
 		this.$('.attack-end-button').addClass('hidden');
 		this.$('.no-fortify-button').removeClass('hidden');
 		this.model.setPhase('fortify');
+	}
+
+	highlightSelectableTerritories() {
+		var invalidTerritories = [];
+		var phase = this.model.getPhase();
+
+		if (phase === 'setup') {
+			var allTerritoriesClaimed = this.model.map.territories.every(territory => {
+				return territory.getOwner() !== null;
+			});
+
+			if (!allTerritoriesClaimed) {
+				this.model.map.territories.forEach(territory => {
+					if (territory.getOwner() !== null) {
+						invalidTerritories.push(territory.id);
+					}
+				});
+			} else {
+				this.model.map.territories.forEach(territory => {
+					if (territory.getOwner() !== this.model.self) {
+						invalidTerritories.push(territory.id);
+					}
+				});
+			}
+		} else if (phase === 'deploy') {
+			this.model.map.territories.forEach(territory => {
+				if (territory.getOwner() !== this.model.self) {
+					invalidTerritories.push(territory.id);
+				}
+			})
+		} else if (phase === 'attack') {
+			if (this.message === null) {
+				this.model.map.territories.forEach(territory => {
+					if (territory.getOwner() !== this.model.self) {
+						invalidTerritories.push(territory.id);
+					}
+				});
+			} else {
+				var sourceId = (<Messages.AttackMessage>this.message).payload[0];
+				var source = this.model.map.territories.get(sourceId);
+
+				invalidTerritories = this.model.map.territories.map(territory => territory.id);
+				source.connections.forEach(territory => {
+					invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+				});
+			}
+		} else if (phase === 'fortify') {
+			// TODO both states.
+		}
+
+		invalidTerritories.forEach(id => (<HTMLElement>document.querySelector('svg .territory[data-territory-id="' + id + '"]')).classList.add('fade'));
+	}
+
+	clearHighlightedTerritories() {
+		var territories = document.querySelectorAll('svg .territory.fade');
+
+		for (var i = 0; i < territories.length; i++) {
+			(<HTMLElement>territories[i]).classList.remove('fade');
+		}
 	}
 }
 
