@@ -4,6 +4,7 @@ import Player = require('./player');
 import PlayerList = require('./player-list');
 import Messages = require('./messages');
 import Map = require('./map');
+import CardList = require('./card-list');
 
 var defaultMapJson = require('../../default-map.json');
 
@@ -15,6 +16,7 @@ class Game extends Model {
 	playerList : PlayerList;
 	self : Player;
 	map : Map = new Map();
+	playerCards : CardList = new CardList();
 	_isHost : boolean;
 	_phase : string = 'setup';
 
