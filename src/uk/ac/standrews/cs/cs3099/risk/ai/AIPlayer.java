@@ -323,28 +323,27 @@ public class AIPlayer extends Player {
 		boolean fortifyFound = false;
 		for(Territory territory : territories){
 			if(territory.getArmies() > 1){
-				boolean territoryFrozen = true;
-				for(Territory linkedTerritory : territory.getLinkedTerritories()){
-					if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
-				}
-				if(territoryFrozen) {
-					details[0] = territory.getId();
-					details[2] = territory.getArmies() - 1;
+				for(Territory nextTerritory : territories){
+					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
+						boolean territoryFrozen = true;
+						for(Territory linkedTerritory : territory.getLinkedTerritories()){
+							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+						}
+						boolean territoryFree = false;
+						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
+							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
+						}
+						if(territoryFrozen && territoryFree) {
+							details[0] = territory.getId();
+							details[1] = nextTerritory.getId();
+							details[2] = territory.getArmies() - 1;
+							fortifyFound = true;
+						}
+					}
 				}
 			}
 		}
 		
-		for(Territory territory : territories){
-			boolean territoryFree = false;
-			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if(linkedTerritory.getId() != this.getId()) territoryFree = true;
-			}
-			if(territoryFree && (gameState.areOwnedTerritoriesConnected(this.getId(), gameState.getMap().findTerritoryById(details[0]), territory))){
-				details[1] = territory.getId();
-			}
-		}
-		
-		fortifyFound = true;
 		FortifyCommand command = null;
 		if(fortifyFound){
 			command = new FortifyCommand(this.getId(), lastAckid++, details);
@@ -356,7 +355,8 @@ public class AIPlayer extends Player {
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
-		}	
+		}
+		return null;
 	}
 
 	public Command getAttackCommand() 
