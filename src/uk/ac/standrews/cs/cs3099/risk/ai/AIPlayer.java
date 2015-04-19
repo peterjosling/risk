@@ -27,6 +27,7 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class AIPlayer extends Player {
@@ -145,10 +146,18 @@ public class AIPlayer extends Player {
 
 	public DeployCommand getDeployCommand() 
 	{
+		int deployableArmies = gameState.getDeployableArmies(this.getId());
+		Deployment[] deployments = new Deployment[deployableArmies];
+
+		Territory[] playerTerritories = gameState.getTerritoriesForPlayer(this.getId());
+		for(int i = 0; i < deployableArmies; i ++){
+			Random rnd = new Random();
+			int nextRandom = rnd.nextInt(playerTerritories.length);
+			Territory deployTerritory = playerTerritories[nextRandom];
+			deployments[i] = new Deployment(deployTerritory.getId(), 1);
+		}
+		
 		// Deploys all troops to first owned territory.
-		Territory deployTerritory = gameState.getTerritoriesForPlayer(getId())[0];
-		Deployment[] deployments = new Deployment[1];
-		deployments[0] = new Deployment(deployTerritory.getId(), gameState.getDeployableArmies(getId()));
 		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
 		
 		if(gameState.isCommandValid(command)){

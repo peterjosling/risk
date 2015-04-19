@@ -32,6 +32,7 @@ public class GameState {
 	private boolean attackSuccessful = false;
 	private boolean lastAttackSuccessful = false;
 	private int remainingArmies = 0;
+	private ArrayList<Integer> deadPlayers = new ArrayList<Integer>();
 
 	private final int DECK_SIZE = 44;
 	private final int TEMP_SEED = 123456;
@@ -100,6 +101,20 @@ public class GameState {
 		TRADE_IN_VALUES[5] = 15;
 	}
 
+	public Boolean isPlayerDead(int player)
+	{
+		if(deadPlayers.contains(player)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void addDeadPlayer(int player)
+	{
+		deadPlayers.add(player);
+	}
+	
 	public int getNumberOfPlayers() {
 		return playerIDs.size();
 	}
