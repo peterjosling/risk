@@ -579,7 +579,7 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @return
 	 */
-	private int nextAckId()
+	public int nextAckId()
 	{
 		return ackId++;
 	}
