@@ -14,14 +14,13 @@ class Game extends Model {
 
 	playerList : PlayerList;
 	self : Player;
-	map : Map;
+	map : Map = new Map();
 	_isHost : boolean;
 	_phase : string = 'setup';
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new PlayerList();
-		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
 		this.set('currentPlayer', -1);
 	}

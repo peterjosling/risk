@@ -19,11 +19,11 @@ class Territory extends Model {
 		return this.get('name');
 	}
 
-	setCardType(cardType : number) : void {
+	setCardType(cardType : string) : void {
 		this.set('cardType', cardType);
 	}
 
-	getCardType() : number {
+	getCardType() : string {
 		return this.get('cardType');
 	}
 
