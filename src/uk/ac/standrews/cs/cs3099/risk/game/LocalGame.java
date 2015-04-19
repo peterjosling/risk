@@ -137,9 +137,40 @@ public class LocalGame extends AbstractGame {
 	
 	public void printMap(){
 		Map map = this.gameState.getMap();
-		System.out.println(map.findTerritoryById(0).getOwner() + ", " + map.findTerritoryById(1).getOwner() + ", " + map.findTerritoryById(2).getOwner());
-		System.out.println(map.findTerritoryById(3).getOwner() + ", " + map.findTerritoryById(4).getOwner() + ", " + map.findTerritoryById(5).getOwner());
-		System.out.println(map.findTerritoryById(6).getOwner() + ", " + map.findTerritoryById(7).getOwner());
+		System.out.println(map.findTerritoryById(0).getOwner() + ", "
+				+ map.findTerritoryById(1).getOwner() + ", "
+				+ map.findTerritoryById(2).getOwner() + "    "
+				+ map.findTerritoryById(13).getOwner() + ", "
+				+ map.findTerritoryById(14).getOwner() + ",    "
+				+ map.findTerritoryById(26).getOwner() + ", "
+				+ map.findTerritoryById(27).getOwner() + ", "
+				+ map.findTerritoryById(28).getOwner() + ", "
+				+ map.findTerritoryById(29).getOwner());
+		System.out.println(map.findTerritoryById(3).getOwner() + ", "
+				+ map.findTerritoryById(4).getOwner() + ", "
+				+ map.findTerritoryById(5).getOwner() + ",   "
+				+ map.findTerritoryById(16).getOwner() + ", "
+				+ map.findTerritoryById(17).getOwner() + ", "
+				+ map.findTerritoryById(15).getOwner() + ",       "
+				+ map.findTerritoryById(30).getOwner());
+		System.out.println(map.findTerritoryById(6).getOwner() + ", "
+				+ map.findTerritoryById(7).getOwner() + ",      "
+				+ map.findTerritoryById(18).getOwner() + ", "
+				+ map.findTerritoryById(19).getOwner() + ",    "
+				+ map.findTerritoryById(33).getOwner() + ",    "
+				+ map.findTerritoryById(31).getOwner() + ", "
+				+ map.findTerritoryById(32).getOwner());
+;
+		System.out.println(" " + map.findTerritoryById(8).getOwner());
+		System.out.println();
+		System.out.println(" " + map.findTerritoryById(9).getOwner());
+		System.out.println(map.findTerritoryById(8).getOwner() + ", "
+				+ map.findTerritoryById(8).getOwner());
+		System.out.println(" " + map.findTerritoryById(12).getOwner());
+
+
+
+		
 
 
 	}
