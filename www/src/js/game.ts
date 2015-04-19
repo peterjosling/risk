@@ -88,6 +88,31 @@ class Game extends Model {
 		this.set('currentPlayer', id);
 	}
 
+	// Calculate how many new armies the player is going to receive.
+	getNewPlayerArmies() : number {
+		// Calculate the number of armies received for territories.
+		var territoryCount = this.self.getTerritories();
+		var armies = Math.floor(territoryCount / 3);
+
+		// Calculate the number of armies received for continents.
+		this.map.continents.forEach(continent => {
+			var continentOwned = continent.territories.every(territory => {
+				return territory.getOwner() === this.self;
+			});
+
+			if (continentOwned) {
+				armies += continent.getValue();
+			}
+		});
+
+		// Each player always receives a minimum of 3 armies.
+		if (armies < 3) {
+			armies = 3;
+		}
+
+		return armies;
+	}
+
 	// Connect to a host server on the specified host and port.
 	connect(host : string, port : number) : Promise<Messages.Message> {
 		this._isHost = false;
