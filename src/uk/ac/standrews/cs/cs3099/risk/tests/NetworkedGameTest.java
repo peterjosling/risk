@@ -9,10 +9,10 @@ public class NetworkedGameTest {
 	@Test
 	public void nonPlayingHostTest() throws IOException
 	{
-		NetworkedGame game = new NetworkedGame(24);
+		NetworkedGame game = new NetworkedGame();
 //		game.startServer(1234);
 
-		NetworkedGame client = new NetworkedGame(24);
+		NetworkedGame client = new NetworkedGame();
 //		client.connectToServer("localhost", 1234);
 	}
 }
