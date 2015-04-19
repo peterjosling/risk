@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class UIPlayer extends Player {
-	private WebSocket webSocket;
+	protected WebSocket webSocket;
 	private BlockingQueue<Command> moveQueue = new LinkedBlockingQueue<Command>();
 
 	public UIPlayer(WebSocket ws, int id, String name)
