@@ -221,6 +221,7 @@ public class AIPlayer extends Player {
 
 	public Command getPlayCardsCommand() 
 	{
+		PlayCardsCommand command = null;
 		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
 		
 		ArrayList<ArrayList<Card>> nonWildCards = new ArrayList<ArrayList<Card>>();
@@ -249,36 +250,48 @@ public class AIPlayer extends Player {
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
 				cards[0] =  (Card[]) (currentType.subList(0, 2)).toArray();
-				return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
 
 		// 3 CARDS OF DIFFERENT TYPE
-		if(artillery.size() > 0 && infantry.size() > 0 && cavalry.size() > 0){
-			for(int i = 0; i < 3; i++){
-				cards[0][i] = nonWildCards.get(i).get(0);
+		if(command == null){
+			if(artillery.size() > 0 && infantry.size() > 0 && cavalry.size() > 0){
+				for(int i = 0; i < 3; i++){
+					cards[0][i] = nonWildCards.get(i).get(0);
+				}
+				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
-			return new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		}
 		
 		int total = artillery.size() + infantry.size() + cavalry.size();
 		// 1 WILD && 2 RANDOM
-		if((wild.size() > 0) && (total > 1)){
-			int count = 1;
-			cards[0][0] = wild.get(0);
-			for(ArrayList<Card> currentType : nonWildCards){
-				for(Card currentCard : currentType){
-					cards[0][count] = currentCard;
-					count ++;
-					if(count == 3){
-						return new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		if(command == null){
+			if((wild.size() > 0) && (total > 1)){
+				int count = 1;
+				cards[0][0] = wild.get(0);
+				for(ArrayList<Card> currentType : nonWildCards){
+					for(Card currentCard : currentType){
+						cards[0][count] = currentCard;
+						count ++;
+						if(count == 3){
+							command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+						}
 					}
 				}
 			}
 		}
 		
-		// NOTIFY MOVE??????????????
-		return new PlayCardsCommand(this.getId(), lastAckid++);
+		if(command == null){
+			command = new PlayCardsCommand(this.getId(), lastAckid++);
+		}
+		if(gameState.isCommandValid(command)){
+			notifyCommand(command);
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+		}
+		return null;
 	}
 
 	public Command getLeaveGameCommand()
