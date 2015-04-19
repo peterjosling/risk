@@ -344,6 +344,32 @@ public class AIPlayer extends Player {
 			}
 		}
 		
+		for(Territory territory : territories){
+			if(territory.getArmies() > 1){
+				for(Territory nextTerritory : territories){
+					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
+						boolean territoryFrozen = true;
+						for(Territory linkedTerritory : territory.getLinkedTerritories()){
+							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+						}
+						boolean territoryFree = false;
+						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
+							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
+						}
+						if(territoryFrozen && territoryFree) {
+							details[0] = territory.getId();
+							details[1] = nextTerritory.getId();
+							details[2] = territory.getArmies() - 1;
+							fortifyFound = true;
+						}
+					}
+				}
+			}
+		}
+		
+		// Find max frozen territory.
+		// If an adjacent territory is Free, create command.
+		// If not, move closer.
 		FortifyCommand command = null;
 		if(fortifyFound){
 			command = new FortifyCommand(this.getId(), lastAckid++, details);
@@ -433,8 +459,6 @@ public class AIPlayer extends Player {
 		case ROLL_HASH:
 			notifyCommand((RollHashCommand) command);
 			break;
-		default:
-			notifyCommand((LeaveGameCommand) command);
 		}
 	}
 
