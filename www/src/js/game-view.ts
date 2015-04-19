@@ -16,6 +16,12 @@ class GameView extends View<Game> {
 		return 'game';
 	}
 
+	get events() : any {
+		return {
+			'click #attack-end-button': 'endAttackPhase'
+		}
+	}
+
 	constructor(options?) {
 		super(options);
 
@@ -148,12 +154,80 @@ class GameView extends View<Game> {
 				if (this.deployableArmies === 0) {
 					this.model.sendMessage(this.message);
 					this.model.setPhase('attack');
-					// TODO
+					this.startAttackPhase();
 				}
 			});
 
 			this.armyCountSelectView.show();
+		} else if (phase === 'attack') {
+			if (this.message === null) {
+				// Check this territory can be selected.
+				if (territory.getOwner() !== this.model.self) {
+					this.model.showToast('You do not own this territory');
+					return;
+				}
+
+				if (territory.getArmies() < 2) {
+					this.model.showToast('This territory doesn\'t contain enough armies to attack');
+					return;
+				}
+
+				this.message = <Messages.AttackMessage>({
+					command: 'attack',
+					payload: [id],
+					player_id: this.model.self.id
+				});
+			} else {
+				// Check this territory can be selected.
+				if (territory.getOwner() === this.model.self) {
+					this.model.showToast('You cannot attack your own territory');
+					return;
+				}
+
+				var sourceId = (<Messages.AttackMessage>this.message).payload[0];
+				var sourceTerritory = this.model.map.territories.get(sourceId);
+
+				if (!territory.connections.get(sourceTerritory)) {
+					this.model.showToast('This territory is not connected to yours.');
+					return;
+				}
+
+				// TODO add deselect button.
+
+				(<Messages.AttackMessage>this.message).payload.push(id);
+
+				// Get number of armies to attack with.
+				var maxArmies = Math.min(3, territory.getArmies() - 1);
+
+				this.armyCountSelectView.setMin(1);
+				this.armyCountSelectView.setMax(maxArmies);
+				this.armyCountSelectView.off('select');
+				this.armyCountSelectView.on('select', armies => {
+					(<Messages.AttackMessage>this.message).payload.push(armies);
+					this.model.sendMessage(this.message);
+					this.message = null;
+
+					// TODO show roll result view.
+				});
+
+				this.armyCountSelectView.show();
+
+				// TODO handle clicking cancel in the modal.
+
+				this.highlightSelectableTerritories();
+			}
 		}
+	}
+
+	startAttackPhase() {
+		this.$('.attack-end-button').removeClass('hidden');
+		this.message = null;
+	}
+
+	endAttackPhase() {
+		this.$('.attack-end-button').addClass('hidden');
+		this.$('.no-fortify-button').removeClass('hidden');
+		this.model.setPhase('fortify');
 	}
 }
 
