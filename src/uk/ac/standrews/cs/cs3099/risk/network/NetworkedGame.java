@@ -48,15 +48,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		connectionManager = new ConnectionManager(this, port);
-
-		// TODO put this in a shared function.
-		try {
-			gameStart.acquire();
-			run();
-		} catch (InterruptedException e) {
-			System.err.println("Failed to wait on game start.");
-			System.exit(1);
-		}
+		threadSafeRunGame();
 	}
 
 	/**
@@ -75,8 +67,11 @@ public class NetworkedGame extends AbstractGame {
 		JoinGameCommand joinGameCommand = new JoinGameCommand(SUPPORTED_VERSIONS, SUPPORTED_FEATURES);
 		connectionManager = new ConnectionManager(this, hostname, port);
 		connectionManager.sendCommand(joinGameCommand);
+		threadSafeRunGame();
+	}
 
-		// TODO put this in a shared function.
+	public void threadSafeRunGame()
+	{
 		try {
 			gameStart.acquire();
 			run();
@@ -183,12 +178,12 @@ public class NetworkedGame extends AbstractGame {
 			sendAcknowledgement(ackId);
 		}
 
-		// TODO Add to correct player's move queue based on player_id field.
+		// Add to correct player's move queue based on player_id field.
 		NetworkPlayer player = (NetworkPlayer) getPlayerById(command.getPlayerId());
 		BlockingQueue moveQueue = player.getMoveQueue();
 		moveQueue.add(command);
 
-		// TODO forward to all players, if host.
+		// forward to all players, if host.
 		if (connectionManager.isServer()) {
 			connectionManager.sendCommand(command);
 		}
@@ -610,10 +605,39 @@ public class NetworkedGame extends AbstractGame {
 		assignTerritories();
 		while(!gameState.isGameComplete()) {
 			Player currentPlayer = nextTurn();
-			playCards(currentPlayer);
-			deploy(currentPlayer);
-			attack(getCurrentTurnPlayer());
-			fortify(currentPlayer);
+			int phase = 0;
+			while(phase != 4) {
+				Command command = null;
+				switch (phase){
+					case 0:
+						command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+						break;
+					case 1:
+						command = currentPlayer.getCommand(CommandType.DEPLOY);
+						break;
+					case 2:
+						command = currentPlayer.getCommand(CommandType.ATTACK);
+						break;
+					case 3:
+						command = currentPlayer.getCommand(CommandType.FORTIFY);
+						break;
+				}
+				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
+					playCards(currentPlayer);
+					phase = 1;
+				}else if(command.getType()==CommandType.DEPLOY && phase < 2) {
+					deploy(currentPlayer);
+					phase = 2;
+				}else if(command.getType()==CommandType.ATTACK && phase == 2) {
+					while(canPlayerAttack(currentPlayer)){
+						attack(currentPlayer);
+					}
+					phase = 3;
+				}else if(command.getType()==CommandType.FORTIFY && phase<4){
+					fortify(currentPlayer);
+					phase = 4;
+				}
+			}
 			if (gameState.getAttackSuccessful()) {
 				drawCard(currentPlayer);
 			}

@@ -121,7 +121,8 @@ public class LocalGame extends AbstractGame {
 				}
 				boolean attackPhase = true;
 				while(canPlayerAttack(currentPlayer) && attackPhase){
-					attackPhase = attack(getCurrentTurnPlayer());
+					//TODO fix now attack no longer returns boolean
+					attack(getCurrentTurnPlayer());
 				}
 	
 				fortify(currentPlayer);
@@ -136,7 +137,69 @@ public class LocalGame extends AbstractGame {
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
-	
+
+	public void runRefactored()
+	{
+		int noOfTurns = 0;
+		printMap();
+		assignTerritories();
+		boolean firstTurn = true;
+		while(!gameState.isGameComplete()){
+			if(noOfTurns%2 == 0){
+				printMap();
+				System.out.println("Enter anything to continue.");
+				String cont = EasyIn.getString();
+			}
+			Player currentPlayer = nextTurn();
+
+			if(!gameState.isPlayerDead(currentPlayer.getId())){
+
+				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
+				int phase = 0;
+				while(phase != 4) {
+					Command command = null;
+					switch (phase){
+						case 0:
+							command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+							break;
+						case 1:
+							command = currentPlayer.getCommand(CommandType.DEPLOY);
+							break;
+						case 2:
+							command = currentPlayer.getCommand(CommandType.ATTACK);
+							break;
+						case 3:
+							command = currentPlayer.getCommand(CommandType.FORTIFY);
+							break;
+					}
+					if(command.getType()==CommandType.PLAY_CARDS && phase==0){
+						playCards(currentPlayer);
+						phase = 1;
+					}else if(command.getType()==CommandType.DEPLOY && phase < 2) {
+						deploy(currentPlayer);
+						phase = 2;
+					}else if(command.getType()==CommandType.ATTACK && phase == 2) {
+						while(canPlayerAttack(currentPlayer)){
+							attack(currentPlayer);
+						}
+						phase = 3;
+					}else if(command.getType()==CommandType.FORTIFY && phase<4){
+						fortify(currentPlayer);
+						phase = 4;
+					}
+				}
+				if(gameState.getAttackSuccessful()){
+					drawCard(currentPlayer);
+				}
+				checkDeadPlayers();
+				calcDeployable();
+				noOfTurns++;
+			}
+		}
+		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
+	}
+
+
 	public void printMap()
 	{
 		Map map = gameState.getMap();
@@ -226,18 +289,5 @@ public class LocalGame extends AbstractGame {
 		}
 		return -1;
 	}
-	
-	public boolean canPlayerAttack(Player player)
-	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
-		
-		for(Territory territory : territories){
-			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+
 }
