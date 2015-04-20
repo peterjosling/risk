@@ -475,7 +475,7 @@ class Game extends Model {
 			var player = this.getCurrentPlayer();
 			this.showToast(player.name + ' to play first');
 		} else if (!this.map.deck.shuffled) {
-			// TODO
+			this.map.deck.shuffleWithNumber(message.payload);
 		} else {
 			this.attackDetails.rolls.push(message);
 			var attackRollCount = this.attackDetails.attack.payload[2];
