@@ -237,15 +237,18 @@ public class GameState {
 
 	public void playCommand(AttackCommand command)
 	{
+		if(!inAttackPhase){
+			attackPhaseCommands.add(command);
+		}
 		lastAttackSuccessful = false;
 		inAttackPhase = true;
-		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
+		if(attackPhaseCommands.size()==(2+getNumberOfPlayers()*2)){
 			ArrayList<String> rollHashes = new ArrayList<String>();
 			ArrayList<String> rollNumbers = new ArrayList<String>();
 			int dieFaces = 6;
 			int numberOfAttackingDice = command.getArmies();
 			int numberOfDefendingDice = defDice;
-			for(int commandIndex=0; commandIndex< attackPhaseCommands.size(); commandIndex++){
+			for(int commandIndex=1; commandIndex< attackPhaseCommands.size(); commandIndex++){
 				Command phaseCommand = attackPhaseCommands.get(commandIndex);
 				if(phaseCommand.getType() == CommandType.DEFEND){
 					numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
@@ -332,6 +335,10 @@ public class GameState {
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 		}
+		if(attackPhaseCommands.size()==(2+getNumberOfPlayers()*2)){
+			playCommand(attackPhaseCommands.get(0));
+		}
+
 	}
 
 	public void playCommand(AttackCaptureCommand command)
@@ -370,10 +377,12 @@ public class GameState {
 
 	public void drawCard(int playerID)
 	{
-		System.out.println("Card Drawn: " + deck.getTopCardIndex());
 		if(deck.getTopCardIndex() < 44){
+			System.out.println("Card Drawn: " + deck.getTopCardIndex());
 			Card drawnCard = deck.dealCard();
 			playerCards.get(playerID).add(drawnCard);
+		} else {
+			System.out.println("No Card Drawn.");
 		}
 	}
 

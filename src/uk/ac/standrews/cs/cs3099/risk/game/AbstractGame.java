@@ -102,9 +102,6 @@ public abstract class AbstractGame {
 			notifyPlayers(rollHash);
 			notifyPlayers(rollNumber);
 		}
-		
-		getCurrentTurnPlayer().notifyCommand(command); // THIS WILL NEED FIXED.
-		notifyPlayers(command);
 
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
