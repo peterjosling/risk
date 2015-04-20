@@ -51,14 +51,14 @@ class Game extends Model {
 		return this.get('currentPlayer');
 	}
 
-	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
+	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack', 'defend' or 'fortify'.
 	getPhase() : string {
 		return this._phase;
 	}
 
 	// Set the current game phase.
 	setPhase(phase : string) {
-		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend', 'fortify'];
 
 		if (validPhases.indexOf(phase) === -1) {
 			throw new Error('Invalid phase specified');
