@@ -18,8 +18,9 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private Date timePingSent;
 	private boolean gameInProgress;
-	private String[] turnRollHashes = new String[6];
-	private String[] turnRollNumbers = new String[6];
+	private String[] initRollHashes;
+	private String[] initRollNumbers;
+	private boolean deckShuffled = false;
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
@@ -159,13 +160,20 @@ public class NetworkedGame extends AbstractGame {
 				initialiseGameCommand((InitialiseGameCommand) command);
 				return;
 
+			// Handle RollHash and RollNumber commands only for the initial turn roll.
 			case ROLL_HASH:
-				rollHashCommand((RollHashCommand) command);
-				return;
+				if (getCurrentTurn() == -1 || !deckShuffled) {
+					rollHashCommand((RollHashCommand) command);
+					return;
+				}
+				break;
 
 			case ROLL_NUMBER:
-				rollNumberCommand((RollNumberCommand) command);
-				return;
+				if (getCurrentTurn() == -1 || !deckShuffled) {
+					rollNumberCommand((RollNumberCommand) command);
+					return;
+				}
+				break;
 
 			case ACKNOWLEDGEMENT:
 				acknowledgementReceived((AcknowledgementCommand) command);
@@ -463,8 +471,11 @@ public class NetworkedGame extends AbstractGame {
 			String num = die.byteToHex(numb);
 			String hash = die.byteToHex(die.hashByteArr(numb));
 
-			turnRollHashes[id] = hash;
-			turnRollNumbers[id] = num;
+			initRollHashes = new String[6];
+			initRollNumbers = new String[6];
+
+			initRollHashes[id] = hash;
+			initRollNumbers[id] = num;
 
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
@@ -512,7 +523,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void rollHashCommand(RollHashCommand command)
 	{
-		turnRollHashes[command.getPlayerId()] = command.getHash();
+		initRollHashes[command.getPlayerId()] = command.getHash();
 
 		try {
 			die.addHash(command.getPlayerId(), command.getHash());
@@ -526,7 +537,7 @@ public class NetworkedGame extends AbstractGame {
 
 		for (Player player : getPlayers()) {
 			if (!player.isNeutral()) {
-				String hash = turnRollHashes[player.getId()];
+				String hash = initRollHashes[player.getId()];
 				hashesReceived = hashesReceived && hash != null;
 			}
 		}
@@ -535,12 +546,12 @@ public class NetworkedGame extends AbstractGame {
 			int id = localPlayer.getId();
 
 			try {
-				die.addHash(id, turnRollHashes[id]);
+				die.addHash(id, initRollHashes[id]);
 			} catch (HashMismatchException e) {
-				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + turnRollHashes[id] + ")");
+				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + initRollHashes[id] + ")");
 			}
 
-			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, turnRollNumbers[id]);
+			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, initRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
 	}
@@ -552,7 +563,7 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void rollNumberCommand(RollNumberCommand command)
 	{
-		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
+		initRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
 
 		try {
 			die.addNumber(command.getPlayerId(), command.getRollNumberHex());
@@ -565,7 +576,7 @@ public class NetworkedGame extends AbstractGame {
 
 		for (Player player : getPlayers()) {
 			if (!player.isNeutral()) {
-				String number = turnRollNumbers[player.getId()];
+				String number = initRollNumbers[player.getId()];
 				rollsReceived = rollsReceived && number != null;
 			}
 		}
@@ -574,9 +585,9 @@ public class NetworkedGame extends AbstractGame {
 			int id = localPlayer.getId();
 
 			try {
-				die.addNumber(id, turnRollNumbers[id]);
+				die.addNumber(id, initRollNumbers[id]);
 			} catch (HashMismatchException e) {
-				Logger.print("ERROR - Couldn't add number from localplayer id " + id + " (" + turnRollNumbers[id] + ")");
+				Logger.print("ERROR - Couldn't add number from localplayer id " + id + " (" + initRollNumbers[id] + ")");
 			}
 
 			try {
@@ -607,11 +618,13 @@ public class NetworkedGame extends AbstractGame {
 					else if (player.getType() == PlayerType.LOCAL)
 						((LocalPlayer)player).setDeckOrder(deckorder);
 				}
-			}
-		}
 
-		if (rollsReceived) {
-			gameStart.release();
+				gameState.setDeckOrder(deckorder);
+				deckShuffled = true;
+
+				// All initialisation done - start the game loop.
+				gameStart.release();
+			}
 		}
 	}
 
@@ -680,6 +693,7 @@ public class NetworkedGame extends AbstractGame {
 				switch (phase){
 					case 0:
 						command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+						gameState.setDeployableArmies();
 						break;
 					case 1:
 						command = currentPlayer.getCommand(CommandType.DEPLOY);

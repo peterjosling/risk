@@ -588,6 +588,8 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		gameState.setDeployableArmies();
+
 		if(command.getCards() == null){
 			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
 			return;
