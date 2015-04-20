@@ -4,12 +4,16 @@ public class JoinGameCommand extends Command {
 	private String command = "join_game";
 	private JoinGamePayload payload = new JoinGamePayload();
 
-	public JoinGameCommand(float[] supported_versions, String[] supported_features)
+	public JoinGameCommand(float[] supported_versions, String[] supported_features, String name)
 	{
-		super();
 		this.payload.supported_versions = supported_versions;
 		this.payload.supported_features = supported_features;
-		this.payload.name = "Player names not implemented";
+		this.payload.name = name;
+	}
+
+	public JoinGameCommand(float[] supported_versions, String[] supported_features)
+	{
+		this(supported_versions, supported_features, "Unknown player");
 	}
 
 	public float[] getSupported_versions()

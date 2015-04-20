@@ -134,8 +134,15 @@ class Game extends Model {
 	}
 
 	// Connect to a host server on the specified host and port.
-	connect(host : string, port : number, ai : boolean) : Promise<Messages.Message> {
+	connect(name : string, host : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = false;
+
+		this.self = new Player({
+			isActive: true,
+			name: name
+		});
+
+		this.playerList.add(this.self);
 
 		return new Promise<Messages.Message>((resolve, reject) => {
 			// Connect to Game server and attempt to join a game.
@@ -145,6 +152,7 @@ class Game extends Model {
 				this.sendMessage({
 					command: 'server_connect',
 					payload: {
+						name: name,
 						hostname: host,
 						port: port,
 						ai: ai
@@ -170,13 +178,13 @@ class Game extends Model {
 	}
 
 	// Start a host server on the specified port.
-	startServer(port : number) : Promise<Messages.Message> {
+	startServer(name : string, port : number) : Promise<Messages.Message> {
 		this._isHost = true;
 
 		this.self = new Player({
 			player_id: 0,
 			isActive: true,
-			name: 'TODO Implement player names'
+			name: name
 		});
 
 		this.playerList.add(this.self);
@@ -188,6 +196,7 @@ class Game extends Model {
 				this.sendMessage({
 					command: 'server_start',
 					payload: {
+						name: name,
 						port: port
 					}
 				});
@@ -309,13 +318,7 @@ class Game extends Model {
 	}
 
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
-		this.self = new Player({
-			player_id: message.payload.player_id,
-			isActive: true,
-			name: 'TODO Implement player names'
-		});
-
-		this.playerList.add(this.self);
+		this.self.set('player_id', message.payload.player_id);
 		this.trigger('acceptJoinGame', message);
 	}
 

@@ -21,14 +21,19 @@ class ConnectionView extends View<Game> {
 	}
 
 	connectButtonClick(e : Event) : boolean {
+		if (!(<HTMLFormElement>this.$('.connect-form')[0]).checkValidity()) {
+			return true;
+		}
+
 		var hostname : string = this.$('#connection-host').val(),
 			port : number = this.$('#connection-port').val(),
-			ai = (<HTMLInputElement>this.$('#connection-ai')[0]).checked;
+			ai = (<HTMLInputElement>this.$('#connection-ai')[0]).checked,
+			name = this.$('#player-name').val();
 
 		this.disableInputs();
 		this.model.showToast('Connecting...');
 
-		this.model.connect(hostname, port, ai).catch((message) => {
+		this.model.connect(name, hostname, port, ai).catch((message) => {
 			var toastText = 'Failed to connect to WebSocket server.';
 
 			if (message.command && message.command === 'reject_join_game') {
@@ -44,11 +49,16 @@ class ConnectionView extends View<Game> {
 	}
 
 	hostButtonClick(e : Event) : boolean {
-		var port : number = +this.$('#host-port').val();
+		if (!(<HTMLFormElement>this.$('.host-form')[0]).checkValidity()) {
+			return true;
+		}
+
+		var port : number = +this.$('#host-port').val(),
+			name = this.$('#host-player-name').val();
 
 		this.disableInputs();
 		this.model.showToast('Starting server...');
-		this.model.startServer(port).catch(() => {
+		this.model.startServer(name, port).catch(() => {
 			this.model.showToast('Failed to start server.');
 			this.enableInputs();
 		});
