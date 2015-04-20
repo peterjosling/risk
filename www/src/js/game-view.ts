@@ -281,7 +281,9 @@ class GameView extends View<Game> {
 
 				invalidTerritories = this.model.map.territories.map(territory => territory.id);
 				source.connections.forEach(territory => {
-					invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+					if (territory.getOwner() !== this.model.self) {
+						invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+					}
 				});
 			}
 		} else if (phase === 'fortify') {
