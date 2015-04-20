@@ -693,10 +693,6 @@ public class NetworkedGame extends AbstractGame {
 					phase = 4;
 				}
 			}
-			if (gameState.getAttackSuccessful()) {
-				// TODO replace this with getting the correct card automatically
-				drawCard(currentPlayer);
-			}
 		}
 	}
 }

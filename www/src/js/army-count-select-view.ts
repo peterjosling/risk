@@ -36,9 +36,14 @@ class ArmyCountSelectView extends View<Model> {
 		this.hide();
 	}
 
-	show() {
+	show(force? : boolean) {
 		this.render();
 		this.$el.removeClass('hidden');
+		this.$('.army-count').focus();
+
+		if (force) {
+			this.$('.cancel-button').remove();
+		}
 	}
 
 	hide() {

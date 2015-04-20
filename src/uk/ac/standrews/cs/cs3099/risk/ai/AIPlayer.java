@@ -174,9 +174,10 @@ public class AIPlayer extends Player {
 			// Pick the first free territory to claim.
 			territory = freeTerritories[0];
 		} else {
-			// All claimed - reinforce the first available. TODO - IMPROVE
 			Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-			territory = territories[0];
+			Random rnd = new Random();
+			int nextRandom = rnd.nextInt(territories.length);
+			territory = territories[nextRandom];
 		}
 
 		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++lastAckid, territory.getId());
@@ -235,7 +236,9 @@ public class AIPlayer extends Player {
 		// 3 CARDS OF SAME TYPE
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
-				cards[0] =  (Card[]) (currentType.subList(0, 2)).toArray();
+				for(int i = 0; i < 3; i ++){
+					cards[0][i] = currentType.get(i);
+				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
@@ -251,6 +254,7 @@ public class AIPlayer extends Player {
 		}
 		
 		int total = artillery.size() + infantry.size() + cavalry.size();
+		
 		// 1 WILD && 2 RANDOM
 		if(command == null){
 			if((wild.size() > 0) && (total > 1)){
@@ -258,10 +262,12 @@ public class AIPlayer extends Player {
 				cards[0][0] = wild.get(0);
 				for(ArrayList<Card> currentType : nonWildCards){
 					for(Card currentCard : currentType){
+						if(count >= 3) break;
 						cards[0][count] = currentCard;
 						count ++;
 						if(count == 3){
 							command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+							break;
 						}
 					}
 				}
@@ -273,6 +279,13 @@ public class AIPlayer extends Player {
 		}
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
+			if(command.getCards() != null){
+				for(Card[] cardSet : command.getCards()){
+					for(Card card : cardSet){
+						this.playCard(card);
+					}
+				}
+			}
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Play Cards Command");
@@ -340,14 +353,14 @@ public class AIPlayer extends Player {
 			// IS IT FROZEN
 			boolean territoryFrozen = true;
 			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+				if(linkedTerritory.getOwner() != this.getId()) territoryFrozen = false;
 			}
 			
-			if(territoryFrozen){
+			if(territoryFrozen && (territory.getArmies() -1 > details[2])){
 				// IS A LINKED TERRITORY BESIDE ENEMY
 				for(Territory linkedTerritory : territory.getLinkedTerritories()){
 					for(Territory linkedLinkedTerritory : linkedTerritory.getLinkedTerritories()){
-						if((linkedLinkedTerritory.getOwner() != this.getId() && (territory.getArmies() -1 > details[2]))){
+						if((linkedLinkedTerritory.getOwner() != this.getId())){
 							details[0] = territory.getId();
 							details[1] = linkedTerritory.getId();
 							details[2] = territory.getArmies() - 1;
@@ -491,18 +504,23 @@ public class AIPlayer extends Player {
 	{
 		if(command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
-			return;
+		} else {
+			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
+			String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
+			int armies = command.getFortifyDetails()[2];
+			System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
 		}
-		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
-		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
-		int armies = command.getFortifyDetails()[2];
-		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
-		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid FortifyCommand.");
-		}	
+		}
+		if(gameState.getAttackSuccessful()){
+			Card drawnCard = gameState.drawCard(command.getPlayerId());
+			if(drawnCard!= null && command.getPlayerId() == this.getId()){
+				this.addCard(drawnCard);
+			}
+		}
 	}
 	
 	public void notifyCommand(DeployCommand command)

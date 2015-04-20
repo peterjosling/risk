@@ -344,33 +344,44 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getPlayCardsCommand()
 	{
+		PlayCardsCommand command = null;
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
-		if(numberOfTradeIns == 0) return new PlayCardsCommand(this.getId(), lastAckid++);
-		List<Card> playersCards = getCards();
-		System.out.println("Your Cards:");
-		for(Card card:playersCards){
-			System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
-					card.getTerritoryId() + "Card Type:" + card.getCardType());
-		}
-		Card[][] cards = new Card[numberOfTradeIns][3];
-		int cardId;
-		for(int i =0; i<numberOfTradeIns; i++){
-			System.out.println("Select 3 cards to trade in:");
-			for(int j=0; j<cards[i].length; j++) {
-				System.out.println("Enter Card ID:");
-				cardId = EasyIn.getInt();
-				try {
-					cards[i][j] = getCardByID(cardId);
-				} catch (CardNotFoundException e) {
-					System.out.println("Card not found please enter another ID");
-					j--;
+		if(numberOfTradeIns == 0){
+			command = new PlayCardsCommand(this.getId(), lastAckid++);
+		} else {
+			List<Card> playersCards = getCards();
+			System.out.println("Your Cards:");
+			for(Card card:playersCards){
+				System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
+						card.getTerritoryId() + "Card Type:" + card.getCardType());
+			}
+			Card[][] cards = new Card[numberOfTradeIns][3];
+			int cardId;
+			for(int i =0; i<numberOfTradeIns; i++){
+				System.out.println("Select 3 cards to trade in:");
+				for(int j=0; j<cards[i].length; j++) {
+					System.out.println("Enter Card ID:");
+					cardId = EasyIn.getInt();
+					try {
+						cards[i][j] = getCardByID(cardId);
+					} catch (CardNotFoundException e) {
+						System.out.println("Card not found please enter another ID");
+						j--;
+					}
 				}
 			}
+			command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		}
-		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
+			if(command.getCards() != null){
+				for(Card[] cardSet : command.getCards()){
+					for(Card card : cardSet){
+						this.playCard(card);
+					}
+				}
+			}
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");
@@ -504,7 +515,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AssignArmyCommand.");
 		}
 	}
-
+	
 	public void notifyCommand(AttackCommand command)
 	{
 		this.attackSourceId = command.getSource();
@@ -519,25 +530,30 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(FortifyCommand command)
 	{
 		if(command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
-			return;
+		} else {
+			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
+			String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
+			int armies = command.getFortifyDetails()[2];
+			System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
 		}
-		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
-		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
-		int armies = command.getFortifyDetails()[2];
-		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
-		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid FortifyCommand.");
-		}	
+		}
+		if(gameState.getAttackSuccessful()){
+			Card drawnCard = gameState.drawCard(command.getPlayerId());
+			if(drawnCard!= null && command.getPlayerId() == this.getId()){
+				this.addCard(drawnCard);
+			}
+		}
 	}
-
+	
 	public void notifyCommand(DeployCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
@@ -562,28 +578,28 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DefendCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
-		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies");
+		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies,");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid AttackCaptureCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
-			System.out.println("Invalid TimeoutCommand.");
-		}	
+			System.out.println("Invalid TimeOutCommand.");
+		}		
 	}
-
+	
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
@@ -591,9 +607,9 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid LeaveGameCommand.");
-		}	
+		}		
 	}
-
+	
 	public void notifyCommand(PlayCardsCommand command)
 	{
 		if(command.getCards() == null){
@@ -612,7 +628,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid PlayCardsCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(RollNumberCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
@@ -622,8 +638,8 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollNumberCommand.");
 		}	
 	}
-
-	public void notifyCommand(RollHashCommand command) 
+	
+	public void notifyCommand(RollHashCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
@@ -631,7 +647,7 @@ public class LocalPlayer extends Player {
 		} else {
 			System.out.println("Invalid RollHashCommand.");
 		}	
-	}
+	}	
 
 	public void setDeckOrder(int[] deckOrder)
 	{

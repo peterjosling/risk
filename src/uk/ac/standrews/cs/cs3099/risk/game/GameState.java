@@ -219,6 +219,7 @@ public class GameState {
 
 	public void playCommand(FortifyCommand command)
 	{
+		if(command.getFortifyDetails()[2] == 0) return;
 		int source = command.getFortifyDetails()[0];
 		int destination = command.getFortifyDetails()[1];
 		int numberOfArmies = command.getFortifyDetails()[2];
@@ -401,14 +402,16 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public void drawCard(int playerID)
+	public Card drawCard(int playerID)
 	{
 		if(deck.getTopCardIndex() < 44){
 			System.out.println("Card Drawn: " + deck.getTopCardIndex());
 			Card drawnCard = deck.dealCard();
 			playerCards.get(playerID).add(drawnCard);
+			return drawnCard;
 		} else {
 			System.out.println("No Card Drawn.");
+			return null;
 		}
 	}
 
@@ -486,7 +489,7 @@ public class GameState {
 	public boolean areOwnedTerritoriesConnected(int playerId, Territory source, Territory dest)
 	{
 		if(source == null || dest == null) return false;
-		if(source.isLinkedTo(dest) && (source.getId() == playerId) && (dest.getId() == playerId)) return true;
+		if(source.isLinkedTo(dest) && (source.getOwner() == playerId) && (dest.getOwner() == playerId)) return true;
 
 		return false;
 	}
@@ -572,7 +575,7 @@ public class GameState {
 		if(fortifyDest.getOwner() != playerId) return false;
 
 		if(fortifySource.getArmies() > 1){
-			if((command.getFortifyDetails()[2]) < fortifySource.getArmies()) return false;
+			if((command.getFortifyDetails()[2]) > fortifySource.getArmies()) return false;
 		} else {
 			return false;
 		}
@@ -657,8 +660,8 @@ public class GameState {
 
 			// Any 2 Cards & 1 wild card
 			if ((cardSet[0].getCardType() == CardType.WILD)
-					^ (cardSet[1].getCardType() == CardType.WILD)
-					^ (cardSet[2].getCardType() == CardType.WILD))
+					|| (cardSet[1].getCardType() == CardType.WILD)
+					|| (cardSet[2].getCardType() == CardType.WILD))
 				return true;
 		}
 		return false;

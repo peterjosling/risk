@@ -1,0 +1,14 @@
+<form class="modal">
+	<h2>Select cards to trade in</h2>
+	<div class="cards">
+		{{#each cards}}
+			<div class="card" data-id="{{id}}">
+				{{#if territory}}<p>{{territory.name}}</p>{{/if}}
+				<p>{{type}}</p>
+			</div>
+		{{/each}}
+	</div>
+	<button type="submit" class="trade-button">Trade</button>
+	{{#unless mustTrade}}<button type="button" class="done-button">Done</button>{{/unless}}
+</form>
+
