@@ -92,9 +92,6 @@ public class LocalGame extends AbstractGame {
 				}
 	
 				fortify(currentPlayer);
-				if(gameState.getAttackSuccessful()){
-					drawCard(currentPlayer);
-				}
 				checkDeadPlayers();
 				calcDeployable();
 				noOfTurns++;
