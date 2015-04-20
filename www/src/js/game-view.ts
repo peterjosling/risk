@@ -72,6 +72,7 @@ class GameView extends View<Game> {
 		}
 	}
 
+	// Start the player's turn.
 	startTurn() {
 		this.model.showToast('Your turn!');
 
