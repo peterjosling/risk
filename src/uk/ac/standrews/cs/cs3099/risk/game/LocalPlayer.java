@@ -109,7 +109,14 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAssignArmyCommand()
 	{
-		System.out.print("Free Territories: ");
+		Territory[] territories = null;
+		if(gameState.getUnclaimedTerritories().length == 0){
+			System.out.print("Your Territories: ");
+			territories = gameState.getTerritoriesForPlayer(this.getId());
+		} else {
+			System.out.print("Free Territories: ");
+			territories = gameState.getUnclaimedTerritories();
+		}
 		for(Territory territory : gameState.getUnclaimedTerritories()){
 			System.out.print(territory.getId() + " ");
 		}
@@ -190,25 +197,18 @@ public class LocalPlayer extends Player {
 		int territoryID;
 		int armies;
 		DeployCommand.Deployment[] deployments = null;
-		if(gameState.getDeployableArmies(this.getId()) == 1){
-			numberOfDeployments = 1;
-			armies = 1;
-			System.out.println("Choose Territory To Deploy 1 Army to. Enter Territory ID:");
-			territoryID = EasyIn.getInt();
+
+		System.out.println("Enter number of deployments:");
+		numberOfDeployments = EasyIn.getInt();
+		System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
+		territoryID = EasyIn.getInt();
+		for(int i=0; i<numberOfDeployments; i++){
 			deployments = new DeployCommand.Deployment[numberOfDeployments];
-			deployments[0] = new DeployCommand.Deployment(territoryID, armies);
-		} else {
-			System.out.println("Enter number of deployments:");
-			numberOfDeployments = EasyIn.getInt();
-			System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
-			territoryID = EasyIn.getInt();
-			for(int i=0; i<numberOfDeployments; i++){
-				deployments = new DeployCommand.Deployment[numberOfDeployments];
-				System.out.println("Enter number of armies to deploy here:");
-				armies = EasyIn.getInt();
-				deployments[i] = new DeployCommand.Deployment(territoryID, armies);
-			}
+			System.out.println("Enter number of armies to deploy here:");
+			armies = EasyIn.getInt();
+			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 		}
+		
 		DeployCommand command = new DeployCommand(this.getId(), lastAckid++, deployments);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);

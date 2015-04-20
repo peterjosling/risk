@@ -54,19 +54,7 @@ public class LocalGame extends AbstractGame {
 	 */
 	@Override
 	public void assignTerritories()	
-	{
-//		for(Player player : this.getPlayers()){
-//			switch (player.getType()) {
-//			case AI:
-//				((AIPlayer)player).getGameState().setDeployableArmies(1);
-//				break;
-//			case LOCAL:
-//				((LocalPlayer)player).getGameState().setDeployableArmies(1);
-//				break;				
-//			}
-//		}
-//		gameState.setDeployableArmies(1);
-		
+	{		
 		Command command = null;
 
 		int totalTurns = this.getArmiesPerPlayer() * this.getPlayers().size();

@@ -176,7 +176,7 @@ public class AIPlayer extends Player {
 			// Pick the first free territory to claim.
 			territory = freeTerritories[0];
 		} else {
-			// All claimed - reinforce the first available.
+			// All claimed - reinforce the first available. TODO - IMPROVE
 			Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
 			territory = territories[0];
 		}
