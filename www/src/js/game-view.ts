@@ -32,6 +32,7 @@ class GameView extends View<Game> {
 
 		this.listenTo(mapView, 'territorySelect', this.territorySelected);
 		this.listenTo(this.model, 'change:currentPlayer', this.currentPlayerChange);
+		this.listenTo(this.model, 'defend', this.startDefend);
 		this.listenTo(this.model, 'attackCapture', this.getAttackCapture);
 
 		this.childViews = [
