@@ -591,12 +591,7 @@ public class NetworkedGame extends AbstractGame {
 		int totalTurns = armiesPerPlayer * this.getPlayers().size();
 		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
-			if(i < gameState.getMap().getTerritories().size()){
-				command = player.getCommand(CommandType.ASSIGN_ARMY);
-			} else {
-				command = player.getCommand(CommandType.DEPLOY);
-			}
-
+			command = player.getCommand(CommandType.ASSIGN_ARMY);
 			notifyPlayers(command);
 		}
 	}
