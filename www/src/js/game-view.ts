@@ -94,65 +94,7 @@ class GameView extends View<Game> {
 			this.deployableArmies = this.model.getNewPlayerArmies();
 
 			if (this.model.playerCards.canTradeInCards()) {
-				var playCardsMessage : Messages.PlayCardsMessage = {
-					command: 'play_cards',
-					payload: {
-						cards: [],
-						armies: -1
-					},
-					player_id: this.model.self.id
-				};
-
-				this.cardSelectView.show();
-				this.cardSelectView.off('trade');
-				this.cardSelectView.off('close');
-
-				// Add each set of cards to the command.
-				this.cardSelectView.on('trade', cards => {
-					this.model.playerCards.remove(cards);
-					playCardsMessage.payload.cards.push(cards);
-				});
-
-				this.cardSelectView.on('close', () => {
-					var cards = playCardsMessage.payload.cards;
-
-					if (cards.length === 0) {
-						playCardsMessage.payload = null;
-					} else {
-						// Get the value of the cards traded in.
-						for (var i = 0; i < cards.length; i++) {
-							this.deployableArmies += this.model.getCardArmies();
-						}
-
-						// Check if any of the cards traded in match an owned territory.
-						var bonusTerritory = null;
-
-						cards.forEach(set => {
-							set.forEach(card => {
-								var territory = card.getTerritory();
-
-								if (territory.getOwner() === this.model.self) {
-									bonusTerritory = territory;
-								}
-							});
-						});
-
-						// Automatically deploy bonus armies to one of the matched territories.
-						if (bonusTerritory) {
-							this.message = <Messages.DeployMessage>({
-								command: 'deploy',
-								payload: [[bonusTerritory.id, 2]],
-								player_id: this.model.self.id
-							});
-
-							bonusTerritory.addArmies(2);
-							this.model.trigger('change:map');
-						}
-					}
-
-					this.model.sendMessage(playCardsMessage);
-					this.startDeployPhase();
-				});
+				this.startCardTrade();
 			} else {
 				var playCardsMessage : Messages.PlayCardsMessage = {
 					command: 'play_cards',
@@ -166,6 +108,69 @@ class GameView extends View<Game> {
 		}
 
 		this.highlightSelectableTerritories();
+	}
+
+	// Show the player the card trade window.
+	startCardTrade() {
+		var playCardsMessage : Messages.PlayCardsMessage = {
+			command: 'play_cards',
+			payload: {
+				cards: [],
+				armies: -1
+			},
+			player_id: this.model.self.id
+		};
+
+		this.cardSelectView.show();
+		this.cardSelectView.off('trade');
+		this.cardSelectView.off('close');
+
+		// Add each set of cards to the command.
+		this.cardSelectView.on('trade', cards => {
+			this.model.playerCards.remove(cards);
+			playCardsMessage.payload.cards.push(cards);
+		});
+
+		this.cardSelectView.on('close', () => {
+			var cards = playCardsMessage.payload.cards;
+
+			if (cards.length === 0) {
+				playCardsMessage.payload = null;
+			} else {
+				// Get the value of the cards traded in.
+				for (var i = 0; i < cards.length; i++) {
+					this.deployableArmies += this.model.getCardArmies();
+				}
+
+				// Check if any of the cards traded in match an owned territory.
+				var bonusTerritory = null;
+
+				cards.forEach(set => {
+					set.forEach(card => {
+						var territory = card.getTerritory();
+
+						if (territory.getOwner() === this.model.self) {
+							bonusTerritory = territory;
+						}
+					});
+				});
+
+				// Automatically deploy bonus armies to one of the matched territories.
+				if (bonusTerritory) {
+					this.message = <Messages.DeployMessage>({
+						command: 'deploy',
+						payload: [[bonusTerritory.id, 2]],
+						player_id: this.model.self.id
+					});
+
+					bonusTerritory.addArmies(2);
+					this.model.trigger('change:map');
+				}
+			}
+
+			this.model.sendMessage(playCardsMessage);
+			this.startDeployPhase();
+		});
 	}
 
 	// Handle a territory being selected in the interface.
