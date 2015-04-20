@@ -83,6 +83,7 @@ public abstract class AbstractGame {
 	
 	public void attack(AttackCommand command, Player player)
 	{
+		Logger.print("Abstract attack");
 		Die die = new Die();
 		byte[] num = die.generateNumber();
 		byte[] numhash = die.hashByteArr(num);
@@ -102,12 +103,14 @@ public abstract class AbstractGame {
 		}
 		notifyPlayers(defCommand);
 
+		Logger.print("Sending my hash (" + die.byteToHex(numhash) + ")");
 		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(numhash)));
 		for(Player playerRoll : players){
 			Command rollHash = playerRoll.getCommand(CommandType.ROLL_HASH);
 			notifyPlayers(rollHash);
 		}
 
+		Logger.print("Sending my num (" + die.byteToHex(num) + ")");
 		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(num)));
 		for(Player playerRoll : players){
 			Command rollNumber = playerRoll.getCommand(CommandType.ROLL_NUMBER);

@@ -1,10 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
-import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +25,8 @@ public class NetworkedGame extends AbstractGame {
 	private float highestMutuallySupportedVersion;
 	private Semaphore gameStart = new Semaphore(0);
 
-	private Die die = new Die();
+	private Die die;
+	private int firstplayer;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -452,20 +450,14 @@ public class NetworkedGame extends AbstractGame {
 	}
 
 	/**
-	 * Let local player know what version/features the game is using, participate in player selection roll.
-	 *
-	 * @param command
+	 * Called when a new dice roll is expected to reinitialise the die state and send the first hash
 	 */
-	private void initialiseGameCommand(InitialiseGameCommand command)
+	private void startDieRoll()
 	{
-		localPlayer.notifyCommand(command);
-
-		// Initialise the game state and load the map. Players list is finalised.
-		init();
-
 		if (localPlayer != null) {
 			int id = localPlayer.getId();
 
+			die = new Die();
 			byte[] numb = die.generateNumber();
 			String num = die.byteToHex(numb);
 			String hash = die.byteToHex(die.hashByteArr(numb));
@@ -476,6 +468,20 @@ public class NetworkedGame extends AbstractGame {
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
 		}
+	}
+
+	/**
+	 * Let local player know what version/features the game is using, participate in player selection roll.
+	 *
+	 * @param command
+	 */
+	private void initialiseGameCommand(InitialiseGameCommand command)
+	{
+		localPlayer.notifyCommand(command);
+
+		// Initialise the game state and load the map. Players list is finalised.
+		init();
+		startDieRoll();
 	}
 
 	private void readyReceived(ReadyCommand command)
@@ -564,8 +570,9 @@ public class NetworkedGame extends AbstractGame {
 				System.exit(-1);
 			}
 
+			int number = (int)(die.nextInt() % getPlayers().size());
 			// Send the computed result of the dice roll to the interface.
-			RollResultCommand rollResult = new RollResultCommand((int)(die.nextInt() % getPlayers().size()));
+			RollResultCommand rollResult = new RollResultCommand(number);
 			localPlayer.notifyCommand(rollResult);
 		}
 
