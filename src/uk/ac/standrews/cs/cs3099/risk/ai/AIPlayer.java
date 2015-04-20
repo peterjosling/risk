@@ -491,18 +491,23 @@ public class AIPlayer extends Player {
 	{
 		if(command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
-			return;
+		} else {
+			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
+			String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
+			int armies = command.getFortifyDetails()[2];
+			System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
 		}
-		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
-		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
-		int armies = command.getFortifyDetails()[2];
-		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
-		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid FortifyCommand.");
-		}	
+		}
+		if(gameState.getAttackSuccessful()){
+			Card drawnCard = gameState.drawCard(command.getPlayerId());
+			if(drawnCard!= null && command.getPlayerId() == this.getId()){
+				this.addCard(drawnCard);
+			}
+		}
 	}
 	
 	public void notifyCommand(DeployCommand command)

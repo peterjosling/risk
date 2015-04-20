@@ -120,6 +120,9 @@ public abstract class AbstractGame {
 	
 	public void drawCard(Player player)
 	{
+		for(Player nextPlayer : this.getPlayers()){
+//			nextPlayer.ge
+		}
 		gameState.drawCard(player.getId());
 	}
 

@@ -219,6 +219,7 @@ public class GameState {
 
 	public void playCommand(FortifyCommand command)
 	{
+		if(command.getFortifyDetails()[2] == 0) return;
 		int source = command.getFortifyDetails()[0];
 		int destination = command.getFortifyDetails()[1];
 		int numberOfArmies = command.getFortifyDetails()[2];
@@ -374,14 +375,16 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public void drawCard(int playerID)
+	public Card drawCard(int playerID)
 	{
 		if(deck.getTopCardIndex() < 44){
 			System.out.println("Card Drawn: " + deck.getTopCardIndex());
 			Card drawnCard = deck.dealCard();
 			playerCards.get(playerID).add(drawnCard);
+			return drawnCard;
 		} else {
 			System.out.println("No Card Drawn.");
+			return null;
 		}
 	}
 
@@ -630,8 +633,8 @@ public class GameState {
 
 			// Any 2 Cards & 1 wild card
 			if ((cardSet[0].getCardType() == CardType.WILD)
-					^ (cardSet[1].getCardType() == CardType.WILD)
-					^ (cardSet[2].getCardType() == CardType.WILD))
+					|| (cardSet[1].getCardType() == CardType.WILD)
+					|| (cardSet[2].getCardType() == CardType.WILD))
 				return true;
 		}
 		return false;

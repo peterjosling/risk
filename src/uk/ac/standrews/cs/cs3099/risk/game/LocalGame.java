@@ -81,7 +81,7 @@ public class LocalGame extends AbstractGame {
 				calcDeployable();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
-				playCards(currentPlayer);
+//				playCards(currentPlayer);
 
 				deploy(currentPlayer);
 				
@@ -92,9 +92,6 @@ public class LocalGame extends AbstractGame {
 				}
 	
 				fortify(currentPlayer);
-				if(gameState.getAttackSuccessful()){
-					drawCard(currentPlayer);
-				}
 				checkDeadPlayers();
 				calcDeployable();
 				noOfTurns++;

@@ -504,7 +504,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AssignArmyCommand.");
 		}
 	}
-
+	
 	public void notifyCommand(AttackCommand command)
 	{
 		this.attackSourceId = command.getSource();
@@ -519,25 +519,30 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(FortifyCommand command)
 	{
 		if(command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
-			return;
+		} else {
+			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
+			String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
+			int armies = command.getFortifyDetails()[2];
+			System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
 		}
-		String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
-		String destName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[1]).getName();
-		int armies = command.getFortifyDetails()[2];
-		System.out.println("Player " + command.getPlayerId() + " is fortifying " + destName + " from " + srcName + " with " + armies + " armies");
-		
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid FortifyCommand.");
-		}	
+		}
+		if(gameState.getAttackSuccessful()){
+			Card drawnCard = gameState.drawCard(command.getPlayerId());
+			if(drawnCard!= null && command.getPlayerId() == this.getId()){
+				this.addCard(drawnCard);
+			}
+		}
 	}
-
+	
 	public void notifyCommand(DeployCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
@@ -562,28 +567,28 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DefendCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
-		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies");
+		System.out.println("Player " + command.getPlayerId() + " has captured " + name + " with " + command.getCaptureDetails()[2] + " armies,");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid AttackCaptureCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
-			System.out.println("Invalid TimeoutCommand.");
-		}	
+			System.out.println("Invalid TimeOutCommand.");
+		}		
 	}
-
+	
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
@@ -591,9 +596,9 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid LeaveGameCommand.");
-		}	
+		}		
 	}
-
+	
 	public void notifyCommand(PlayCardsCommand command)
 	{
 		if(command.getCards() == null){
@@ -612,7 +617,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid PlayCardsCommand.");
 		}	
 	}
-
+	
 	public void notifyCommand(RollNumberCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
@@ -622,8 +627,8 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollNumberCommand.");
 		}	
 	}
-
-	public void notifyCommand(RollHashCommand command) 
+	
+	public void notifyCommand(RollHashCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
@@ -631,6 +636,6 @@ public class LocalPlayer extends Player {
 		} else {
 			System.out.println("Invalid RollHashCommand.");
 		}	
-	}
+	}	
 
 }
