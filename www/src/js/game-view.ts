@@ -233,16 +233,19 @@ class GameView extends View<Game> {
 	}
 
 	startAttackPhase() {
-		this.$('.attack-end-button').removeClass('hidden');
-		this.message = null;
+		this.$('#attack-end-button').removeClass('hidden');
 		this.model.showToast('Select a territory to attack from', true);
+		this.message = null;
+		this.highlightSelectableTerritories();
 	}
 
 	endAttackPhase() {
-		this.$('.attack-end-button').addClass('hidden');
-		this.$('.no-fortify-button').removeClass('hidden');
+		this.$('#attack-end-button').addClass('hidden');
+		this.$('#no-fortify-button').removeClass('hidden');
 		this.model.setPhase('fortify');
 		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
+		this.message = null;
+		this.highlightSelectableTerritories();
 	}
 
 	startDefend(payload : Array<number>) {
