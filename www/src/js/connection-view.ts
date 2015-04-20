@@ -21,7 +21,7 @@ class ConnectionView extends View<Game> {
 	}
 
 	connectButtonClick(e : Event) : boolean {
-		if (!(<HTMLFormElement>this.$('form')[0]).checkValidity()) {
+		if (!(<HTMLFormElement>this.$('.connect-form')[0]).checkValidity()) {
 			return true;
 		}
 
@@ -49,7 +49,7 @@ class ConnectionView extends View<Game> {
 	}
 
 	hostButtonClick(e : Event) : boolean {
-		if (!(<HTMLFormElement>this.$('form')[0]).checkValidity()) {
+		if (!(<HTMLFormElement>this.$('.host-form')[0]).checkValidity()) {
 			return true;
 		}
 
