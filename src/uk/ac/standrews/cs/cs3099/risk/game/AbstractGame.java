@@ -4,6 +4,7 @@ import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.RollHashCommand;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -87,6 +88,10 @@ public abstract class AbstractGame {
 	
 	public void attack(Player player)
 	{
+		Die die = new Die();
+		byte[] num = die.generateNumber();
+		byte[] numhash = die.hashByteArr(num);
+
 		Command attackCommand = player.getCommand(CommandType.ATTACK);
 		if (attackCommand.getType() != CommandType.ATTACK) {
 			terminate();
@@ -102,12 +107,16 @@ public abstract class AbstractGame {
 			return;
 		}
 		notifyPlayers(defCommand);
-		
+
+		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(numhash)));
 		for(Player playerRoll : players){
 			Command rollHash = playerRoll.getCommand(CommandType.ROLL_HASH);
-			Command rollNumber = playerRoll.getCommand(CommandType.ROLL_NUMBER);
-			
 			notifyPlayers(rollHash);
+		}
+
+		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(num)));
+		for(Player playerRoll : players){
+			Command rollNumber = playerRoll.getCommand(CommandType.ROLL_NUMBER);
 			notifyPlayers(rollNumber);
 		}
 		

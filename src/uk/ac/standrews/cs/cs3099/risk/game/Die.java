@@ -153,8 +153,8 @@ public class Die {
 	 *
 	 * @param playerid
 	 *            The player id sending the number
-	 * @param number
-	 *            The number itself
+	 * @param hash
+	 *            The hash itself
 	 */
 	public synchronized void addHash(int playerid, String hash)
 			throws HashMismatchException {

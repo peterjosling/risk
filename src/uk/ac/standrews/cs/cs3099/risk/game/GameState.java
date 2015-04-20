@@ -128,6 +128,7 @@ public class GameState {
 		return getTerritoriesForPlayer(-1);
 	}
 
+
 	/**
 	 * Get all territories currently owned by a player.
 	 * @param playerID ID of the player to find territories for.
@@ -224,8 +225,6 @@ public class GameState {
 		try {
 			if (attackPhaseCommands.size() == (1 + getNumberOfPlayers() * 2)) {
 				Die die = new Die();
-				byte[] num = die.generateNumber();
-				byte[] numhash = die.hashByteArr(num);
 				//ArrayList<String> rollHashes = new ArrayList<String>();
 				//ArrayList<String> rollNumbers = new ArrayList<String>();
 
@@ -238,13 +237,11 @@ public class GameState {
 						numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
 					}
 					if (phaseCommand.getType() == CommandType.ROLL_HASH) {
-						// SEND OUR HASH HERE
 						String hash = ((RollHashCommand) phaseCommand).getHash();
 						//rollHashes.add(hash);
 						die.addHash(phaseCommand.getPlayerId(), hash);
 					}
 					if (phaseCommand.getType() == CommandType.ROLL_NUMBER) {
-						// SEND OUR NUMBER HERE
 						String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex(); // not a hash
 						//rollNumbers.add(rollNumberHash);
 						die.addNumber(phaseCommand.getPlayerId(), rollNumberHash);
