@@ -9,18 +9,35 @@ import java.util.ArrayList;
 
 public class LocalGame extends AbstractGame {
 
+	/**
+	 * Creates a local game with a specific map
+	 * @param jsonMap - the risk map in json format
+	 * @param playerCount - the number of human players in the game
+	 * @param aiCount - the number of AI players in the game
+	 * @throws MapParseException
+	 */
 	public LocalGame(String jsonMap, int playerCount, int aiCount) throws MapParseException
 	{
 		initialise(playerCount, aiCount);
 		this.init();
 	}
-	
+
+	/**
+	 * Create a local game with the default risk map
+	 * @param playerCount -  the number of human players
+	 * @param aiCount - the number of AI players
+	 */
 	public LocalGame(int playerCount, int aiCount)
 	{
 		initialise(playerCount, aiCount);
 		this.init();
 	}
-	
+
+	/**
+	 * Initialises the game adding the specified number of each player type
+	 * @param playerCount - the number of human players
+	 * @param aiCount - the number of AI players
+	 */
 	public void initialise(int playerCount, int aiCount)
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
@@ -67,7 +84,10 @@ public class LocalGame extends AbstractGame {
 			notifyPlayers(command);
 		}
 	}
-	
+
+	/**
+	 * Runs the game, controlling the game flow, and ending when game is complete
+	 */
 	public void run()
 	{
 		int noOfTurns = 0;
@@ -100,6 +120,9 @@ public class LocalGame extends AbstractGame {
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
 
+	/**
+	 * Prints a command line representation of the default risk map
+	 */
 	public void printMap()
 	{
 		Map map = gameState.getMap();
@@ -148,6 +171,7 @@ public class LocalGame extends AbstractGame {
 				+ map.findTerritoryById(41).getOwner());
 	}
 	
+
 	public void printAttackable(Player player){
 		printMap();
 		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
@@ -179,7 +203,10 @@ public class LocalGame extends AbstractGame {
 			System.out.println(territory.getId() + "           |  " + territory.getArmies() + "  | " + fortifyable);
 		}
 	}
-	
+
+	/**
+	 * Checks whether a player has been eliminated from the game and if they have add them to the list of dead players
+	 */
 	public void checkDeadPlayers()
 	{
 		for(Player player : this.getPlayers()){
@@ -198,7 +225,11 @@ public class LocalGame extends AbstractGame {
 			}
 		}
 	}
-	
+
+	/**
+	 * Returns the id of the only remaining player in the game or -1 if multiple players remain
+	 *  @return the id of the player
+	 */
 	public int getWinner()
 	{
 		for(Player player : this.getPlayers()){
