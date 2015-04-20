@@ -6,7 +6,6 @@ public enum CommandType {
 	ATTACK,
 	FORTIFY,
 	DEPLOY,
-	DRAW_CARD,
 	ASSIGN_ARMY,
 	DEFEND,
 	JOIN_GAME,

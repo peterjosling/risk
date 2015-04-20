@@ -68,8 +68,6 @@ public class LocalPlayer extends Player {
 				return getFortifyCommand();
 			case DEPLOY:
 				return getDeployCommand();
-			case DRAW_CARD:
-				return getDrawCardCommand();
 			case DEFEND:
 				return getDefendCommand();
 			case JOIN_GAME:
@@ -109,6 +107,18 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAssignArmyCommand()
 	{
+		Territory[] territories = null;
+		if(gameState.getUnclaimedTerritories().length == 0){
+			System.out.print("Your Territories: ");
+			territories = gameState.getTerritoriesForPlayer(this.getId());
+		} else {
+			System.out.print("Free Territories: ");
+			territories = gameState.getUnclaimedTerritories();
+		}
+		for(Territory territory : territories){
+			System.out.print(territory.getId() + " ");
+		}
+		System.out.println();
 		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
 		int territoryID = EasyIn.getInt();
 		AssignArmyCommand command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
@@ -175,18 +185,28 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getDeployCommand()
 	{
-		System.out.println("Enter number of deployments:");
-		int numberOfDeployments = EasyIn.getInt();
+		System.out.print("Your owned territories: ");
+		for(Territory territory : gameState.getTerritoriesForPlayer(this.getId())){
+			System.out.print(territory.getId() + " ");
+		}
+		System.out.println();
+		System.out.println("Deployable armies: " + gameState.getDeployableArmies(this.getId()));
+		int numberOfDeployments;
 		int territoryID;
 		int armies;
-		DeployCommand.Deployment[] deployments = new DeployCommand.Deployment[numberOfDeployments];
+		DeployCommand.Deployment[] deployments = null;
+
+		System.out.println("Enter number of deployments:");
+		numberOfDeployments = EasyIn.getInt();
+		System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
+		territoryID = EasyIn.getInt();
 		for(int i=0; i<numberOfDeployments; i++){
-			System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
-			territoryID = EasyIn.getInt();
+			deployments = new DeployCommand.Deployment[numberOfDeployments];
 			System.out.println("Enter number of armies to deploy here:");
 			armies = EasyIn.getInt();
 			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 		}
+		
 		DeployCommand command = new DeployCommand(this.getId(), lastAckid++, deployments);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
@@ -194,22 +214,6 @@ public class LocalPlayer extends Player {
 		} else {
 			System.out.println("Invalid Command, please try again.");
 			return getDeployCommand();
-		}
-	}
-
-	/**
-	 * Creates a draw card command
-	 * @return the new draw card command
-	 */
-	public Command getDrawCardCommand()
-	{
-		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
-		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getDrawCardCommand();
 		}
 	}
 
@@ -298,6 +302,7 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCaptureCommand()
 	{
+		System.out.println("How many armies do you desire to capture with?");
 		int armies = EasyIn.getInt();
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
@@ -453,9 +458,6 @@ public class LocalPlayer extends Player {
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
 			break;
-		case DRAW_CARD:
-			notifyCommand((DrawCardCommand) command);
-			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
 			break;
@@ -547,16 +549,6 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid DeployCommand.");
-		}	
-	}
-
-	public void notifyCommand(DrawCardCommand command)
-	{
-		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
-		if(gameState.isCommandValid(command)){
-			gameState.playCommand(command);
-		} else {
-			System.out.println("Invalid DrawCardCommand.");
 		}	
 	}
 
