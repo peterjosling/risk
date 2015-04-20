@@ -22,12 +22,13 @@ class ConnectionView extends View<Game> {
 
 	connectButtonClick(e : Event) : boolean {
 		var hostname : string = this.$('#connection-host').val(),
-			port : number = this.$('#connection-port').val();
+			port : number = this.$('#connection-port').val(),
+			ai = (<HTMLInputElement>this.$('#connection-ai')[0]).checked;
 
 		this.disableInputs();
 		this.model.showToast('Connecting...');
 
-		this.model.connect(hostname, port).catch((message) => {
+		this.model.connect(hostname, port, ai).catch((message) => {
 			var toastText = 'Failed to connect to WebSocket server.';
 
 			if (message.command && message.command === 'reject_join_game') {

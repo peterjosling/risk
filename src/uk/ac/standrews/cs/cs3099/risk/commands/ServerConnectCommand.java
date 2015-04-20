@@ -22,6 +22,10 @@ public class ServerConnectCommand extends Command {
 		return this.payload.port;
 	}
 
+	public boolean useAi() {
+		return payload.ai;
+	}
+
 	@Override
 	public CommandType getType()
 	{
@@ -31,5 +35,6 @@ public class ServerConnectCommand extends Command {
 	private class ServerConnectPayload {
 		String hostname;
 		int port;
+		boolean ai;
 	}
 }
