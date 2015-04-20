@@ -367,11 +367,13 @@ class Game extends Model {
 		}
 
 		this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
-		this.handleAttackMessage(message);
+		this.handleAttackMessage(message, destPlayer === this.self);
 	}
 
-	public handleAttackMessage(message : Messages.AttackMessage) {
-		// TODO store attack details.
+	public handleAttackMessage(message : Messages.AttackMessage, isLocalPlayer : boolean) {
+		if (isLocalPlayer) {
+			this.trigger('defend', message.payload);
+		}
 	}
 
 	private defendMessageReceived(message : Messages.DefendMessage) {

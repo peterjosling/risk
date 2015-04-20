@@ -216,6 +216,7 @@ class GameView extends View<Game> {
 				this.armyCountSelectView.off('select');
 				this.armyCountSelectView.on('select', armies => {
 					(<Messages.AttackMessage>this.message).payload.push(armies);
+					this.model.handleAttackMessage(<Messages.AttackMessage>this.message, false);
 					this.model.sendMessage(this.message);
 					this.message = null;
 
@@ -242,6 +243,30 @@ class GameView extends View<Game> {
 		this.$('.no-fortify-button').removeClass('hidden');
 		this.model.setPhase('fortify');
 		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
+	}
+
+	startDefend(territoryId : number) {
+		var territory = this.model.map.territories.get(territoryId);
+		var maxArmies = Math.min(2, territory.getArmies());
+
+		this.model.setPhase('defend');
+		this.armyCountSelectView.setMin(1);
+		this.armyCountSelectView.setMax(maxArmies);
+		this.armyCountSelectView.off('select');
+		this.armyCountSelectView.on('select', count => {
+			var message : Messages.DefendMessage = {
+				command: 'defend',
+				payload: count,
+				player_id: this.model.self.id
+			};
+
+			this.model.handleDefendMessage(message);
+			this.model.sendMessage(message);
+		});
+
+		// TODO don't let the user click cancel.
+
+		this.armyCountSelectView.show();
 	}
 
 	highlightSelectableTerritories() {
