@@ -712,10 +712,7 @@ public class NetworkedGame extends AbstractGame {
 					notifyPlayers(command);
 					phase = 2;
 				}else if(command.getType()==CommandType.ATTACK && phase == 2) {
-					while(canPlayerAttack(currentPlayer)){
-						attack((AttackCommand)command, currentPlayer);
-					}
-					phase = 3;
+					attack((AttackCommand)command, currentPlayer);
 				}else if(command.getType()==CommandType.FORTIFY && phase<4){
 					notifyPlayers(command);
 					phase = 4;
