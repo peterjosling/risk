@@ -501,6 +501,7 @@ public class GameState {
 	public boolean isCommandValid(AssignArmyCommand command)
 	{
 		int territoryId = command.getTerritoryId();
+		if(territoryId > map.getTerritories().size() -1) return false;
 		Territory territory = map.findTerritoryById(territoryId);
 		boolean allClaimed = getUnclaimedTerritories().length == 0;
 
@@ -509,6 +510,10 @@ public class GameState {
 
 	public boolean isCommandValid(AttackCommand command)
 	{
+		if ((command.getSource() > map.getTerritories().size() -1)
+				|| (command.getDest() > map.getTerritories().size() -1))
+			return false;
+		
 		int playerId = command.getPlayerId();
 		Territory sourceTerritory = map.findTerritoryById(command.getSource());
 		if(sourceTerritory.getOwner() != playerId) return false;
@@ -528,6 +533,10 @@ public class GameState {
 	public boolean isCommandValid(FortifyCommand command)
 	{
 		if(command.getFortifyDetails()[2] == 0) return true;
+		
+		if ((command.getFortifyDetails()[0] > map.getTerritories().size() -1)
+				|| (command.getFortifyDetails()[1] > map.getTerritories().size() -1))
+			return false;
 		
 		int playerId = command.getPlayerId();
 
@@ -555,6 +564,8 @@ public class GameState {
 
 		for (Deployment deployment : command.getDeployments()){
 
+			if(deployment.getTerritoryId() > map.getTerritories().size() -1) return false;
+			
 			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
 			if(deployTerritory.getOwner() != playerId) return false;
 
@@ -584,6 +595,10 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
+		if ((command.getCaptureDetails()[0] > map.getTerritories().size() -1)
+				|| (command.getCaptureDetails()[1] > map.getTerritories().size() -1))
+			return false;
+		
 		int[] captureDetails = command.getCaptureDetails();
 
 		Territory sourceTerritory = map.findTerritoryById(captureDetails[0]);
