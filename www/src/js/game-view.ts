@@ -57,7 +57,7 @@ class GameView extends View<Game> {
 			this.startTurn()
 		} else {
 			// TODO end turn
-			this.model.showToast(player.name + '\'s turn');
+			this.model.showToast(player.name + '\'s turn', true);
 		}
 	}
 
@@ -77,7 +77,7 @@ class GameView extends View<Game> {
 				toastMessage = 'Select a territory to claim...';
 			}
 
-			this.model.showToast(toastMessage);
+			this.model.showToast(toastMessage, true);
 		} else {
 			this.model.setPhase('cards');
 			this.deployableArmies = this.model.getNewPlayerArmies();
@@ -87,6 +87,7 @@ class GameView extends View<Game> {
 				// TODO add the values of traded in hands to deployableArmies.
 			} else {
 				this.model.setPhase('deploy');
+				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true)
 			}
 		}
 
@@ -179,6 +180,9 @@ class GameView extends View<Game> {
 					payload: [id],
 					player_id: this.model.self.id
 				});
+
+				this.model.showToast('Select a territory to attack', true);
+				this.highlightSelectableTerritories();
 			} else {
 				// Check this territory can be selected.
 				if (territory.getOwner() === this.model.self) {
@@ -224,12 +228,14 @@ class GameView extends View<Game> {
 	startAttackPhase() {
 		this.$('.attack-end-button').removeClass('hidden');
 		this.message = null;
+		this.model.showToast('Select a territory to attack from', true);
 	}
 
 	endAttackPhase() {
 		this.$('.attack-end-button').addClass('hidden');
 		this.$('.no-fortify-button').removeClass('hidden');
 		this.model.setPhase('fortify');
+		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
 	}
 
 	highlightSelectableTerritories() {
