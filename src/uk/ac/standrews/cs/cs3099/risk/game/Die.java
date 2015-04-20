@@ -234,6 +234,7 @@ public class Die {
 				this.finalised = true;
 			}
 		}
+
 		mixednumber = hashByteArr(mixednumber); // So all seeds create a
 		// pseudo-random sequence of
 		// numbers
