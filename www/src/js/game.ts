@@ -402,6 +402,9 @@ class Game extends Model {
 		});
 
 		this.updateArmyCounts();
+
+		// Trigger change to update the map view.
+		this.trigger('change:map');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
