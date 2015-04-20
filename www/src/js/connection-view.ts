@@ -21,6 +21,10 @@ class ConnectionView extends View<Game> {
 	}
 
 	connectButtonClick(e : Event) : boolean {
+		if (!(<HTMLFormElement>this.$('form')[0]).checkValidity()) {
+			return true;
+		}
+
 		var hostname : string = this.$('#connection-host').val(),
 			port : number = this.$('#connection-port').val(),
 			ai = (<HTMLInputElement>this.$('#connection-ai')[0]).checked,
@@ -45,6 +49,10 @@ class ConnectionView extends View<Game> {
 	}
 
 	hostButtonClick(e : Event) : boolean {
+		if (!(<HTMLFormElement>this.$('form')[0]).checkValidity()) {
+			return true;
+		}
+
 		var port : number = +this.$('#host-port').val(),
 			name = this.$('#host-player-name').val();
 
