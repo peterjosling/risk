@@ -358,72 +358,49 @@ public class AIPlayer extends Player {
 
 	public Command getFortifyCommand() 
 	{
-//		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-//		int[] details = new int[3];
-//		boolean fortifyFound = false;
-//		for(Territory territory : territories){
-//			if(territory.getArmies() > 1){
-//				for(Territory nextTerritory : territories){
-//					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
-//						boolean territoryFrozen = true;
-//						for(Territory linkedTerritory : territory.getLinkedTerritories()){
-//							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
-//						}
-//						boolean territoryFree = false;
-//						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
-//							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
-//						}
-//						if(territoryFrozen && territoryFree) {
-//							details[0] = territory.getId();
-//							details[1] = nextTerritory.getId();
-//							details[2] = territory.getArmies() - 1;
-//							fortifyFound = true;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		
-//		for(Territory territory : territories){
-//			if(territory.getArmies() > 1){
-//				for(Territory nextTerritory : territories){
-//					if(gameState.areOwnedTerritoriesConnected(this.getId(), territory, nextTerritory)){
-//						boolean territoryFrozen = true;
-//						for(Territory linkedTerritory : territory.getLinkedTerritories()){
-//							if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
-//						}
-//						boolean territoryFree = false;
-//						for(Territory linkedTerritory : nextTerritory.getLinkedTerritories()){
-//							if(linkedTerritory.getId() != this.getId()) territoryFree = true;
-//						}
-//						if(territoryFrozen && territoryFree) {
-//							details[0] = territory.getId();
-//							details[1] = nextTerritory.getId();
-//							details[2] = territory.getArmies() - 1;
-//							fortifyFound = true;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		
-//		// Find max frozen territory.
-//		// If an adjacent territory is Free, create command.
-//		// If not, move closer.
-//		FortifyCommand command = null;
-//		if(fortifyFound){
-//			command = new FortifyCommand(this.getId(), lastAckid++, details);
-//		} else {
-//			command = new FortifyCommand(this.getId(), lastAckid++);
-//		}
-//		
-//		if(gameState.isCommandValid(command)) {
-//			notifyCommand(command);
-//			return command;
-//		} else {
-//			System.out.println("Invalid Command, please try again.");
-//		}
-		return new FortifyCommand(this.getId(), lastAckid++);
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+		int[] details = new int[3];
+		boolean fortifyFound = false;
+		details[0] = 0;
+		
+		for(Territory territory : territories){
+			
+			// IS IT FROZEN
+			boolean territoryFrozen = true;
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+			}
+			
+			if(territoryFrozen){
+				// IS A LINKED TERRITORY BESIDE ENEMY
+				for(Territory linkedTerritory : territory.getLinkedTerritories()){
+					for(Territory linkedLinkedTerritory : linkedTerritory.getLinkedTerritories()){
+						if((linkedLinkedTerritory.getOwner() != this.getId() && (territory.getArmies() -1 > details[2]))){
+							details[0] = territory.getId();
+							details[1] = linkedTerritory.getId();
+							details[2] = territory.getArmies() - 1;
+							fortifyFound = true;
+						}
+					}
+				}	
+			}
+		}
+		
+		// TODO - LOOK FOR MAX AND MOVE TOWARD ENEMY, INSTEAD OF JUST MOVING TO EDGE.
+		FortifyCommand command = null;
+		if(fortifyFound){
+			command = new FortifyCommand(this.getId(), lastAckid++, details);
+		} else {
+			command = new FortifyCommand(this.getId(), lastAckid++);
+		}
+		
+		if(gameState.isCommandValid(command)) {
+			notifyCommand(command);
+			return command;
+		} else {
+			System.out.println("Invalid Command, please try again.");
+		}
+		return null;
 	}
 
 	public Command getAttackCommand() 

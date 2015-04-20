@@ -509,6 +509,8 @@ public class GameState {
 
 	public boolean isCommandValid(FortifyCommand command)
 	{
+		if(command.getFortifyDetails()[2] == 0) return true;
+		
 		int playerId = command.getPlayerId();
 
 		Territory fortifySource = map.findTerritoryById(command.getFortifyDetails()[0]);
