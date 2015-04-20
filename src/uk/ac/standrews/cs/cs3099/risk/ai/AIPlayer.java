@@ -1,27 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.ai;
 
-import uk.ac.standrews.cs.cs3099.risk.commands.AcceptJoinGameCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.AcknowledgementCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.AssignArmyCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.AttackCaptureCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.DefendCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
-import uk.ac.standrews.cs.cs3099.risk.commands.DrawCardCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.InitialiseGameCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.JoinGameCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.LeaveGameCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.PingCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.PlayCardsCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.PlayersJoinedCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.ReadyCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.RejectJoinGameCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.RollHashCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.RollNumberCommand;
-import uk.ac.standrews.cs.cs3099.risk.commands.TimeoutCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.commands.DeployCommand.Deployment;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 
@@ -190,9 +169,18 @@ public class AIPlayer extends Player {
 	
 	public AssignArmyCommand getAssignArmyCommand()
 	{
-		// Pick the first free territory to claim.
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
-		Territory territory = freeTerritories[0];
+		Territory territory;
+
+		if (freeTerritories.length > 0) {
+			// Pick the first free territory to claim.
+			territory = freeTerritories[0];
+		} else {
+			// All claimed - reinforce the first available.
+			Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+			territory = territories[0];
+		}
+
 		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++lastAckid, territory.getId());
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
