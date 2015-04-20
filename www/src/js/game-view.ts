@@ -18,7 +18,8 @@ class GameView extends View<Game> {
 
 	get events() : any {
 		return {
-			'click #attack-end-button': 'endAttackPhase'
+			'click #attack-end-button': 'endAttackPhase',
+			'click #no-fortify-button': 'noFortifyButtonClick'
 		}
 	}
 
@@ -31,6 +32,7 @@ class GameView extends View<Game> {
 
 		this.listenTo(mapView, 'territorySelect', this.territorySelected);
 		this.listenTo(this.model, 'change:currentPlayer', this.currentPlayerChange);
+		this.listenTo(this.model, 'attackCapture', this.getAttackCapture);
 
 		this.childViews = [
 			{
@@ -226,8 +228,66 @@ class GameView extends View<Game> {
 				this.armyCountSelectView.show();
 
 				// TODO handle clicking cancel in the modal.
+			}
+		} else if (phase === 'fortify') {
+			if (!this.message) {
+				// Check this territory can be selected.
+				if (territory.getOwner() !== this.model.self) {
+					this.model.showToast('You do not own this territory');
+					return;
+				}
 
+				if (territory.getArmies() < 2) {
+					this.model.showToast('This territory doesn\'t contain enough armies to fortify');
+					return;
+				}
+
+				this.message = <Messages.FortifyMessage>({
+					command: 'fortify',
+					payload: [id],
+					player_id: this.model.self.id
+				});
+
+				this.model.showToast('Select a territory to fortify', true);
 				this.highlightSelectableTerritories();
+			} else {
+				// Check this territory can be selected.
+				if (territory.getOwner() !== this.model.self) {
+					this.model.showToast('You do not own this territory');
+					return;
+				}
+
+				var sourceId = (<Messages.FortifyMessage>this.message).payload[0];
+				var sourceTerritory = this.model.map.territories.get(sourceId);
+
+				if (!territory.connections.get(sourceTerritory)) {
+					this.model.showToast('This territory is not connected to the source');
+					return;
+				}
+
+				// TODO add deselect button.
+
+				(<Messages.FortifyMessage>this.message).payload.push(id);
+
+				// Get number of armies to attack with.
+				var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
+
+				this.armyCountSelectView.setMin(1);
+				this.armyCountSelectView.setMax(maxArmies);
+				this.armyCountSelectView.off('select');
+				this.armyCountSelectView.on('select', armies => {
+					(<Messages.FortifyMessage>this.message).payload.push(armies);
+					this.model.handleFortifyMessage(<Messages.FortifyMessage>this.message);
+					this.model.sendMessage(this.message);
+					this.message = null;
+
+					// Draw card, end turn.
+					this.drawCard();
+				});
+
+				this.armyCountSelectView.show();
+
+				// TODO handle clicking cancel in the modal.
 			}
 		}
 	}
@@ -246,6 +306,47 @@ class GameView extends View<Game> {
 		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
 		this.message = null;
 		this.highlightSelectableTerritories();
+	}
+
+	getAttackCapture(attack : Messages.AttackMessage) {
+		this.model.showToast('You won! Select how many armies you wish to move in to the new territory', true);
+
+		var sourceTerritory = this.model.map.territories.get(attack.payload[0]);
+
+		this.armyCountSelectView.setMin(attack.payload[2]);
+		this.armyCountSelectView.setMax(sourceTerritory.getArmies() - 1);
+		this.armyCountSelectView.off('select');
+		this.armyCountSelectView.on('select', count => {
+			var message : Messages.AttackCaptureMessage = {
+				command: 'attack_capture',
+				payload: [attack.payload[0], attack.payload[1], count],
+				player_id: this.model.self.id
+			};
+
+			this.model.sendMessage(message);
+			this.model.handleAttackCaptureMessage(message);
+		});
+
+		// TODO disable cancel button.
+	}
+
+	noFortifyButtonClick() {
+		this.$('#no-fortify-button').addClass('hidden');
+
+		var message : Messages.FortifyMessage = {
+			command: 'fortify',
+			payload: null,
+			player_id: this.model.self.id
+		};
+
+		this.model.sendMessage(message);
+
+		// Draw card, end turn.
+		this.drawCard();
+	}
+
+	drawCard() {
+		// TODO
 	}
 
 	startDefend(payload : Array<number>) {
@@ -321,7 +422,23 @@ class GameView extends View<Game> {
 				});
 			}
 		} else if (phase === 'fortify') {
-			// TODO both states.
+			if (!this.message) {
+				this.model.map.territories.forEach(territory => {
+					if (territory.getOwner() !== this.model.self) {
+						invalidTerritories.push(territory.id);
+					}
+				});
+			} else {
+				var sourceId = (<Messages.FortifyMessage>this.message).payload[0];
+				var source = this.model.map.territories.get(sourceId);
+
+				invalidTerritories = this.model.map.territories.map(territory => territory.id);
+				source.connections.forEach(territory => {
+					if (territory.getOwner() === this.model.self) {
+						invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+					}
+				});
+			}
 		}
 
 		invalidTerritories.forEach(id => (<HTMLElement>document.querySelector('svg .territory[data-territory-id="' + id + '"]')).classList.add('fade'));
