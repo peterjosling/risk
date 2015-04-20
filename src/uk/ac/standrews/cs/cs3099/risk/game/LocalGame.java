@@ -131,9 +131,9 @@ public class LocalGame extends AbstractGame {
 				calcDeployable();
 				noOfTurns++;
 			}
-			printMap();
-			System.out.println("Press enter to continue.");
-			String cont = EasyIn.getString();
+//			printMap();
+//			System.out.println("Press enter to continue.");
+//			String cont = EasyIn.getString();
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
