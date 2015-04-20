@@ -153,6 +153,13 @@ class GameView extends View<Game> {
 					this.startDeployPhase();
 				});
 			} else {
+				var playCardsMessage : Messages.PlayCardsMessage = {
+					command: 'play_cards',
+					payload: null,
+					player_id: this.model.self.id
+				};
+
+				this.model.sendMessage(playCardsMessage);
 				this.startDeployPhase();
 			}
 		}

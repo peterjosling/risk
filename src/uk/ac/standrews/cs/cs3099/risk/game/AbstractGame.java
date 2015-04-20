@@ -3,7 +3,6 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
-import uk.ac.standrews.cs.cs3099.risk.commands.RollHashCommand;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -84,14 +83,11 @@ public abstract class AbstractGame {
 	public void attack(AttackCommand command, Player player)
 	{
 		Logger.print("Abstract attack");
-		Die die = new Die();
-		byte[] num = die.generateNumber();
-		byte[] numhash = die.hashByteArr(num);
 
-		Command attackCommand = player.getCommand(CommandType.ATTACK);
-		if (attackCommand.getType() != CommandType.ATTACK) {
+		if (command.getType() != CommandType.ATTACK) {
 			return;
 		}
+
 		notifyPlayers(command);
 		
 		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) command).getDest());
