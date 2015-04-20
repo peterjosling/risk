@@ -118,14 +118,6 @@ public abstract class AbstractGame {
 		notifyPlayers(command);
 	}
 	
-	public void drawCard(Player player)
-	{
-		for(Player nextPlayer : this.getPlayers()){
-//			nextPlayer.ge
-		}
-		gameState.drawCard(player.getId());
-	}
-
 	public void playCards(Player player)
 	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
