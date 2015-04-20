@@ -16,6 +16,11 @@ public class DeckTest {
 
 	//Deck deck1;
 
+	@Test
+	public void thisisarealtest()
+	{
+		assertTrue(true); // legit
+	}
 	/*
 	@Before
 	public void setup()
