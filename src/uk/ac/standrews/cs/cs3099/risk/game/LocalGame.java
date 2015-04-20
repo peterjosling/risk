@@ -101,24 +101,21 @@ public class LocalGame extends AbstractGame {
 		printMap();
 
 		assignTerritories();
-		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
-			if(noOfTurns%2 == 0){
-				printMap();
-				System.out.println("Press enter to continue.");
-				String cont = EasyIn.getString();
-			}
+//			if(noOfTurns%2 == 0){
+//				printMap();
+//				System.out.println("Press enter to continue.");
+//				String cont = EasyIn.getString();
+//			}
 			
 			Player currentPlayer = nextTurn();
 			
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
-				if(firstTurn){
-					firstTurn = false;
-				} else {
-					playCards(currentPlayer);
-					deploy(currentPlayer);
-				}
+
+				playCards(currentPlayer);
+				deploy(currentPlayer);
+				
 				boolean attackPhase = true;
 				while(canPlayerAttack(currentPlayer) && attackPhase){
 					//TODO fix now attack no longer returns boolean
@@ -134,6 +131,9 @@ public class LocalGame extends AbstractGame {
 				calcDeployable();
 				noOfTurns++;
 			}
+			printMap();
+			System.out.println("Press enter to continue.");
+			String cont = EasyIn.getString();
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
