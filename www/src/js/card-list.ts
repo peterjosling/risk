@@ -11,7 +11,7 @@ class CardList extends Collection<Card> {
 		var infantryCount = this.where({type: 'infantry'}).length;
 		var hasWildcards = this.findWhere({type: 'wildcard'}) != null;
 
-		return artilleryCount > 2 || cavalryCount > 2 || infantryCount > 2 || hasWildcards && this.length > 2;
+		return artilleryCount > 2 || cavalryCount > 2 || infantryCount > 2 || hasWildcards && this.length > 2 || (artilleryCount > 0 && cavalryCount > 0 && infantryCount > 0);
 	}
 }
 
