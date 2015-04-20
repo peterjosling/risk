@@ -475,8 +475,6 @@ public class GameState {
 				return isCommandValid((FortifyCommand) command);
 			case DEPLOY:
 				return isCommandValid((DeployCommand) command);
-			case DRAW_CARD:
-				return isCommandValid((DrawCardCommand) command);
 			case DEFEND:
 				return isCommandValid((DefendCommand) command);
 			case TIMEOUT:
@@ -609,12 +607,6 @@ public class GameState {
 
 		if((sourceTerritory.getArmies() <= captureDetails[2]) || (captureDetails[2] < remainingArmies)) return false;
 
-		return true;
-	}
-
-	public boolean isCommandValid(DrawCardCommand command)
-	{
-		if(!attackSuccessful) return false;
 		return true;
 	}
 

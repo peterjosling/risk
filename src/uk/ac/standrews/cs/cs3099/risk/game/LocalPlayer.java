@@ -68,8 +68,6 @@ public class LocalPlayer extends Player {
 				return getFortifyCommand();
 			case DEPLOY:
 				return getDeployCommand();
-			case DRAW_CARD:
-				return getDrawCardCommand();
 			case DEFEND:
 				return getDefendCommand();
 			case JOIN_GAME:
@@ -216,22 +214,6 @@ public class LocalPlayer extends Player {
 		} else {
 			System.out.println("Invalid Command, please try again.");
 			return getDeployCommand();
-		}
-	}
-
-	/**
-	 * Creates a draw card command
-	 * @return the new draw card command
-	 */
-	public Command getDrawCardCommand()
-	{
-		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
-		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getDrawCardCommand();
 		}
 	}
 
@@ -476,9 +458,6 @@ public class LocalPlayer extends Player {
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
 			break;
-		case DRAW_CARD:
-			notifyCommand((DrawCardCommand) command);
-			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
 			break;
@@ -570,16 +549,6 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid DeployCommand.");
-		}	
-	}
-
-	public void notifyCommand(DrawCardCommand command)
-	{
-		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
-		if(gameState.isCommandValid(command)){
-			gameState.playCommand(command);
-		} else {
-			System.out.println("Invalid DrawCardCommand.");
 		}	
 	}
 
