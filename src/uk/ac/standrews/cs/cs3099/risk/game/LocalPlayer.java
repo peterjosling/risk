@@ -344,33 +344,44 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getPlayCardsCommand()
 	{
+		PlayCardsCommand command = null;
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
-		if(numberOfTradeIns == 0) return new PlayCardsCommand(this.getId(), lastAckid++);
-		List<Card> playersCards = getCards();
-		System.out.println("Your Cards:");
-		for(Card card:playersCards){
-			System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
-					card.getTerritoryId() + "Card Type:" + card.getCardType());
-		}
-		Card[][] cards = new Card[numberOfTradeIns][3];
-		int cardId;
-		for(int i =0; i<numberOfTradeIns; i++){
-			System.out.println("Select 3 cards to trade in:");
-			for(int j=0; j<cards[i].length; j++) {
-				System.out.println("Enter Card ID:");
-				cardId = EasyIn.getInt();
-				try {
-					cards[i][j] = getCardByID(cardId);
-				} catch (CardNotFoundException e) {
-					System.out.println("Card not found please enter another ID");
-					j--;
+		if(numberOfTradeIns == 0){
+			command = new PlayCardsCommand(this.getId(), lastAckid++);
+		} else {
+			List<Card> playersCards = getCards();
+			System.out.println("Your Cards:");
+			for(Card card:playersCards){
+				System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
+						card.getTerritoryId() + "Card Type:" + card.getCardType());
+			}
+			Card[][] cards = new Card[numberOfTradeIns][3];
+			int cardId;
+			for(int i =0; i<numberOfTradeIns; i++){
+				System.out.println("Select 3 cards to trade in:");
+				for(int j=0; j<cards[i].length; j++) {
+					System.out.println("Enter Card ID:");
+					cardId = EasyIn.getInt();
+					try {
+						cards[i][j] = getCardByID(cardId);
+					} catch (CardNotFoundException e) {
+						System.out.println("Card not found please enter another ID");
+						j--;
+					}
 				}
 			}
+			command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		}
-		PlayCardsCommand command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
+			if(command.getCards() != null){
+				for(Card[] cardSet : command.getCards()){
+					for(Card card : cardSet){
+						this.playCard(card);
+					}
+				}
+			}
 			return command;
 		} else {
 			System.out.println("Invalid Command, please try again.");

@@ -81,7 +81,7 @@ public class LocalGame extends AbstractGame {
 				calcDeployable();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
-//				playCards(currentPlayer);
+				playCards(currentPlayer);
 
 				deploy(currentPlayer);
 				

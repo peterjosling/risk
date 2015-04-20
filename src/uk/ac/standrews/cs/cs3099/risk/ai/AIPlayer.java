@@ -236,7 +236,9 @@ public class AIPlayer extends Player {
 		// 3 CARDS OF SAME TYPE
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
-				cards[0] =  (Card[]) (currentType.subList(0, 2)).toArray();
+				for(int i = 0; i < 3; i ++){
+					cards[0][i] = currentType.get(i);
+				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
@@ -252,6 +254,7 @@ public class AIPlayer extends Player {
 		}
 		
 		int total = artillery.size() + infantry.size() + cavalry.size();
+		
 		// 1 WILD && 2 RANDOM
 		if(command == null){
 			if((wild.size() > 0) && (total > 1)){
@@ -259,10 +262,12 @@ public class AIPlayer extends Player {
 				cards[0][0] = wild.get(0);
 				for(ArrayList<Card> currentType : nonWildCards){
 					for(Card currentCard : currentType){
+						if(count >= 3) break;
 						cards[0][count] = currentCard;
 						count ++;
 						if(count == 3){
 							command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+							break;
 						}
 					}
 				}
@@ -274,6 +279,13 @@ public class AIPlayer extends Player {
 		}
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
+			if(command.getCards() != null){
+				for(Card[] cardSet : command.getCards()){
+					for(Card card : cardSet){
+						this.playCard(card);
+					}
+				}
+			}
 			return command;
 		} else {
 			System.out.println("Player: " + this.getId() + " created an invalid Play Cards Command");
