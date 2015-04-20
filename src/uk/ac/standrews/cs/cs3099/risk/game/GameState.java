@@ -214,7 +214,7 @@ public class GameState {
 	{
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
 		territory.addArmies(1);
-		territory.claim(command.getPlayerId());
+		if(!territory.isClaimed()) territory.claim(command.getPlayerId());
 	}
 
 	public void playCommand(FortifyCommand command)
@@ -295,7 +295,6 @@ public class GameState {
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
 			if(aRoll<numberOfAttackingDice){
-//				attackingRolls[aRoll] = player==0 ? 10 : rolls[roll]; // TESTING PURPOSES
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
 			} else if (dRoll<numberOfDefendingDice){

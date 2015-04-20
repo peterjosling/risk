@@ -117,7 +117,7 @@ public class LocalPlayer extends Player {
 			System.out.print("Free Territories: ");
 			territories = gameState.getUnclaimedTerritories();
 		}
-		for(Territory territory : gameState.getUnclaimedTerritories()){
+		for(Territory territory : territories){
 			System.out.print(territory.getId() + " ");
 		}
 		System.out.println();
@@ -320,6 +320,7 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCaptureCommand()
 	{
+		System.out.println("How many armies do you desire to capture with?");
 		int armies = EasyIn.getInt();
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
