@@ -169,7 +169,8 @@ public class GameState {
 	}
 
 
-	public void playCommand(Command command){
+	public void playCommand(Command command)
+	{
 		switch(command.getType()){
 			case ASSIGN_ARMY:
 				playCommand((AssignArmyCommand) command);
@@ -212,20 +213,23 @@ public class GameState {
 		}
 	}
 
-	public void playCommand(AssignArmyCommand command){
+	public void playCommand(AssignArmyCommand command)
+	{
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
 		territory.addArmies(1);
 		territory.claim(command.getPlayerId());
 	}
 
-	public void playCommand(FortifyCommand command){
+	public void playCommand(FortifyCommand command)
+	{
 		int source = command.getFortifyDetails()[0];
 		int destination = command.getFortifyDetails()[1];
 		int numberOfArmies = command.getFortifyDetails()[2];
 		moveArmies(source, destination, numberOfArmies);
 	}
 
-	public void playCommand(DeployCommand command){
+	public void playCommand(DeployCommand command)
+	{
 		DeployCommand.Deployment[] deployments = command.getDeployments();
 		for(DeployCommand.Deployment deployment : deployments){
 			int id = deployment.getTerritoryId();
@@ -234,7 +238,8 @@ public class GameState {
 		}
 	}
 
-	public void playCommand(AttackCommand command){
+	public void playCommand(AttackCommand command)
+	{
 		lastAttackSuccessful = false;
 		inAttackPhase = true;
 		if(attackPhaseCommands.size()==(1+getNumberOfPlayers()*2)){
@@ -281,7 +286,8 @@ public class GameState {
 	 * @param numberOfDefendingDice
 	 * @return int array with attacking losses at index 0 and defending losses at index 1
 	 */
-	public int[] calculateResult(int[] rolls, int numberOfAttackingDice, int numberOfDefendingDice, int player){
+	public int[] calculateResult(int[] rolls, int numberOfAttackingDice, int numberOfDefendingDice, int player)
+	{
 		int[] attackingRolls = new int[numberOfAttackingDice];
 		int[] defendingRolls = new int[numberOfDefendingDice];
 		int aRoll = 0;
@@ -309,26 +315,30 @@ public class GameState {
 		return losses;
 	}
 
-	public void playCommand(DefendCommand command){
+	public void playCommand(DefendCommand command)
+	{
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 			defDice = command.getArmies();
 		}
 	}
 
-	public void playCommand(RollHashCommand command){
+	public void playCommand(RollHashCommand command)
+	{
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 		}
 	}
 
-	public void playCommand(RollNumberCommand command){
+	public void playCommand(RollNumberCommand command)
+	{
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 		}
 	}
 
-	public void playCommand(AttackCaptureCommand command){
+	public void playCommand(AttackCaptureCommand command)
+	{
 		int[] captureDetails = command.getCaptureDetails();
 		int source = captureDetails[0];
 		int destination = captureDetails[1];
@@ -338,7 +348,8 @@ public class GameState {
 		territory.claim(command.getPlayerId());
 	}
 
-	public void playCommand(PlayCardsCommand command){
+	public void playCommand(PlayCardsCommand command)
+	{
 		if(command.getCards() == null){
 			return;
 		}
@@ -360,22 +371,26 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public void playCommand(DrawCardCommand command){
+	public void playCommand(DrawCardCommand command)
+	{
 		if(deck.getTopCardIndex() < 44){
 			Card drawnCard = deck.dealCard();
 			playerCards.get(command.getPlayerId()).add(drawnCard);
 		}
 	}
 
-	public void playCommand(LeaveGameCommand command){
+	public void playCommand(LeaveGameCommand command)
+	{
 			playerIDs.remove(command.getPlayerId());
 	}
 
-	public void playCommand(TimeoutCommand command){
+	public void playCommand(TimeoutCommand command)
+	{
 			playerIDs.remove(command.getPlayerId());
 	}
 
-	public int calculateArmiesFromTradeIn(){
+	public int calculateArmiesFromTradeIn()
+	{
 		if(tradeInCount<=5){
 			return TRADE_IN_VALUES[tradeInCount];
 		}else {
@@ -397,7 +412,8 @@ public class GameState {
 		return true;
 	}
 	
-	public void setDeployableArmies(){
+	public void setDeployableArmies()
+	{
 		for(int player : playerIDs){
 			playersDeployableArmies[player] = calculateDeployArmies(player);
 		}
@@ -533,7 +549,6 @@ public class GameState {
 	public boolean isCommandValid(DeployCommand command)
 	{
 		int playerId = command.getPlayerId();
-
 		int deployingTroops = 0;
 
 		for (Deployment deployment : command.getDeployments()){
@@ -543,7 +558,6 @@ public class GameState {
 
 			deployingTroops += deployment.getArmies();
 		}
-
 		if(deployingTroops != playersDeployableArmies[playerId]) return false;
 
 		return true;
@@ -584,7 +598,6 @@ public class GameState {
 	public boolean isCommandValid(DrawCardCommand command)
 	{
 		if(!attackSuccessful) return false;
-
 		return true;
 	}
 
@@ -612,7 +625,6 @@ public class GameState {
 					^ (cardSet[2].getCardType() == CardType.WILD))
 				return true;
 		}
-
 		return false;
 	}
 
@@ -644,7 +656,8 @@ public class GameState {
 		return lastAttackSuccessful;
 	}
 	
-	public void setDeployableArmies(int armies){
+	public void setDeployableArmies(int armies)
+	{
 		for(int i = 0; i < playersDeployableArmies.length; i ++){
 			playersDeployableArmies[i] = armies;
 		}
@@ -655,11 +668,13 @@ public class GameState {
 		this.attackSuccessful = attackSuccessful;
 	}
 
-	public boolean getAttackSuccessful(){
+	public boolean getAttackSuccessful()
+	{
 		return attackSuccessful;
 	}
 	
-	public int getRemainingArmies(){
+	public int getRemainingArmies()
+	{
 		return remainingArmies;
 	}
 }

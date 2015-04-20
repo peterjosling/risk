@@ -220,6 +220,4 @@ public abstract class AbstractGame {
 	{
 
 	}
-
-
 }

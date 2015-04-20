@@ -103,11 +103,12 @@ public class LocalGame extends AbstractGame {
 		assignTerritories();
 		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
-//			if(noOfTurns%2 == 0){
-//				printMap();
-//				System.out.println("Enter anything to continue.");
-//				String cont = EasyIn.getString();
-//			}
+			if(noOfTurns%2 == 0){
+				printMap();
+				System.out.println("Press enter to continue.");
+				String cont = EasyIn.getString();
+			}
+			
 			Player currentPlayer = nextTurn();
 			
 			if(!gameState.isPlayerDead(currentPlayer.getId())){

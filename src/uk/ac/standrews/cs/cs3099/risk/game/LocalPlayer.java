@@ -39,7 +39,8 @@ public class LocalPlayer extends Player {
 	}
 
 	@Override
-	public boolean isNeutral() {
+	public boolean isNeutral() 
+	{
 		return isNeutral;
 	}
 
@@ -625,7 +626,8 @@ public class LocalPlayer extends Player {
 		}	
 	}
 
-	public void notifyCommand(RollHashCommand command) {
+	public void notifyCommand(RollHashCommand command) 
+	{
 		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);

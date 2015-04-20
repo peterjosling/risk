@@ -177,7 +177,6 @@ public class AIPlayer extends Player {
 			deployments[i] = new Deployment(deployTerritory.getId(), 1);
 		}
 		
-		// Deploys all troops to first owned territory.
 		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
 		
 		if(gameState.isCommandValid(command)){
@@ -306,12 +305,11 @@ public class AIPlayer extends Player {
 	{	
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
 		
+		int armies = (source.getArmies() - 1) / 2;
 		
-		int armies = source.getArmies() - 1;
-		
-//		if(armies < gameState.getRemainingArmies()){
-//			armies = gameState.getRemainingArmies();
-//		}
+		if(armies < gameState.getRemainingArmies()){
+			armies = gameState.getRemainingArmies();
+		}
 
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		
@@ -427,7 +425,6 @@ public class AIPlayer extends Player {
 				continue;
 			}
 		}
-		System.out.println("Source: " + sourceId + ", dest: " + destId + ", armies: " + armies);
 		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
@@ -640,6 +637,5 @@ public class AIPlayer extends Player {
 		} else {
 			System.out.println("Invalid RollHashCommand.");
 		}	
-	}
-	
+	}	
 }
