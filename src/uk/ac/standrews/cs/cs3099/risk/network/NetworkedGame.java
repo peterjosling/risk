@@ -534,6 +534,13 @@ public class NetworkedGame extends AbstractGame {
 
 		if (hashesReceived && localPlayer != null) {
 			int id = localPlayer.getId();
+
+			try {
+				die.addHash(id, turnRollHashes[id]);
+			} catch (HashMismatchException e) {
+				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + turnRollHashes[id] + ")");
+			}
+
 			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, turnRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
@@ -565,6 +572,14 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		if (rollsReceived && localPlayer != null) {
+			int id = localPlayer.getId();
+
+			try {
+				die.addNumber(id, turnRollNumbers[id]);
+			} catch (HashMismatchException e) {
+				Logger.print("ERROR - Couldn't add number from localplayer id " + id + " (" + turnRollNumbers[id] + ")");
+			}
+
 			try {
 				die.finalise();
 			} catch (HashMismatchException e) {
