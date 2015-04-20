@@ -1,10 +1,8 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
-import uk.ac.standrews.cs.cs3099.risk.game.AbstractGame;
-import uk.ac.standrews.cs.cs3099.risk.game.NetworkPlayer;
-import uk.ac.standrews.cs.cs3099.risk.game.Player;
-import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.game.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +25,10 @@ public class NetworkedGame extends AbstractGame {
 	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
 	private float highestMutuallySupportedVersion;
 	private Semaphore gameStart = new Semaphore(0);
+
+	private Die die;
+	private int firstplayer = -1;
+	private int[] deckorder = new int[44];
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -450,6 +452,27 @@ public class NetworkedGame extends AbstractGame {
 	}
 
 	/**
+	 * Called when a new dice roll is expected to reinitialise the die state and send the first hash
+	 */
+	private void startDieRoll()
+	{
+		if (localPlayer != null) {
+			int id = localPlayer.getId();
+
+			die = new Die();
+			byte[] numb = die.generateNumber();
+			String num = die.byteToHex(numb);
+			String hash = die.byteToHex(die.hashByteArr(numb));
+
+			turnRollHashes[id] = hash;
+			turnRollNumbers[id] = num;
+
+			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
+			connectionManager.sendCommand(rollHashCommand);
+		}
+	}
+
+	/**
 	 * Let local player know what version/features the game is using, participate in player selection roll.
 	 *
 	 * @param command
@@ -460,25 +483,27 @@ public class NetworkedGame extends AbstractGame {
 
 		// Initialise the game state and load the map. Players list is finalised.
 		init();
-
-		if (localPlayer != null) {
-			int id = localPlayer.getId();
-
-			String hash = "TODO_IMPLEMENT_HASH";
-			String number = "TODO_IMPLEMENT_NUMBER";
-
-			turnRollHashes[id] = hash;
-			turnRollNumbers[id] = number;
-
-			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
-			connectionManager.sendCommand(rollHashCommand);
-		}
+		startDieRoll();
 	}
 
 	private void readyReceived(ReadyCommand command)
 	{
 		localPlayer.notifyCommand(command);
 		sendAcknowledgement(command.getAckId());
+	}
+
+	public void sendRollHash(String hash)
+	{
+		int id = localPlayer.getId();
+		RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
+		connectionManager.sendCommand(rollHashCommand);
+	}
+
+	public void sendRollNumber(String num)
+	{
+		int id = localPlayer.getId();
+		RollNumberCommand rollNumberCommand = new RollNumberCommand(id, num);
+		connectionManager.sendCommand(rollNumberCommand);
 	}
 
 	/**
@@ -489,6 +514,13 @@ public class NetworkedGame extends AbstractGame {
 	private void rollHashCommand(RollHashCommand command)
 	{
 		turnRollHashes[command.getPlayerId()] = command.getHash();
+
+		try {
+			die.addHash(command.getPlayerId(), command.getHash());
+		} catch (HashMismatchException e) {
+			Logger.printf("ERROR - Problem with player %ds hash - %s", command.getPlayerId(), e.getMessage());
+			System.exit(-1);
+		}
 
 		// If we've received them all, send the roll number.
 		boolean hashesReceived = true;
@@ -515,8 +547,13 @@ public class NetworkedGame extends AbstractGame {
 	private void rollNumberCommand(RollNumberCommand command)
 	{
 		turnRollNumbers[command.getPlayerId()] = command.getRollNumberHex();
-		// TODO verify number/hash match.
 
+		try {
+			die.addNumber(command.getPlayerId(), command.getRollNumberHex());
+		} catch (HashMismatchException e) {
+			Logger.printf("ERROR - Problem with player %ds number - %s", command.getPlayerId(), e.getMessage());
+			System.exit(-1);
+		}
 
 		boolean rollsReceived = true;
 
@@ -528,12 +565,35 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		if (rollsReceived && localPlayer != null) {
-			// TODO roll die, get first player.
+			try {
+				die.finalise();
+			} catch (HashMismatchException e) {
+				Logger.print("ERROR - Problem finalising all received numbers - " + e.getMessage());
+				System.exit(-1);
+			}
 
+			if (firstplayer == -1) {
+				firstplayer = (int) (die.nextInt() % getPlayers().size());
 
-			// Send the computed result of the dice roll to the interface.
-			RollResultCommand rollResult = new RollResultCommand(0);
-			localPlayer.notifyCommand(rollResult);
+				Logger.print("Player " + firstplayer + " will go first, rolling again to shuffle deck");
+				// Send the computed result of the dice roll to the interface.
+				RollResultCommand rollResult = new RollResultCommand(firstplayer);
+				localPlayer.notifyCommand(rollResult);
+
+				startDieRoll();
+			} else { // Deck order here
+				for (int i = 0; i < 44; i++) {
+					deckorder[i] = (int) (die.nextInt() % 44);
+					localPlayer.notifyCommand(new RollResultCommand(deckorder[i]));
+				}
+
+				for (Player player : getPlayers()) {
+					if (player.getType() == PlayerType.AI)
+						((AIPlayer)player).setDeckOrder(deckorder);
+					else if (player.getType() == PlayerType.LOCAL)
+						((LocalPlayer)player).setDeckOrder(deckorder);
+				}
+			}
 		}
 
 		if (rollsReceived) {

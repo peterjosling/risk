@@ -34,14 +34,13 @@ public class GameState {
 	private int remainingArmies = 0;
 	private ArrayList<Integer> deadPlayers = new ArrayList<Integer>();
 
-	private final int DECK_SIZE = 44;
-	private final int TEMP_SEED = 123456;
-
 	private int defDice;
 
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
+		//deck = new Deck(DECK_SIZE);
+		//deck.shuffle(TEMP_SEED);
 		initTradeInValues();
 		playerCards = new ArrayList<ArrayList<Card>>();
 		
@@ -63,7 +62,7 @@ public class GameState {
 			System.exit(-1);
 		}
 	}
-	
+
 	public void loadDefaultMap()
 	{
 		String json = "";
@@ -145,6 +144,7 @@ public class GameState {
 		return getTerritoriesForPlayer(-1);
 	}
 
+
 	/**
 	 * Get all territories currently owned by a player.
 	 * @param playerID ID of the player to find territories for.
@@ -205,8 +205,8 @@ public class GameState {
 			case ROLL_HASH:
 				playCommand((RollHashCommand) command);
 				break;
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 
@@ -238,44 +238,69 @@ public class GameState {
 
 	public void playCommand(AttackCommand command)
 	{
+		Logger.print("Attack command from " + command.getPlayerId());
 		if(!inAttackPhase){
 			attackPhaseCommands.add(command);
 		}
 		lastAttackSuccessful = false;
 		inAttackPhase = true;
-		if(attackPhaseCommands.size()==(2+getNumberOfPlayers()*2)){
-			ArrayList<String> rollHashes = new ArrayList<String>();
-			ArrayList<String> rollNumbers = new ArrayList<String>();
-			int dieFaces = 6;
-			int numberOfAttackingDice = command.getArmies();
-			int numberOfDefendingDice = defDice;
-			for(int commandIndex=1; commandIndex< attackPhaseCommands.size(); commandIndex++){
-				Command phaseCommand = attackPhaseCommands.get(commandIndex);
-				if(phaseCommand.getType() == CommandType.DEFEND){
-					numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+
+		try {
+			if (attackPhaseCommands.size() == (1 + getNumberOfPlayers() * 2)) {
+				Logger.print("Got all attack commands");
+				Die die = new Die();
+				//ArrayList<String> rollHashes = new ArrayList<String>();
+				//ArrayList<String> rollNumbers = new ArrayList<String>();
+
+				int dieFaces = 6;
+				int numberOfAttackingDice = command.getArmies();
+				int numberOfDefendingDice = defDice;
+				for (int commandIndex = 0; commandIndex < attackPhaseCommands.size(); commandIndex++) {
+					Command phaseCommand = attackPhaseCommands.get(commandIndex);
+					if (phaseCommand.getType() == CommandType.DEFEND) {
+						numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
+					}
+					if (phaseCommand.getType() == CommandType.ROLL_HASH) {
+						String hash = ((RollHashCommand) phaseCommand).getHash();
+						//rollHashes.add(hash);
+
+						Logger.print("Hash from " + phaseCommand.getPlayerId());
+						die.addHash(phaseCommand.getPlayerId(), hash);
+					}
+					if (phaseCommand.getType() == CommandType.ROLL_NUMBER) {
+						String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex(); // not a hash
+						//rollNumbers.add(rollNumberHash);
+						Logger.print("Number from " + phaseCommand.getPlayerId());
+						die.addNumber(phaseCommand.getPlayerId(), rollNumberHash);
+					}
 				}
-				if(phaseCommand.getType() == CommandType.ROLL_HASH){
-					String hash = ((RollHashCommand) phaseCommand).getHash();
-					rollHashes.add(hash);
+				//Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
+				Logger.print("Rolling dice for attack!");
+				die.finalise();
+				int[] resultingRolls = die.rollDiceNetwork(numberOfAttackingDice + numberOfDefendingDice);
+
+				/// INFORMATION ONLY
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < resultingRolls.length; i++)
+					sb.append(resultingRolls[i] + (i == resultingRolls.length - 1 ? "" : ", "));
+
+				Logger.print("The rolls: " + sb);
+				////////////////////
+
+				int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice, command.getPlayerId());
+				//apply result to board
+				removeArmiesForTerritory(command.getSource(), result[0]);
+				removeArmiesForTerritory(command.getDest(), result[1]);
+				if (map.findTerritoryById(command.getDest()).getArmies() == 0) {
+					attackSuccessful = true;
+					lastAttackSuccessful = true;
+					remainingArmies = numberOfAttackingDice - result[0];
 				}
-				if(phaseCommand.getType() == CommandType.ROLL_NUMBER){
-					String rollNumberHash = ((RollNumberCommand) phaseCommand).getRollNumberHex();
-					rollNumbers.add(rollNumberHash);
-				}
+				attackPhaseCommands.clear();
+				inAttackPhase = false;
 			}
-			Die die = new Die(rollHashes, rollNumbers, dieFaces, numberOfAttackingDice+numberOfDefendingDice);
-			int[] resultingRolls = die.rollDice();
-			int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice, command.getPlayerId());
-			//apply result to board
-			removeArmiesForTerritory(command.getSource(), result[0]);
-			removeArmiesForTerritory(command.getDest(), result[1]);
-			if(map.findTerritoryById(command.getDest()).getArmies() == 0){
-				attackSuccessful = true;
-				lastAttackSuccessful = true;
-				remainingArmies = numberOfAttackingDice-result[0];
-			}
-			attackPhaseCommands.clear();
-			inAttackPhase = false;
+		} catch (HashMismatchException e) {
+			Logger.print("ERROR - Encountered error during distributed dice roll: " + e.getMessage());
 		}
 	}
 
@@ -295,6 +320,7 @@ public class GameState {
 		int dRoll = 0;
 		int[] losses = new int[2]; //attack lose, defend lose
 		for(int roll =0; roll<rolls.length; roll++){
+
 			if(aRoll<numberOfAttackingDice){
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
@@ -328,6 +354,7 @@ public class GameState {
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 		}
+		Logger.print("Got sum hhash");
 	}
 
 	public void playCommand(RollNumberCommand command)
@@ -667,6 +694,7 @@ public class GameState {
 	{
 		return lastAttackSuccessful;
 	}
+
 	
 	public void setDeployableArmies(int armies)
 	{
@@ -674,8 +702,8 @@ public class GameState {
 			playersDeployableArmies[i] = armies;
 		}
 	}
-	
-	public void setAttackSuccessful(boolean attackSuccessful) 
+
+	public void setAttackSuccessful(boolean attackSuccessful)
 	{
 		this.attackSuccessful = attackSuccessful;
 	}
@@ -689,5 +717,9 @@ public class GameState {
 	{
 		return remainingArmies;
 	}
-}
 
+	public void setDeckOrder(int[] deckOrder)
+	{
+		deck.setOrder(deckOrder);
+	}
+}
