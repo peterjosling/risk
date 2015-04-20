@@ -419,7 +419,7 @@ class GameView extends View<Game> {
 			this.model.handleAttackCaptureMessage(message);
 		});
 
-		// TODO disable cancel button.
+		this.armyCountSelectView.show(true);
 	}
 
 	noFortifyButtonClick() {
