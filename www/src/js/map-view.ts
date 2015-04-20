@@ -39,13 +39,7 @@ class MapView extends View<Game> {
 
 			// Show number of armies.
 			var armies = territory.getArmies();
-			var armiesText = '<text x="50%" y="50%">' + armies + '</text>';
-
-			if (armies === 0) {
-				armiesText = '';
-			}
-
-			$territory.html(armiesText);
+			this.$('text[data-territory-id=' + territory.id + '] tspan').text(armies);
 		}, this);
 	}
 
