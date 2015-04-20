@@ -245,8 +245,8 @@ class GameView extends View<Game> {
 		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
 	}
 
-	startDefend(territoryId : number) {
-		var territory = this.model.map.territories.get(territoryId);
+	startDefend(payload : Array<number>) {
+		var territory = this.model.map.territories.get(payload[0]);
 		var maxArmies = Math.min(2, territory.getArmies());
 
 		this.model.setPhase('defend');
