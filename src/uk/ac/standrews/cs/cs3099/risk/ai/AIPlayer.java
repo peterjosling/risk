@@ -341,14 +341,14 @@ public class AIPlayer extends Player {
 			// IS IT FROZEN
 			boolean territoryFrozen = true;
 			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if(linkedTerritory.getId() != this.getId()) territoryFrozen = false;
+				if(linkedTerritory.getOwner() != this.getId()) territoryFrozen = false;
 			}
 			
-			if(territoryFrozen){
+			if(territoryFrozen && (territory.getArmies() -1 > details[2])){
 				// IS A LINKED TERRITORY BESIDE ENEMY
 				for(Territory linkedTerritory : territory.getLinkedTerritories()){
 					for(Territory linkedLinkedTerritory : linkedTerritory.getLinkedTerritories()){
-						if((linkedLinkedTerritory.getOwner() != this.getId() && (territory.getArmies() -1 > details[2]))){
+						if((linkedLinkedTerritory.getOwner() != this.getId())){
 							details[0] = territory.getId();
 							details[1] = linkedTerritory.getId();
 							details[2] = territory.getArmies() - 1;
