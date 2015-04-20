@@ -17,37 +17,41 @@ public class LocalPlayer extends Player {
 		return PlayerType.LOCAL;
 	}
 
+	/**
+	 * Create a LocalPlayer without a name
+	 * @param id the player id
+	 */
 	public LocalPlayer(int id)
 	{
 		super(id);
 	}
 
+	/**
+	 * Create a local player with a name
+	 * @param id the player id
+	 * @param name the name of the player
+	 */
 	public LocalPlayer(int id, String name)
 	{
 		super(id, name);
 	}
 
+	/**
+	 * Initialises the game state with a default map and a list of player ids
+	 * @param playerInts - ArrayList of player ids
+	 */
 	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
 		gameState = new GameState(playerInts);
 		gameState.loadDefaultMap();
 	}
-	
+
+	/**
+	 * @return the players copy of the gamestate
+	 */
 	public GameState getGameState()
 	{
 		return gameState;
-	}
-
-	@Override
-	public boolean isNeutral() 
-	{
-		return isNeutral;
-	}
-
-	@Override
-	public void setNeutral(boolean neutral)
-	{
-		isNeutral = neutral;
 	}
 
 	/**
@@ -546,6 +550,10 @@ public class LocalPlayer extends Player {
 		}
 	}
 
+	/**
+	 * Update the players game state for an ArmyCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
@@ -560,7 +568,11 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AssignArmyCommand.");
 		}
 	}
-	
+
+	/**
+	 * Update the players game state for an AttackCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(AttackCommand command)
 	{
 		this.attackSourceId = command.getSource();
@@ -575,7 +587,11 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for an FortifyCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(FortifyCommand command)
 	{
 		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0){
@@ -598,7 +614,11 @@ public class LocalPlayer extends Player {
 			}
 		}
 	}
-	
+
+	/**
+	 * Update the players game state for a Deploy and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(DeployCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
@@ -613,6 +633,10 @@ public class LocalPlayer extends Player {
 		}	
 	}
 
+	/**
+	 * Update the players game state for a DefendCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(DefendCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
@@ -623,7 +647,12 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid DefendCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for an AttackCaptureCommand and inform the user of what has happened via
+	 * the command line
+	 * @param command
+	 */
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
@@ -634,7 +663,11 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid AttackCaptureCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for a TimeoutCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
@@ -644,7 +677,12 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid TimeOutCommand.");
 		}		
 	}
-	
+
+	/**
+	 * Update the players game state for a LeaveGameCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
@@ -654,7 +692,11 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid LeaveGameCommand.");
 		}		
 	}
-	
+
+	/**
+	 * Update the players game state for a PlayCards and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(PlayCardsCommand command)
 	{
 		gameState.setDeployableArmies();
@@ -675,7 +717,12 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid PlayCardsCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for a RollNumberCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
 	public void notifyCommand(RollNumberCommand command)
 	{
 //		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
@@ -685,8 +732,13 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollNumberCommand.");
 		}	
 	}
-	
-	public void notifyCommand(RollHashCommand command)
+
+	/**
+	 * Update the players game state for a RollHashCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
+	public void notifyCommand(RollHashCommand command) 
 	{
 //		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){

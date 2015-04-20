@@ -27,6 +27,9 @@ public abstract class Player {
 
 	private int totalArmies = 0;
 
+	/**
+	 * Random names that can be used for players
+	 */
 	private final String[][] names = {{"Adam", "Alan", "Andrew", "Antony", "Arnald", "Arthur", "Aubrey", "Baldwin", "Barnard", "Bartholomew", "Benedict",
 									   "Charles", "Christopher", "David", "Denys", "Edmond", "Edmund", "Edward", "Elias", "Esmour", "Ethelbert", "Eustace",
 									   "Francis", "Gauwyn", "Geoffrey", "George", "Gerard", "Gilbert", "Giles", "Godfrey", "Guy", "Harry", "Henry", "Hitler",
@@ -59,6 +62,10 @@ public abstract class Player {
 									  };
 
 
+	/**
+	 * Constructor for a player without a name
+	 * @param id - the id of the player
+	 */
 	public Player(int id)
 	{
 		Random r = new Random();
@@ -67,11 +74,17 @@ public abstract class Player {
 		this.name = genName();
 	}
 
+	/**
+	 * Constructor for a player with a name
+	 * @param id the id of the player
+	 * @param name the name of the player
+	 */
 	public Player(int id, String name)
 	{
 		this.id = id;
 		this.name = name;
 	}
+
 //
 //	public void initialiseGameState(ArrayList<Integer> playerInts)
 //	{
@@ -91,9 +104,13 @@ public abstract class Player {
 	public byte[] getLastRollNumber(){
 		return lastRollNumber;
 	}
-	
+
 	public abstract PlayerType getType();
 
+	/**
+	 * Generate a random name
+	 * @return  the name
+	 */
 	public String genName()
 	{
 		Random r = new Random();
@@ -101,42 +118,76 @@ public abstract class Player {
 		return names[0][r.nextInt(names[0].length - 1)] + " " + names[1][r.nextInt(names[1].length - 1)];
 	}
 
+	/**
+	 * @return the players name
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * @return the players id
+	 */
 	public int getId()
 	{
 		return id;
 	}
 
+	/**
+	 * Sets the players id
+	 * @param id player id
+	 */
 	public void setId(int id)
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Checks whether the player can move a specified number of armies from one territory to another
+	 * @param src - the source territory
+	 * @param dst -  the destination territory
+	 * @param amount - the number of armies to move
+	 * @return true if player can move armies, false if not
+	 */
 	public boolean canMoveArmies(Territory src, Territory dst, int amount)
 	{
 		return src.getArmies() - 1 > amount && src.isLinkedTo(dst) &&
 				ownsTerritory(src) && ownsTerritory(dst);
 	}
 
+	/**
+	 * Adds a given card to the players list of hidden cards
+	 * @param c - the card
+	 */
 	public void addCard(Card c)
 	{
 		hiddenCards.add(c);
 	}
 
+	/**
+	 * Removes a players card from their hidden cards list to their used cards list
+	 * @param c
+	 */
 	public void playCard(Card c)
 	{
 		hiddenCards.remove(c);
 		usedCards.add(c);
 	}
 
+	/**
+	 * @return the list of cards the player has not yet played
+	 */
 	public List<Card> getCards(){
 		return hiddenCards;
 	}
 
+	/**
+	 * Given an id of a card in the hidden cards list return the instance of that card, if it exits
+	 * @param id the id of the card
+	 * @return the matching card
+	 * @throws CardNotFoundException
+	 */
 	public Card getCardByID(int id) throws CardNotFoundException{
 		for(Card card:hiddenCards){
 			if(card.getId()==id){
@@ -146,15 +197,44 @@ public abstract class Player {
 		throw new CardNotFoundException("Card Not Found");
 	}
 
+	/**
+	 * Checks if the player owen a given territory
+	 * @param t - the territory
+	 * @return true if player owns it, false if not
+	 */
 	public boolean ownsTerritory(Territory t)
 	{
 		return t.getOwner() == id;
 	}
 
+	/**
+	 * Gets a command from the user via appropriate mechanisms for each type of player
+	 * @param type the command type to get
+	 * @return the created command
+	 */
 	public abstract Command getCommand(CommandType type);
+
+	/**
+	 * Notifies all players about the specified command being actioned so that all players can update their game state
+	 * @param command
+	 */
 	public abstract void notifyCommand(Command command);
 
-	public abstract boolean isNeutral();
-	public abstract void setNeutral(boolean neutral);
-	
+	/**
+	 * @return whether the player is neural
+	 */
+	public boolean isNeutral()
+	{
+		return isNeutral;
+	}
+
+	/**
+	 * Set the whether the player is neutral
+	 * @param neutral
+	 */
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
+	}
+
 }

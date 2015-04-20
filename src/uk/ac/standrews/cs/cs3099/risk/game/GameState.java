@@ -499,7 +499,7 @@ public class GameState {
 	 * Draws a card from the top of the deck for a specified player
 	 * @param playerID the id of the player who is drawing a card
 	 */
-	public void drawCard(int playerID)
+	public Card drawCard(int playerID)
 	{
 		if(deck.getTopCardIndex() < 44){
 			System.out.println("Card Drawn: " + deck.getTopCardIndex());
