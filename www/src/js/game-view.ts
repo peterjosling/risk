@@ -289,9 +289,7 @@ class GameView extends View<Game> {
 					// TODO show roll result view.
 				});
 
-				this.armyCountSelectView.show();
-
-				// TODO handle clicking cancel in the modal.
+				this.armyCountSelectView.show(true);
 			}
 		} else if (phase === 'fortify') {
 			if (!this.message) {
@@ -348,9 +346,7 @@ class GameView extends View<Game> {
 					this.endTurn();
 				});
 
-				this.armyCountSelectView.show();
-
-				// TODO handle clicking cancel in the modal.
+				this.armyCountSelectView.show(true);
 			}
 		}
 	}
@@ -434,9 +430,7 @@ class GameView extends View<Game> {
 			this.model.sendMessage(message);
 		});
 
-		// TODO don't let the user click cancel.
-
-		this.armyCountSelectView.show();
+		this.armyCountSelectView.show(true);
 	}
 
 	highlightSelectableTerritories() {
