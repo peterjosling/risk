@@ -84,7 +84,12 @@ public abstract class AbstractGame {
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */
 	public abstract void assignTerritories();
-	
+
+	/**
+	 * Plays out the deployment phase of the game, getting a command from a player
+	 * updating the game state and notifying all players
+	 * @param player - the player to get the command from
+	 */
 	public void deploy(Player player)
 	{
 		Command command = player.getCommand(CommandType.DEPLOY);
@@ -94,7 +99,13 @@ public abstract class AbstractGame {
 		}
 		notifyPlayers(command);
 	}
-	
+
+	/**
+	 * Plays out the attack phase of the game, getting the appropriate commands from players
+	 * updating the game state and notifying all players
+	 * @param command - the attack command
+	 * @param player - the player who actioned the command
+	 */
 	public void attack(AttackCommand command, Player player)
 	{
 		Logger.print("Abstract attack");
@@ -131,27 +142,53 @@ public abstract class AbstractGame {
 			Logger.print("Attack Unsuccessful. Remaining Armies: " + gameState.getMap().findTerritoryById(command.getDest()).getArmies());
 		}
 	}
-	
-	public void fortify(FortifyCommand command){
+
+	/**
+	 * Plays out the fortify phase of the game, getting a command from a player
+	 * updating the game state and notifying all players
+	 * @param player - the player to get the fortify command from
+	 */
+	public void fortify(Player player)
+	{
+		Command command = player.getCommand(CommandType.FORTIFY);
 		if (command.getType() != CommandType.FORTIFY) {
 			return;
 		}
 		notifyPlayers(command);
 	}
-	
+
+	/**
+	 * Deals a card to the specified player when they are required to draw one.
+	 * @param player - the player who is drawing the card
+	 */
+	public void drawCard(Player player)
+	{
+		gameState.drawCard(player.getId());
+	}
+
+	/**
+	 * Plays out the playing cards phase of the game, getting a play cards command from a player
+	 * updating the game state and notifying all players
+	 * @param player
+	 */
+
 	public void playCards(Player player)
 	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
-		
 		if (command.getType() != CommandType.PLAY_CARDS) {
 			return;
 		}
 		notifyPlayers(command);
 	}
 
+	/**
+	 * Sends a notification to all players in the game so that they can update their game state and
+	 * plays out the command on the games game state
+	 * @param command - the command to notify
+	 */
 	public void notifyPlayers(Command command)
 	{
-		for(Player player: players){
+		for(Player player : players){
 			if (player.getId() != command.getPlayerId()) {
 				player.notifyCommand(command);
 			}
@@ -208,6 +245,11 @@ public abstract class AbstractGame {
 		return getCurrentTurnPlayer();
 	}
 
+	/**
+	 * Get a player instance given an id of that  player
+	 * @param playerId - the player required
+	 * @return the player instance or null if no player is found
+	 */
 	public Player getPlayerById(int playerId)
 	{
 		for(Player player : players){
@@ -215,15 +257,40 @@ public abstract class AbstractGame {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * @return a list of all the players in the game
+	 */
 	public List<Player> getPlayers()
 	{
 		return players;
 	}
-	
+
+	/**
+	 * @return the number of armies each player gets a the start of the game
+	 */
 	public int getArmiesPerPlayer()
 	{
 		return armiesPerPlayer;
+	}
+
+	/**
+	 * Checks whether a player has the ability to attack
+	 * @param player the player to check
+	 * @return true if player can attack, false if not
+	 */
+	public boolean canPlayerAttack(Player player)
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -231,7 +298,7 @@ public abstract class AbstractGame {
 	 */
 	public void terminate()
 	{
-
+		//TODO work out if we need to do something here or just delete it
 	}
 
 }
