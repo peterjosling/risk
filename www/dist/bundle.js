@@ -693,6 +693,9 @@
 	    });
 	    ConnectionView.prototype.connectButtonClick = function (e) {
 	        var _this = this;
+	        if (!this.$('.connect-form')[0].checkValidity()) {
+	            return true;
+	        }
 	        var hostname = this.$('#connection-host').val(), port = this.$('#connection-port').val(), ai = this.$('#connection-ai')[0].checked, name = this.$('#player-name').val();
 	        this.disableInputs();
 	        this.model.showToast('Connecting...');
@@ -709,6 +712,9 @@
 	    };
 	    ConnectionView.prototype.hostButtonClick = function (e) {
 	        var _this = this;
+	        if (!this.$('.host-form')[0].checkValidity()) {
+	            return true;
+	        }
 	        var port = +this.$('#host-port').val(), name = this.$('#host-player-name').val();
 	        this.disableInputs();
 	        this.model.showToast('Starting server...');
@@ -1626,7 +1632,7 @@
 
 	var Handlebars = __webpack_require__(40);
 	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-	  return "<form>\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form>\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
+	  return "<form class=\"connect-form\">\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form class=\"host-form\">\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
 	  },"useData":true});
 
 /***/ },
