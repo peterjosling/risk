@@ -82,6 +82,9 @@ public class ConnectionManager {
 		}
 	}
 
+	/**
+	 * @return true if acting as a host, false if not
+	 */
 	public boolean isServer()
 	{
 		return isServer;
@@ -101,14 +104,24 @@ public class ConnectionManager {
 		return null;
 	}
 
+	/**
+	 * Removes the specified player socket from the list of players sockets
+	 * @param socket the socket to remove
+	 */
 	public void removePlayerSocket(PlayerSocket socket){
 		playerSockets.remove(socket);
 	}
 
+	/**
+	 * @return the list of player sockets
+	 */
 	public ArrayList<PlayerSocket> getPlayerSockets(){
 		return playerSockets;
 	}
 
+	/**
+	 * @return the host server
+	 */
 	public HostServer getHostServer(){
 		return hostServer;
 	}

@@ -39,6 +39,9 @@ public class PlayerSocket implements Runnable {
 		writer.flush();
 	}
 
+	/**
+	 * Reads commands from the socket and passes them to the game to process
+	 */
 	@Override
 	public void run()
 	{
@@ -67,11 +70,17 @@ public class PlayerSocket implements Runnable {
 		}
 	}
 
+	/**
+	 * @return the player id of the player this socket connects to
+	 */
 	public int getPlayerId()
 	{
 		return playerId;
 	}
 
+	/**
+	 * Closes the socket
+	 */
 	public void disconnect(){
 		try {
 			socket.close();
