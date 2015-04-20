@@ -104,7 +104,6 @@ public abstract class AbstractGame {
 		}
 
 		if(gameState.getLastAttackSuccessful()){
-			System.out.println("HERE 4");
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
 		}

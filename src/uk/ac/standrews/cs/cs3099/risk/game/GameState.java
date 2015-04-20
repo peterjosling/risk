@@ -246,7 +246,6 @@ public class GameState {
 		lastAttackSuccessful = false;
 		inAttackPhase = true;
 		if(attackPhaseCommands.size()==(2+getNumberOfPlayers()*2)){
-			System.out.println("HERE 2");
 			ArrayList<String> rollHashes = new ArrayList<String>();
 			ArrayList<String> rollNumbers = new ArrayList<String>();
 			int dieFaces = 6;
@@ -273,7 +272,6 @@ public class GameState {
 			removeArmiesForTerritory(command.getSource(), result[0]);
 			removeArmiesForTerritory(command.getDest(), result[1]);
 			if(map.findTerritoryById(command.getDest()).getArmies() == 0){
-				System.out.println("HERE 3");
 				attackSuccessful = true;
 				lastAttackSuccessful = true;
 				remainingArmies = numberOfAttackingDice-result[0];
@@ -341,7 +339,6 @@ public class GameState {
 			attackPhaseCommands.add(command);
 		}
 		if(attackPhaseCommands.size()==(2+getNumberOfPlayers()*2)){
-			System.out.println("HERE");
 			playCommand(attackPhaseCommands.get(0));
 		}
 
