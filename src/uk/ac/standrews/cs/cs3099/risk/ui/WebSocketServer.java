@@ -120,9 +120,9 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		NetworkedGame game = new NetworkedGame();
 
 		Player player;
+		String name = command.getName();
 
 		if (command.useAi()) {
-			String name = "Test AI Player";
 			player = new UIAIPlayer(ws, 0, name, new AIPlayer(0, name));
 		} else {
 			player = new UIPlayer(ws, 0, "Test player");
@@ -131,7 +131,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 
-		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getHostname(), command.getPort());
+		NetworkedGameThread networkedGameThread = new NetworkedGameThread(game, command.getHostname(), command.getPort(), name);
 		new Thread(networkedGameThread).start();
 	}
 
@@ -143,7 +143,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		Player player = new UIPlayer(ws, 0, "Player names not implemented");
+		Player player = new UIPlayer(ws, 0, command.getName());
 		NetworkedGame game = new NetworkedGame();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);

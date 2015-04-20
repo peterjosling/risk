@@ -33,7 +33,6 @@ public class NetworkedGame extends AbstractGame {
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
 
-	
 	/**
 	 * Start a new host server.
 	 *
@@ -60,13 +59,13 @@ public class NetworkedGame extends AbstractGame {
 	 * @param port     The port to connect on.
 	 * @throws IOException
 	 */
-	public void connectToServer(String hostname, int port) throws IOException
+	public void connectToServer(String hostname, int port, String name) throws IOException
 	{
 		if (connectionManager != null) {
 			return;
 		}
 
-		JoinGameCommand joinGameCommand = new JoinGameCommand(SUPPORTED_VERSIONS, SUPPORTED_FEATURES);
+		JoinGameCommand joinGameCommand = new JoinGameCommand(SUPPORTED_VERSIONS, SUPPORTED_FEATURES, name);
 		connectionManager = new ConnectionManager(this, hostname, port);
 		connectionManager.sendCommand(joinGameCommand);
 		threadSafeRunGame();

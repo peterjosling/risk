@@ -7,12 +7,14 @@ import java.io.IOException;
 public class NetworkedGameThread implements Runnable {
 	private NetworkedGame game;
 	private String hostname;
+	private String name;
 	private int port;
 
-	public NetworkedGameThread(NetworkedGame game, String hostname, int port)
+	public NetworkedGameThread(NetworkedGame game, String hostname, int port, String name)
 	{
 		this(game, port);
 		this.hostname = hostname;
+		this.name = name;
 	}
 
 	public NetworkedGameThread(NetworkedGame game, int port)
@@ -32,7 +34,7 @@ public class NetworkedGameThread implements Runnable {
 			}
 		} else {
 			try {
-				game.connectToServer(hostname, port);
+				game.connectToServer(hostname, port, name);
 			} catch (IOException e) {
 				System.err.println("Failed to connect to remote host.");
 			}

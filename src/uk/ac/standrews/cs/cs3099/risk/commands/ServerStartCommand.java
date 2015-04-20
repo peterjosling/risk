@@ -17,6 +17,10 @@ public class ServerStartCommand extends Command {
 		return payload.port;
 	}
 
+	public String getName() {
+		return payload.name;
+	}
+
 	@Override
 	public CommandType getType()
 	{
@@ -24,6 +28,7 @@ public class ServerStartCommand extends Command {
 	}
 
 	private class ServerStartPayload {
+		String name;
 		int port;
 	}
 }
