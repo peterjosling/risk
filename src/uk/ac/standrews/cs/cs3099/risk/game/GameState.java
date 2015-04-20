@@ -502,14 +502,10 @@ public class GameState {
 	public boolean isCommandValid(AssignArmyCommand command)
 	{
 		int territoryId = command.getTerritoryId();
-
 		Territory territory = map.findTerritoryById(territoryId);
+		boolean allClaimed = getUnclaimedTerritories().length == 0;
 
-		if(territory.isClaimed()){
-			return false;
-		}
-
-		return true;
+		return (!allClaimed && !territory.isClaimed()) || (allClaimed && territory.getOwner() == command.getPlayerId());
 	}
 
 	public boolean isCommandValid(AttackCommand command)

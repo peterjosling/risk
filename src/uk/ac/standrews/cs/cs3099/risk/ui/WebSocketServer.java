@@ -2,7 +2,11 @@ package uk.ac.standrews.cs.cs3099.risk.ui;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import uk.ac.standrews.cs.cs3099.risk.commands.*;
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.commands.Command;
+import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.ServerConnectCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.ServerStartCommand;
 import uk.ac.standrews.cs.cs3099.risk.game.Player;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.network.ConnectionManager;
@@ -115,7 +119,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		System.out.println("Connecting");
 		NetworkedGame game = new NetworkedGame();
 
-		Player player = new UIPlayer(ws, 0, "Test player");
+		Player player;
+
+		if (command.useAi()) {
+			String name = "Test AI Player";
+			player = new UIAIPlayer(ws, 0, name, new AIPlayer(0, name));
+		} else {
+			player = new UIPlayer(ws, 0, "Test player");
+		}
+
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);
 

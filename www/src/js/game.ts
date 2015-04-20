@@ -114,7 +114,7 @@ class Game extends Model {
 	}
 
 	// Connect to a host server on the specified host and port.
-	connect(host : string, port : number) : Promise<Messages.Message> {
+	connect(host : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = false;
 
 		return new Promise<Messages.Message>((resolve, reject) => {
@@ -126,7 +126,8 @@ class Game extends Model {
 					command: 'server_connect',
 					payload: {
 						hostname: host,
-						port: port
+						port: port,
+						ai: ai
 					}
 				});
 			};
