@@ -3,11 +3,13 @@ import Game = require('./game');
 import PlayerListView = require('./player-list-view');
 import MapView = require('./map-view');
 import Messages = require('./messages');
+import CardSelectView = require('./card-select-view');
 import ArmyCountSelectView = require('./army-count-select-view');
 
 class GameView extends View<Game> {
 	template = <Function>require('../hbs/game-view.hbs');
 
+	cardSelectView : CardSelectView;
 	armyCountSelectView : ArmyCountSelectView;
 	message : Messages.Message;
 	deployableArmies : number = 0;
@@ -28,6 +30,7 @@ class GameView extends View<Game> {
 
 		var playerListView = new PlayerListView({ model: this.model });
 		var mapView = new MapView({model: this.model});
+		this.cardSelectView = new CardSelectView({collection: this.model.playerCards});
 		this.armyCountSelectView = new ArmyCountSelectView();
 
 		this.listenTo(mapView, 'territorySelect', this.territorySelected);
@@ -47,6 +50,10 @@ class GameView extends View<Game> {
 			{
 				view: this.armyCountSelectView,
 				el: '#army-count-select'
+			},
+			{
+				view: this.cardSelectView,
+				el: '#card-select'
 			}
 		];
 	}
@@ -86,11 +93,67 @@ class GameView extends View<Game> {
 			this.deployableArmies = this.model.getNewPlayerArmies();
 
 			if (this.model.playerCards.canTradeInCards()) {
-				// TODO show card trade in confirmation, or force it, or don't.
-				// TODO add the values of traded in hands to deployableArmies.
+				var playCardsMessage : Messages.PlayCardsMessage = {
+					command: 'play_cards',
+					payload: {
+						cards: [],
+						armies: -1
+					},
+					player_id: this.model.self.id
+				};
+
+				this.cardSelectView.show();
+				this.cardSelectView.off('trade');
+				this.cardSelectView.off('close');
+
+				// Add each set of cards to the command.
+				this.cardSelectView.on('trade', cards => {
+					this.model.playerCards.remove(cards);
+					playCardsMessage.payload.cards.push(cards);
+				});
+
+				this.cardSelectView.on('close', () => {
+					var cards = playCardsMessage.payload.cards;
+
+					if (cards.length === 0) {
+						playCardsMessage.payload = null;
+					} else {
+						// Get the value of the cards traded in.
+						for (var i = 0; i < cards.length; i++) {
+							this.deployableArmies += this.model.getCardArmies();
+						}
+
+						// Check if any of the cards traded in match an owned territory.
+						var bonusTerritory = null;
+
+						cards.forEach(set => {
+							set.forEach(card => {
+								var territory = card.getTerritory();
+
+								if (territory.getOwner() === this.model.self) {
+									bonusTerritory = territory;
+								}
+							});
+						});
+
+						// Automatically deploy bonus armies to one of the matched territories.
+						if (bonusTerritory) {
+							this.message = <Messages.DeployMessage>({
+								command: 'deploy',
+								payload: [[bonusTerritory.id, 2]],
+								player_id: this.model.self.id
+							});
+
+							bonusTerritory.addArmies(2);
+							this.model.trigger('change:map');
+						}
+					}
+
+					this.model.sendMessage(playCardsMessage);
+					this.startDeployPhase();
+				});
 			} else {
-				this.model.setPhase('deploy');
-				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true)
+				this.startDeployPhase();
 			}
 		}
 
@@ -290,6 +353,11 @@ class GameView extends View<Game> {
 				// TODO handle clicking cancel in the modal.
 			}
 		}
+	}
+
+	startDeployPhase() {
+		this.model.setPhase('deploy');
+		this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
 	}
 
 	startAttackPhase() {

@@ -20,6 +20,7 @@ class Game extends Model {
 	_isHost : boolean;
 	_phase : string = 'setup';
 	cardDrawn : boolean;
+	cardsTradedIn : number = 0;
 
 	attackDetails : {
 		attack: Messages.AttackMessage
@@ -119,6 +120,17 @@ class Game extends Model {
 		}
 
 		return armies;
+	}
+
+	// Calculate how many new armies are received for the nth set of cards traded.
+	getCardArmies() : number {
+		var n = ++this.cardsTradedIn;
+
+		if (n < 6) {
+			return 2 * n + 2;
+		}
+
+		return  5 * n - 15;
 	}
 
 	// Connect to a host server on the specified host and port.
@@ -279,6 +291,10 @@ class Game extends Model {
 
 			case 'fortify':
 				this.fortifyMessageReceived(<Messages.FortifyMessage>message);
+				break;
+
+			case 'play_cards':
+				this.playCardsMessageReceived(<Messages.PlayCardsMessage>message);
 				break;
 		}
 	}
@@ -574,6 +590,22 @@ class Game extends Model {
 		// Update the UI.
 		this.trigger('change:map');
 		this.updateArmyCounts()
+	}
+
+	private playCardsMessageReceived(message : Messages.PlayCardsMessage) {
+		var player = this.playerList.get(message.player_id);
+
+		if (message.payload !== null) {
+			this.showToast(player.name + ' traded in ' + message.payload.cards.length + ' sets of cards');
+		}
+
+		this.handlePlayCardsMessage(message);
+	}
+
+	public handlePlayCardsMessage(message : Messages.PlayCardsMessage) {
+		if (message.payload !== null) {
+			this.cardsTradedIn += message.payload.cards.length;
+		}
 	}
 }
 
