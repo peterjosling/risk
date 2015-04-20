@@ -55,17 +55,17 @@ public class LocalGame extends AbstractGame {
 	@Override
 	public void assignTerritories()	
 	{
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies(1);
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies(1);
-				break;				
-			}
-		}
-		gameState.setDeployableArmies(1);
+//		for(Player player : this.getPlayers()){
+//			switch (player.getType()) {
+//			case AI:
+//				((AIPlayer)player).getGameState().setDeployableArmies(1);
+//				break;
+//			case LOCAL:
+//				((LocalPlayer)player).getGameState().setDeployableArmies(1);
+//				break;				
+//			}
+//		}
+//		gameState.setDeployableArmies(1);
 		
 		Command command = null;
 
@@ -73,26 +73,11 @@ public class LocalGame extends AbstractGame {
 		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
 			printMap();
-			if(i < gameState.getMap().getTerritories().size()){
-				command = player.getCommand(CommandType.ASSIGN_ARMY);
-			} else {
-				command = player.getCommand(CommandType.DEPLOY);
-			}
+			
+			command = player.getCommand(CommandType.ASSIGN_ARMY);
 
 			notifyPlayers(command);
 		}
-		
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies(0);
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies(0);
-				break;				
-			}
-		}
-		gameState.setDeployableArmies(0);
 	}
 	
 	public void run()
@@ -100,24 +85,16 @@ public class LocalGame extends AbstractGame {
 		int noOfTurns = 0;
 	
 		printMap();
-
 		assignTerritories();
-		while(!gameState.isGameComplete()){
-//			if(noOfTurns%2 == 0){
-//				printMap();
-//				System.out.println("Press enter to continue.");
-//				String cont = EasyIn.getString();
-//			}
-			
+		while(!gameState.isGameComplete()){			
 			Player currentPlayer = nextTurn();
 			
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
+				calcDeployable();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
-//				printMap();
-//				System.out.println("Press enter to continue.");
-				String cont = EasyIn.getString();
+
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;
