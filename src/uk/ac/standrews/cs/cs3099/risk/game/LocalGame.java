@@ -72,6 +72,7 @@ public class LocalGame extends AbstractGame {
 		int totalTurns = this.getArmiesPerPlayer() * this.getPlayers().size();
 		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
+			printMap();
 			if(i < gameState.getMap().getTerritories().size()){
 				command = player.getCommand(CommandType.ASSIGN_ARMY);
 			} else {
@@ -114,6 +115,9 @@ public class LocalGame extends AbstractGame {
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
+//				printMap();
+//				System.out.println("Press enter to continue.");
+				String cont = EasyIn.getString();
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;

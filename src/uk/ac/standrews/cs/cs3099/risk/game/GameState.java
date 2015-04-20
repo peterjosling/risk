@@ -388,12 +388,12 @@ public class GameState {
 
 	public void playCommand(LeaveGameCommand command)
 	{
-			playerIDs.remove(command.getPlayerId());
+		playerIDs.remove(command.getPlayerId());
 	}
 
 	public void playCommand(TimeoutCommand command)
 	{
-			playerIDs.remove(command.getPlayerId());
+		playerIDs.remove(command.getPlayerId());
 	}
 
 	public int calculateArmiesFromTradeIn()
