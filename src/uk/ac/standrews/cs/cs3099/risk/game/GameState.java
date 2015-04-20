@@ -377,10 +377,12 @@ public class GameState {
 
 	public void drawCard(int playerID)
 	{
-		System.out.println("Card Drawn: " + deck.getTopCardIndex());
 		if(deck.getTopCardIndex() < 44){
+			System.out.println("Card Drawn: " + deck.getTopCardIndex());
 			Card drawnCard = deck.dealCard();
 			playerCards.get(playerID).add(drawnCard);
+		} else {
+			System.out.println("No Card Drawn.");
 		}
 	}
 
