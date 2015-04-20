@@ -241,12 +241,12 @@ public class GameState {
 		Logger.print("Attack command from " + command.getPlayerId());
 		if(!inAttackPhase){
 			attackPhaseCommands.add(command);
+			lastAttackSuccessful = false;
+			inAttackPhase = true;
 		}
-		lastAttackSuccessful = false;
-		inAttackPhase = true;
 
 		try {
-			if (attackPhaseCommands.size() == (1 + getNumberOfPlayers() * 2)) {
+			if (attackPhaseCommands.size() == (2 + getNumberOfPlayers() * 2)) {
 				Logger.print("Got all attack commands");
 				Die die = new Die();
 				//ArrayList<String> rollHashes = new ArrayList<String>();
@@ -255,7 +255,7 @@ public class GameState {
 				int dieFaces = 6;
 				int numberOfAttackingDice = command.getArmies();
 				int numberOfDefendingDice = defDice;
-				for (int commandIndex = 0; commandIndex < attackPhaseCommands.size(); commandIndex++) {
+				for (int commandIndex = 1; commandIndex < attackPhaseCommands.size(); commandIndex++) {
 					Command phaseCommand = attackPhaseCommands.get(commandIndex);
 					if (phaseCommand.getType() == CommandType.DEFEND) {
 						numberOfDefendingDice = ((DefendCommand) phaseCommand).getArmies();
@@ -354,7 +354,6 @@ public class GameState {
 		if(inAttackPhase) {
 			attackPhaseCommands.add(command);
 		}
-		Logger.print("Got sum hhash");
 	}
 
 	public void playCommand(RollNumberCommand command)

@@ -192,15 +192,22 @@ public class AIPlayer extends Player {
 
 	public Command getRollNumberCommand()
 	{
-		String hash = "";
-		RollNumberCommand command= new RollNumberCommand(this.getId(), hash);
+		Die die = this.getDie();
+		String number = die.byteToHex(this.getLastRollNumber());
+		
+		RollNumberCommand command= new RollNumberCommand(this.getId(), number);
 		notifyCommand(command);
 		return command;
 	}
 
 	public Command getRollHashCommand()
 	{
-		String hash = "";
+		Die die = this.getDie();
+		byte[] num = die.generateNumber();
+		this.setLastRollNumber(num);
+		byte[] numHash = die.hashByteArr(num);
+		String hash = die.byteToHex(numHash);
+		
 		RollHashCommand command = new RollHashCommand(this.getId(), hash);
 		notifyCommand(command);
 		return command;
@@ -600,7 +607,7 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(RollNumberCommand command)
 	{
-		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
+//		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
@@ -610,7 +617,7 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(RollHashCommand command)
 	{
-		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
+//		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
