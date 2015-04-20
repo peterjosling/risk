@@ -36,6 +36,10 @@ public class GameState {
 
 	private int defDice;
 
+	/**
+	 * Creates a game state with the provided list of players and start values for variables
+	 * @param players - an array list of players who are in the game
+	 */
 	public GameState(ArrayList<Integer> players)
 	{
 		playerIDs = players;
@@ -50,6 +54,10 @@ public class GameState {
 		playersDeployableArmies = new int[players.size()];
 	}
 
+	/**
+	 * Loads a a given json map into the game state
+	 * @param mapJSON
+	 */
 	public void loadMap(String mapJSON)
 	{
 		try {
@@ -63,6 +71,9 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Loads the default risk map into the game state
+	 */
 	public void loadDefaultMap()
 	{
 		String json = "";
@@ -87,10 +98,16 @@ public class GameState {
 		loadMap(json);
 	}
 
+	/**
+	 * @return the game state's map
+	 */
 	public Map getMap(){
 		return map;
 	}
 
+	/**
+	 * The number of armies received for each trade in i.e 4 at first then 6 at 2nd etc
+	 */
 	public void initTradeInValues(){
 		TRADE_IN_VALUES[0] = 4;
 		TRADE_IN_VALUES[1] = 6;
@@ -100,6 +117,11 @@ public class GameState {
 		TRADE_IN_VALUES[5] = 15;
 	}
 
+	/**
+	 * Checks whether a player is no longer in the game
+	 * @param player the id of the player to check for
+	 * @return true if player is dead, false if not
+	 */
 	public Boolean isPlayerDead(int player)
 	{
 		if(deadPlayers.contains(player)) {
@@ -108,28 +130,51 @@ public class GameState {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Adds player to the ArrayList of dead player ids
+	 * @param player the id of the player to be removed from the game
+	 */
 	public void addDeadPlayer(int player)
 	{
 		deadPlayers.add(player);
 	}
-	
+
+	/**
+	 * @return the total number of players in the game
+	 */
 	public int getNumberOfPlayers() {
 		return playerIDs.size();
 	}
 
-	public void removeArmiesFromTerritory(int id, int armies)
+	/**
+	 * Removes the specified number of armies from a territory
+	 * @param id the id of the territory
+	 * @param armies the number of armies to remove
+	 */
+	public void removeArmiesForTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.removeArmies(armies);
 	}
 
-	public void addArmiesToTerritory(int id, int armies)
+	/**
+	 * Adds the specified number of armies from a territory
+	 * @param id the id of the territory
+	 * @param armies the number of armies to remove
+	 */
+	public void addArmiesForTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.addArmies(armies);
 	}
 
+	/**
+	 * Moves the specified number of armies from one territory to another
+	 * @param from the source territory
+	 * @param to the destination territory
+	 * @param armies the number of armies to move
+	 */
 	public void moveArmies(int from, int to, int armies)
 	{
 		removeArmiesFromTerritory(from, armies);
@@ -163,12 +208,20 @@ public class GameState {
 		return territories.toArray(new Territory[0]);
 	}
 
+	/**
+	 * Returns the number of armies a specific player can deploy
+	 * @param playerID the id of the player
+	 * @return the number of armies the player can deploy
+	 */
 	public int getDeployableArmies(int playerID)
 	{
 		return playersDeployableArmies[playerID];
 	}
 
-
+	/**
+	 * Calls play command for the specific command given which updates the games state appropriately
+	 * @param command the command
+	 */
 	public void playCommand(Command command)
 	{
 		switch(command.getType()){
@@ -210,6 +263,10 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Updates the game state for an AssignArmiesCommand
+	 * @param command
+	 */
 	public void playCommand(AssignArmyCommand command)
 	{
 		Territory territory = map.findTerritoryById(command.getTerritoryId());
@@ -217,6 +274,10 @@ public class GameState {
 		if(!territory.isClaimed()) territory.claim(command.getPlayerId());
 	}
 
+	/**
+	 * Updates the game state for an FortifyCommand
+	 * @param command
+	 */
 	public void playCommand(FortifyCommand command)
 	{
 		if(command.getFortifyDetails() == null) return;
@@ -226,6 +287,10 @@ public class GameState {
 		moveArmies(source, destination, numberOfArmies);
 	}
 
+	/**
+	 * Updates the game state for an DeployCommand
+	 * @param command
+	 */
 	public void playCommand(DeployCommand command)
 	{
 		DeployCommand.Deployment[] deployments = command.getDeployments();
@@ -236,6 +301,11 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Updates the game state for an AttackCommand taking all the other commands that make up an attack phase and
+	 * using the information contained within them calculate and play out the result on the games state
+	 * @param command the AttackCommand
+	 */
 	public void playCommand(AttackCommand command)
 	{
 		Logger.print("Attack command from " + command.getPlayerId());
@@ -345,6 +415,10 @@ public class GameState {
 		return losses;
 	}
 
+	/**
+	 * Adds the command to the list of command that are required for an attack
+	 * @param command the defend command
+	 */
 	public void playCommand(DefendCommand command)
 	{
 		if(inAttackPhase) {
@@ -353,6 +427,10 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Adds the command to the list of command that are required for an attack
+	 * @param command a Roll Hash command
+	 */
 	public void playCommand(RollHashCommand command)
 	{
 		if(inAttackPhase) {
@@ -360,6 +438,10 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Adds the command to the list of command that are required for an attack
+	 * @param command a Roll Numeber command
+	 */
 	public void playCommand(RollNumberCommand command)
 	{
 		if(inAttackPhase) {
@@ -371,6 +453,10 @@ public class GameState {
 
 	}
 
+	/**
+	 * Updates the game state for an AttackCaptureCommand
+	 * @param command the attack capture command
+	 */
 	public void playCommand(AttackCaptureCommand command)
 	{
 		int[] captureDetails = command.getCaptureDetails();
@@ -382,6 +468,10 @@ public class GameState {
 		territory.claim(command.getPlayerId());
 	}
 
+	/**
+	 * Updates the game state for an PlayCardsCommand
+	 * @param command the play cards command
+	 */
 	public void playCommand(PlayCardsCommand command)
 	{
 		if(command.getCards() == null){
@@ -405,7 +495,11 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public Card drawCard(int playerID)
+	/**
+	 * Draws a card from the top of the deck for a specified player
+	 * @param playerID the id of the player who is drawing a card
+	 */
+	public void drawCard(int playerID)
 	{
 		if(deck.getTopCardIndex() < 44){
 			System.out.println("Card Drawn: " + deck.getTopCardIndex());
@@ -418,16 +512,28 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Updates the game state for an LeaveGameCommand
+	 * @param command the leave game command
+	 */
 	public void playCommand(LeaveGameCommand command)
 	{
 		playerIDs.remove(command.getPlayerId());
 	}
 
+	/**
+	 * Updates the game state when a player is timed out
+	 * @param command the timeout command
+	 */
 	public void playCommand(TimeoutCommand command)
 	{
 		playerIDs.remove(command.getPlayerId());
 	}
 
+	/**
+	 * Calculate the number of armies a player receives for a card trade in
+	 * @return the number of armies received
+	 */
 	public int calculateArmiesFromTradeIn()
 	{
 		if(tradeInCount<=5){
@@ -437,6 +543,10 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Checks whether a game is complete i.e. when one player owns all the territories in the game
+	 * @return true if compelte, false if not
+	 */
 	public boolean isGameComplete()
 	{
 		int player = -1;
@@ -450,7 +560,10 @@ public class GameState {
 		}
 		return true;
 	}
-	
+
+	/**
+	 * Sets the number of armies a player can deploy
+	 */
 	public void setDeployableArmies()
 	{
 		for(int player : playerIDs){
@@ -458,6 +571,11 @@ public class GameState {
 		}
 	}
 
+	/**
+	 * Calculates the number of armies a player can deploy based solely on the territories they own
+	 * @param playerId the id of the player to calculate for
+	 * @return the number of deployable armies
+	 */
 	public int calculateDeployArmies(int playerId)
 	{
 		int deployableTroops = 0;
@@ -489,6 +607,13 @@ public class GameState {
 		return deployableTroops;
 	}
 
+	/**
+	 * Checks whether a player owns the two specified territories and whether they are adjacent on the map
+	 * @param playerId the id of the player
+	 * @param source the source territory
+	 * @param dest the destination territory
+	 * @return true if they are belong to the player and connected, false if otherwise
+	 */
 	public boolean areOwnedTerritoriesConnected(int playerId, Territory source, Territory dest)
 	{
 		if(source == null || dest == null) return false;
@@ -497,6 +622,11 @@ public class GameState {
 		return false;
 	}
 
+	/**
+	 * Checks whether a given command is allowed according to the rules
+	 * @param command the command to validate
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(Command command)
 	{
 		switch(command.getType()){
@@ -529,6 +659,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an AssignArmyCommand is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(AssignArmyCommand command)
 	{
 		int territoryId = command.getTerritoryId();
@@ -539,6 +674,11 @@ public class GameState {
 		return (!allClaimed && !territory.isClaimed()) || (allClaimed && territory.getOwner() == command.getPlayerId());
 	}
 
+	/**
+	 * Checks whether an Attack command is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(AttackCommand command)
 	{
 		if ((command.getSource() > map.getTerritories().size() - 1)
@@ -563,6 +703,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an FortifyCommand is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(FortifyCommand command)
 	{
 		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0) return true;
@@ -594,6 +739,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an DeployCommand is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(DeployCommand command)
 	{
 		int playerId = command.getPlayerId();
@@ -616,6 +766,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an Defend Command is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(DefendCommand command)
 	{
 		if ((command.getArmies() < 1) || (command.getArmies() > 2))
@@ -623,6 +778,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an AttackCapture Command is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(AttackCaptureCommand command)
 	{
 		int playerId = command.getPlayerId();
@@ -651,6 +811,11 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 * Checks whether an PlayCards Command is valid
+	 * @param command
+	 * @return true if valid, false if not
+	 */
 	public boolean isCommandValid(PlayCardsCommand command)
 	{
 		Card[][] cards = command.getCards();
@@ -701,12 +866,19 @@ public class GameState {
 		return true;
 	}
 
+	/**
+	 *
+	 * @return true if the last attack that took place was successful, false if it failed
+	 */
 	public boolean getLastAttackSuccessful()
 	{
 		return lastAttackSuccessful;
 	}
 
-	
+	/**
+	 * Sets the number of armies a player can deploy to the specified number
+	 * @param armies the number of armies
+	 */
 	public void setDeployableArmies(int armies)
 	{
 		for(int i = 0; i < playersDeployableArmies.length; i ++){
@@ -714,16 +886,27 @@ public class GameState {
 		}
 	}
 
-	public void setAttackSuccessful(boolean attackSuccessful)
+	/**
+	 * Sets attack successful to the specified value
+	 * @param attackSuccessful
+	 */
+	public void setAttackSuccessful(boolean attackSuccessful) 
 	{
 		this.attackSuccessful = attackSuccessful;
 	}
 
+	/**
+	 * @return whether the attack was successful
+	 */
 	public boolean getAttackSuccessful()
 	{
 		return attackSuccessful;
 	}
-	
+
+	/**
+	 * Returns the number of armies remaining on a territory after an attack has taken place
+	 * @return the number of armies
+	 */
 	public int getRemainingArmies()
 	{
 		return remainingArmies;
