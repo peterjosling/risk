@@ -2,6 +2,8 @@ import Collection = require('./collection');
 import Card = require('./card');
 
 class CardList extends Collection<Card> {
+	shuffled : boolean = false;
+
 	// Check if there are any valid sets of cards in this deck.
 	canTradeInCards() : boolean {
 		var artilleryCount = this.where({type: 'artillery'}).length;
