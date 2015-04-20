@@ -20,6 +20,12 @@ class Game extends Model {
 	_isHost : boolean;
 	_phase : string = 'setup';
 
+	attackDetails : {
+		attack: Messages.AttackMessage
+		defend: Messages.DefendMessage
+		rolls: Array<Messages.RollResultMessage>
+	};
+
 	constructor(options?) {
 		super(options);
 		this.playerList = new PlayerList();
@@ -257,12 +263,20 @@ class Game extends Model {
 				this.defendMessageReceived(<Messages.DefendMessage>message);
 				break;
 
+			case 'attack_capture':
+				this.attackCaptureMessageReceived(<Messages.AttackCaptureMessage>message);
+				break;
+
 			case 'deploy':
 				this.deployMessageReceived(<Messages.DeployMessage>message);
 				break;
 
 			case 'roll_result':
 				this.rollResultMessageReceived(<Messages.RollResultMessage>message);
+				break;
+
+			case 'fortify':
+				this.fortifyMessageReceived(<Messages.FortifyMessage>message);
 				break;
 		}
 	}
@@ -375,6 +389,12 @@ class Game extends Model {
 		if (isLocalPlayer) {
 			this.trigger('defend', message.payload);
 		}
+
+		this.attackDetails = {
+			attack: message,
+			defend: null,
+			rolls: []
+		};
 	}
 
 	private defendMessageReceived(message : Messages.DefendMessage) {
@@ -384,7 +404,28 @@ class Game extends Model {
 	}
 
 	public handleDefendMessage(message : Messages.DefendMessage) {
-		// TODO store defend details.
+		this.attackDetails.defend = message;
+	}
+
+	private attackCaptureMessageReceived(message : Messages.AttackCaptureMessage) {
+		var player = this.playerList.get(message.player_id);
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		this.showToast(player.name + ' captured ' + dest.getName() + ' and moved in ' + armies + ' from ' + source.getName());
+		this.handleAttackCaptureMessage(message);
+	}
+
+	public handleAttackCaptureMessage(message : Messages.AttackCaptureMessage) {
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		source.addArmies(-armies);
+		dest.addArmies(armies);
+
+		this.trigger('change:map');
 	}
 
 	private deployMessageReceived(message : Messages.DeployMessage) {
@@ -404,10 +445,9 @@ class Game extends Model {
 			territory.addArmies(deployment[1]);
 		});
 
-		this.updateArmyCounts();
-
-		// Trigger change to update the map view.
+		// Update the UI.
 		this.trigger('change:map');
+		this.updateArmyCounts()
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
@@ -416,9 +456,104 @@ class Game extends Model {
 			this.set('currentPlayer', message.payload);
 			var player = this.getCurrentPlayer();
 			this.showToast(player.name + ' to play first');
-		} else {
+		} else if (!this.map.deck.shuffled) {
 			// TODO
+		} else {
+			this.attackDetails.rolls.push(message);
+			var attackRollCount = this.attackDetails.attack.payload[2];
+			var defendRollCount = this.attackDetails.defend.payload;
+
+			// If we've got all the dice rolls, calculate the result.
+			if (this.attackDetails.rolls.length === attackRollCount + defendRollCount) {
+				var rolls = this.attackDetails.rolls;
+				var attackRolls = [];
+				var defendRolls = [];
+
+				for (var i = 0; i < rolls.length; i++) {
+					if (i < attackRollCount) {
+						attackRolls.push(rolls[i]);
+					} else {
+						defendRolls.push(rolls[i]);
+					}
+				}
+
+				attackRolls.sort();
+				defendRolls.sort();
+
+				// Calculate win/lose for each pair of dice.
+				var rollNumber = 1;
+
+				while (attackRolls.length && defendRolls.length) {
+					var attackMax = attackRolls.pop();
+					var defendMax = defendRolls.pop();
+
+					var losingTerritory;
+
+					// Decide which territory won. Defender always wins in a tie.
+					if (attackMax > defendMax) {
+						losingTerritory = this.attackDetails.attack[1];
+					} else {
+						losingTerritory = this.attackDetails.attack[0];
+					}
+
+					// Remove one army from the losing territory.
+					var territory = this.map.territories.get(losingTerritory);
+					territory.addArmies(-1);
+
+					// Show the result.
+					this.showToast('Roll ' + rollNumber + ': ' + territory.getName() + ' lost an army');
+
+					rollNumber++;
+				}
+
+				// Clear stored attack details.
+				this.attackDetails = null;
+
+				// Update the UI.
+				this.trigger('change:map');
+				this.updateArmyCounts();
+
+				// Let the game view create an attack_capture command if the local player won the attack.
+				if (this.attackDetails.attack.payload[0] === this.self.id) {
+					this.trigger('attackCapture');
+				}
+			}
 		}
+	}
+
+	private fortifyMessageReceived(message : Messages.FortifyMessage) {
+		var player = this.playerList.get(message.player_id);
+		var toastMessage;
+
+		if (message.payload) {
+			var source = this.map.territories.get(message.payload[0]);
+			var dest = this.map.territories.get(message.payload[1]);
+			var armies = message.payload[2];
+
+			toastMessage = player.name + ' moved ' + armies + ' armies from ' + source.getName() + ' to ' + dest.getName();
+		} else {
+			toastMessage = player.name + ' has chosen not to fortify';
+		}
+
+		this.showToast(toastMessage);
+		this.handleFortifyMessage(message);
+	}
+
+	public handleFortifyMessage(message : Messages.FortifyMessage) {
+		if (message.payload === null) {
+			return;
+		}
+
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		source.addArmies(armies);
+		dest.addArmies(-armies);
+
+		// Update the UI.
+		this.trigger('change:map');
+		this.updateArmyCounts()
 	}
 }
 

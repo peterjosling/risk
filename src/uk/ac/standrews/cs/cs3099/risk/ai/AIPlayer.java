@@ -54,8 +54,6 @@ public class AIPlayer extends Player {
 				return getFortifyCommand();
 			case DEPLOY:
 				return getDeployCommand();
-			case DRAW_CARD:
-				return getDrawCardCommand();
 			case DEFEND:
 				return getDefendCommand();
 			case JOIN_GAME:
@@ -176,7 +174,7 @@ public class AIPlayer extends Player {
 			// Pick the first free territory to claim.
 			territory = freeTerritories[0];
 		} else {
-			// All claimed - reinforce the first available.
+			// All claimed - reinforce the first available. TODO - IMPROVE
 			Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
 			territory = territories[0];
 		}
@@ -330,18 +328,6 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
-	public Command getDrawCardCommand()
-	{
-		DrawCardCommand command = new DrawCardCommand(this.getId(), lastAckid++);
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
-		} else {
-			System.out.println("Invalid Draw Card Command, please try again.");
-		}	
-		return null;
-	}
-
 	public Command getFortifyCommand() 
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
@@ -439,9 +425,6 @@ public class AIPlayer extends Player {
 		case DEPLOY:
 			notifyCommand((DeployCommand) command);
 			break;
-		case DRAW_CARD:
-			notifyCommand((DrawCardCommand) command);
-			break;
 		case DEFEND:
 			notifyCommand((DefendCommand) command);
 			break;
@@ -535,17 +518,7 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid DeployCommand.");
 		}	
 	}
-	
-	public void notifyCommand(DrawCardCommand command)
-	{
-		System.out.println("Player " + command.getPlayerId() + " has drawn a card.");
-		if(gameState.isCommandValid(command)){
-			gameState.playCommand(command);
-		} else {
-			System.out.println("Invalid DrawCardCommand.");
-		}	
-	}
-	
+
 	public void notifyCommand(DefendCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
