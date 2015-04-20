@@ -20,16 +20,27 @@ public abstract class AbstractGame {
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
 
+	/**
+	 * Adds a player to the List of players in the game
+	 * @param player the player instance to add
+	 */
 	public void addPlayer(Player player)
 	{
 		players.add(player);
 	}
 
+	/**
+	 * Loads a map given as a json string
+	 * @param jsonMap - the json representation of a map
+	 */
 	public void loadMap(String jsonMap)
 	{
 		gameState.loadMap(jsonMap);
 	}
 
+	/**
+	 * Loads the default json map for a standard risk game
+	 */
 	public void loadDefaultMap()
 	{
 		String json = "";
@@ -54,6 +65,9 @@ public abstract class AbstractGame {
 		loadMap(json);
 	}
 
+	/**
+	 * Initialises the game state
+	 */
 	public void init()
 	{
 		ArrayList<Integer> playerIds = new ArrayList<Integer>();
