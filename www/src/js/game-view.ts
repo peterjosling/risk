@@ -282,8 +282,7 @@ class GameView extends View<Game> {
 					this.model.sendMessage(this.message);
 					this.message = null;
 
-					// Draw card, end turn.
-					this.drawCard();
+					this.endTurn();
 				});
 
 				this.armyCountSelectView.show();
@@ -341,13 +340,11 @@ class GameView extends View<Game> {
 		};
 
 		this.model.sendMessage(message);
-
-		// Draw card, end turn.
-		this.drawCard();
+		this.endTurn();
 	}
 
-	drawCard() {
-		// TODO
+	endTurn() {
+		this.model.nextTurn();
 	}
 
 	startDefend(payload : Array<number>) {

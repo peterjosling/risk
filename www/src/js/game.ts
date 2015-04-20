@@ -19,6 +19,7 @@ class Game extends Model {
 	playerCards : CardList = new CardList();
 	_isHost : boolean;
 	_phase : string = 'setup';
+	cardDrawn : boolean;
 
 	attackDetails : {
 		attack: Messages.AttackMessage
@@ -91,6 +92,7 @@ class Game extends Model {
 			}
 		}
 
+		this.cardDrawn = false;
 		this.set('currentPlayer', id);
 	}
 
@@ -506,17 +508,35 @@ class Game extends Model {
 					rollNumber++;
 				}
 
-				// Clear stored attack details.
-				this.attackDetails = null;
-
 				// Update the UI.
 				this.trigger('change:map');
 				this.updateArmyCounts();
 
 				// Let the game view create an attack_capture command if the local player won the attack.
-				if (this.attackDetails.attack.payload[0] === this.self.id) {
-					this.trigger('attackCapture');
+				var defendingTerritory = this.map.territories.get(this.attackDetails.attack[1]);
+				var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
+
+				if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
+					this.trigger('attackCapture', this.attackDetails.attack);
 				}
+
+				// Take a card for this player if they won the attack.
+				if (defendingTerritory.getArmies() === 0 && !this.cardDrawn) {
+					this.cardDrawn = true;
+
+					var card = this.map.deck.first();
+
+					if (card) {
+						this.map.deck.remove(card);
+
+						if (attackingPlayer === this.self) {
+							this.playerCards.add(card);
+						}
+					}
+				}
+
+				// Clear stored attack details.
+				this.attackDetails = null;
 			}
 		}
 	}
