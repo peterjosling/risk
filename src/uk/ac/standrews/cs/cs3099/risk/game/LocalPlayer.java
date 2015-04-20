@@ -344,6 +344,8 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getPlayCardsCommand()
 	{
+		gameState.setDeployableArmies();
+
 		PlayCardsCommand command = null;
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();

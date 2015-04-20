@@ -18,6 +18,8 @@ public abstract class Player {
 	private String name;
 	protected int lastAckid = 0;
 	protected boolean isNeutral = true;
+	private Die die = new Die();
+	private byte[] lastRollNumber;
 
 	// Game state properties
 	private List<Card> usedCards = new ArrayList<Card>();
@@ -76,6 +78,19 @@ public abstract class Player {
 //		gameState = new GameState(playerInts);
 //		gameState.loadDefaultMap();
 //	}
+	
+	public Die getDie()
+	{
+		return die;
+	}
+	
+	public void setLastRollNumber(byte[] num){
+		this.lastRollNumber = num;
+	}
+	
+	public byte[] getLastRollNumber(){
+		return lastRollNumber;
+	}
 	
 	public abstract PlayerType getType();
 

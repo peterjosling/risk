@@ -90,7 +90,6 @@ public abstract class AbstractGame {
 
 		Command attackCommand = player.getCommand(CommandType.ATTACK);
 		if (attackCommand.getType() != CommandType.ATTACK) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);
@@ -103,15 +102,11 @@ public abstract class AbstractGame {
 		}
 		notifyPlayers(defCommand);
 
-		Logger.print("Sending my hash (" + die.byteToHex(numhash) + ")");
-		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(numhash)));
 		for(Player playerRoll : players){
 			Command rollHash = playerRoll.getCommand(CommandType.ROLL_HASH);
 			notifyPlayers(rollHash);
 		}
-
-		Logger.print("Sending my num (" + die.byteToHex(num) + ")");
-		notifyPlayers(new RollHashCommand(player.getId(), die.byteToHex(num)));
+		
 		for(Player playerRoll : players){
 			Command rollNumber = playerRoll.getCommand(CommandType.ROLL_NUMBER);
 			notifyPlayers(rollNumber);
