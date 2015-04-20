@@ -239,6 +239,8 @@ class GameView extends View<Game> {
 	}
 
 	highlightSelectableTerritories() {
+		this.clearHighlightedTerritories();
+
 		var invalidTerritories = [];
 		var phase = this.model.getPhase();
 
