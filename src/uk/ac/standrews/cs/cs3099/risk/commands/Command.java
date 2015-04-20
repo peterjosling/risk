@@ -16,6 +16,8 @@ public abstract class Command {
 		builder.registerTypeAdapter(PlayersJoinedCommand.PlayersNames.class, new PlayersJoinedCommand.PlayersNamesDeserializer());
 		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandSerializer());
 		builder.registerTypeAdapter(PingCommand.class, new PingCommand.PingCommandDeserializer());
+		builder.registerTypeAdapter(DeployCommand.Deployment.class, new DeployCommand.DeploymentDeserializer());
+		builder.registerTypeAdapter(DeployCommand.Deployment.class, new DeployCommand.DeploymentSerializer());
 		gson = builder.serializeNulls().create();
 	}
 
@@ -60,6 +62,11 @@ public abstract class Command {
 	public int getAckId()
 	{
 		return ack_id;
+	}
+
+	public void setAckId(int ack_id)
+	{
+		this.ack_id = ack_id;
 	}
 
 	public abstract CommandType getType();

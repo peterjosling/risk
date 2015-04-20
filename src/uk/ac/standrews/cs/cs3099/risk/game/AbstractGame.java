@@ -1,6 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
@@ -20,11 +19,6 @@ public abstract class AbstractGame {
 	protected int armiesPerPlayer;
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
-
-	public AbstractGame(int armiesPerPlayer)
-	{
-		this.armiesPerPlayer = armiesPerPlayer;
-	}
 
 	public void addPlayer(Player player)
 	{
@@ -67,10 +61,11 @@ public abstract class AbstractGame {
 		for(Player player: players){
 			playerIds.add(player.getId());
 		}
-
+		armiesPerPlayer = 50-5*players.size();
 		gameState = new GameState(playerIds);
 		loadDefaultMap();
 	}
+	
 	/**
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */
@@ -86,7 +81,7 @@ public abstract class AbstractGame {
 		notifyPlayers(command);
 	}
 	
-	public void attack(Player player)
+	public void attack(AttackCommand command, Player player)
 	{
 		Die die = new Die();
 		byte[] num = die.generateNumber();
@@ -97,13 +92,12 @@ public abstract class AbstractGame {
 			terminate();
 			return;
 		}
-		notifyPlayers(attackCommand);
+		notifyPlayers(command);
 		
-		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) attackCommand).getDest());
+		Territory defTerritory = gameState.getMap().findTerritoryById(((AttackCommand) command).getDest());
 		Player defPlayer = getPlayerById(defTerritory.getOwner());
 		Command defCommand = defPlayer.getCommand(CommandType.DEFEND);
 		if (defCommand.getType() != CommandType.DEFEND) {
-			terminate();
 			return;
 		}
 		notifyPlayers(defCommand);
@@ -119,8 +113,6 @@ public abstract class AbstractGame {
 			Command rollNumber = playerRoll.getCommand(CommandType.ROLL_NUMBER);
 			notifyPlayers(rollNumber);
 		}
-		
-		notifyPlayers(attackCommand);
 
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
@@ -132,7 +124,6 @@ public abstract class AbstractGame {
 	{
 		Command command = player.getCommand(CommandType.FORTIFY);
 		if (command.getType() != CommandType.FORTIFY) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);
@@ -140,18 +131,13 @@ public abstract class AbstractGame {
 	
 	public void drawCard(Player player)
 	{
-		Command command = player.getCommand(CommandType.DRAW_CARD);
-		if (command.getType() != CommandType.DRAW_CARD) {
-			terminate();
-			return;
-		}
-		notifyPlayers(command);
+		gameState.drawCard(player.getId());
 	}
 
-	public void playCards(Player player){
+	public void playCards(Player player)
+	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
 		if (command.getType() != CommandType.PLAY_CARDS) {
-			terminate();
 			return;
 		}
 		notifyPlayers(command);
@@ -160,7 +146,9 @@ public abstract class AbstractGame {
 	public void notifyPlayers(Command command)
 	{
 		for(Player player: players){
-			player.notifyCommand(command);
+			if (player.getId() != command.getPlayerId()) {
+				player.notifyCommand(command);
+			}
 		}
 		gameState.playCommand(command);
 	}
@@ -170,7 +158,8 @@ public abstract class AbstractGame {
 	 *
 	 * @return Index of the current player, relative to the list of players sorted by ascending ID.
 	 */
-	public int getCurrentTurn() {
+	public int getCurrentTurn() 
+	{
 		return currentTurn;
 	}
 
@@ -179,7 +168,13 @@ public abstract class AbstractGame {
 	 */
 	public Player getCurrentTurnPlayer()
 	{
-		return players.get(currentTurn);
+		for (Player player : players) {
+			if (player.getId() == currentTurn) {
+				return player;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -215,7 +210,21 @@ public abstract class AbstractGame {
 	{
 		return armiesPerPlayer;
 	}
-	
+
+	public boolean canPlayerAttack(Player player)
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */
@@ -223,6 +232,5 @@ public abstract class AbstractGame {
 	{
 
 	}
-
 
 }

@@ -4,6 +4,7 @@ import Player = require('./player');
 import PlayerList = require('./player-list');
 import Messages = require('./messages');
 import Map = require('./map');
+import CardList = require('./card-list');
 
 var defaultMapJson = require('../../default-map.json');
 
@@ -14,14 +15,14 @@ class Game extends Model {
 
 	playerList : PlayerList;
 	self : Player;
-	map : Map;
+	map : Map = new Map();
+	playerCards : CardList = new CardList();
 	_isHost : boolean;
 	_phase : string = 'setup';
 
 	constructor(options?) {
 		super(options);
 		this.playerList = new PlayerList();
-		this.map = new Map();
 		this.map.fromJSON(defaultMapJson);
 		this.set('currentPlayer', -1);
 	}
@@ -45,6 +46,17 @@ class Game extends Model {
 	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
 	getPhase() : string {
 		return this._phase;
+	}
+
+	// Set the current game phase.
+	setPhase(phase : string) {
+		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+
+		if (validPhases.indexOf(phase) === -1) {
+			throw new Error('Invalid phase specified');
+		}
+
+		this._phase = phase;
 	}
 
 	// Advance to the next (active) player's turn.
@@ -76,8 +88,33 @@ class Game extends Model {
 		this.set('currentPlayer', id);
 	}
 
+	// Calculate how many new armies the player is going to receive.
+	getNewPlayerArmies() : number {
+		// Calculate the number of armies received for territories.
+		var territoryCount = this.self.getTerritories();
+		var armies = Math.floor(territoryCount / 3);
+
+		// Calculate the number of armies received for continents.
+		this.map.continents.forEach(continent => {
+			var continentOwned = continent.territories.every(territory => {
+				return territory.getOwner() === this.self;
+			});
+
+			if (continentOwned) {
+				armies += continent.getValue();
+			}
+		});
+
+		// Each player always receives a minimum of 3 armies.
+		if (armies < 3) {
+			armies = 3;
+		}
+
+		return armies;
+	}
+
 	// Connect to a host server on the specified host and port.
-	connect(host : string, port : number) : Promise<Messages.Message> {
+	connect(host : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = false;
 
 		return new Promise<Messages.Message>((resolve, reject) => {
@@ -89,7 +126,8 @@ class Game extends Model {
 					command: 'server_connect',
 					payload: {
 						hostname: host,
-						port: port
+						port: port,
+						ai: ai
 					}
 				});
 			};
@@ -117,6 +155,7 @@ class Game extends Model {
 
 		this.self = new Player({
 			player_id: 0,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 
@@ -145,8 +184,8 @@ class Game extends Model {
 	}
 
 	// Show a toast-style text message to the user.
-	showToast(message : string) {
-		this.trigger('toast', message);
+	showToast(message : string, persistent? : boolean) {
+		this.trigger('toast', message, persistent);
 	}
 
 	// Read army/territory counts from every territory and update each player's count.
@@ -240,6 +279,7 @@ class Game extends Model {
 	private acceptJoinGameMessageReceived(message : Messages.AcceptJoinGameMessage) {
 		this.self = new Player({
 			player_id: message.payload.player_id,
+			isActive: true,
 			name: 'TODO Implement player names'
 		});
 
@@ -328,11 +368,13 @@ class Game extends Model {
 		}
 
 		this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
-		this.handleAttackMessage(message);
+		this.handleAttackMessage(message, destPlayer === this.self);
 	}
 
-	public handleAttackMessage(message : Messages.AttackMessage) {
-		// TODO store attack details.
+	public handleAttackMessage(message : Messages.AttackMessage, isLocalPlayer : boolean) {
+		if (isLocalPlayer) {
+			this.trigger('defend', message.payload);
+		}
 	}
 
 	private defendMessageReceived(message : Messages.DefendMessage) {
@@ -363,6 +405,9 @@ class Game extends Model {
 		});
 
 		this.updateArmyCounts();
+
+		// Trigger change to update the map view.
+		this.trigger('change:map');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {

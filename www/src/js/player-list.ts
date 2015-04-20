@@ -7,8 +7,8 @@ class PlayerList extends Collection<Player> {
 	}
 
 	getActivePlayerCount() : number {
-		return this.reduce(player => {
-			return (player.isActive) ? 1 : 0;
+		return this.reduce((prev, player) => {
+			return prev + ((player.isActive) ? 1 : 0);
 		}, 0);
 	}
 }

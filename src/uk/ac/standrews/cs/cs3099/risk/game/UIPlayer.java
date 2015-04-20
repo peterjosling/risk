@@ -1,6 +1,7 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
 import org.java_websocket.WebSocket;
+
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
@@ -8,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class UIPlayer extends Player {
-	private WebSocket webSocket;
+	protected WebSocket webSocket;
 	private BlockingQueue<Command> moveQueue = new LinkedBlockingQueue<Command>();
 
 	public UIPlayer(WebSocket ws, int id, String name)
@@ -17,6 +18,12 @@ public class UIPlayer extends Player {
 		webSocket = ws;
 	}
 
+	@Override
+	public PlayerType getType()
+	{
+		return PlayerType.UI;
+	}
+	
 	public void queueCommand(Command command)
 	{
 		moveQueue.add(command);

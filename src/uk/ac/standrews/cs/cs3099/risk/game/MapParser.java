@@ -140,7 +140,7 @@ public class MapParser {
 			k.key = ikey;
 
 			if (isString) {
-				k.value_str_arr.add(value2.getAsString());
+				k.value_str = value2.getAsString();
 			} else {
 				try {
 					int valasint = value2.getAsInt();
@@ -148,7 +148,7 @@ public class MapParser {
 					if (valasint < 0)
 						throw new MapParseException("Array sub-entry cannot be less than 0");
 
-					k.value_arr.add(valasint);
+					k.value = valasint;
 				} catch (Exception e) {
 					throw new MapParseException("Array sub-entry is not a string");
 				}
