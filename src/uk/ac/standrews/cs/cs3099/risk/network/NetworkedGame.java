@@ -687,6 +687,7 @@ public class NetworkedGame extends AbstractGame {
 				switch (phase){
 					case 0:
 						command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+						gameState.setDeployableArmies();
 						break;
 					case 1:
 						command = currentPlayer.getCommand(CommandType.DEPLOY);
