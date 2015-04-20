@@ -184,9 +184,6 @@ public class GameState {
 			case DEPLOY:
 				playCommand((DeployCommand) command);
 				break;
-			case DRAW_CARD:
-				playCommand((DrawCardCommand) command);
-				break;
 			case DEFEND:
 				playCommand((DefendCommand) command);
 				break;
@@ -371,11 +368,12 @@ public class GameState {
 		tradeInCount++;
 	}
 
-	public void playCommand(DrawCardCommand command)
+	public void drawCard(int playerID)
 	{
+		System.out.println("Card Drawn: " + deck.getTopCardIndex());
 		if(deck.getTopCardIndex() < 44){
 			Card drawnCard = deck.dealCard();
-			playerCards.get(command.getPlayerId()).add(drawnCard);
+			playerCards.get(playerID).add(drawnCard);
 		}
 	}
 
