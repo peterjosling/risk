@@ -714,4 +714,9 @@ public class GameState {
 	{
 		return remainingArmies;
 	}
+
+	public void setDeckOrder(int[] deckOrder)
+	{
+		deck.setOrder(deckOrder);
+	}
 }

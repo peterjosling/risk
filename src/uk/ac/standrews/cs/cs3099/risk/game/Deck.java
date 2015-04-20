@@ -64,4 +64,15 @@ public class Deck {
 		}
 	}
 
+	public void setOrder(int[] deckOrder)
+	{
+		for (int i = 0; i < deckOrder.length; i++)
+			Collections.swap(cards, i, deckOrder[i]);
+
+		Logger.print("----------------------Deck order:");
+		for (int i = 0; i < cards.size(); i++)
+			Logger.printf("%d - %s", i, cards.get(i));
+		Logger.print("---------------------------------");
+	}
+
 }

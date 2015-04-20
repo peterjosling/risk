@@ -633,4 +633,9 @@ public class LocalPlayer extends Player {
 		}	
 	}
 
+	public void setDeckOrder(int[] deckOrder)
+	{
+		gameState.setDeckOrder(deckOrder);
+	}
+
 }

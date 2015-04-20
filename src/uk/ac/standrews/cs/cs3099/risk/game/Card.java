@@ -41,4 +41,23 @@ public class Card {
 		return type;
 	}
 
+	public String toString()
+	{
+		String cardtype;
+
+		if (type == CardType.INFANTRY) {
+			cardtype = "Infantry";
+		} else if (type == CardType.CAVALRY) {
+			cardtype = "Cavalry";
+		} else if (type == CardType.ARTILLERY) {
+			cardtype = "Artillery";
+		} else if (type == CardType.WILD) {
+			cardtype = "Wild";
+		} else {
+			cardtype = "UNKNOWN";
+		}
+
+		return id + " " + cardtype;
+	}
+
 }

@@ -1,5 +1,6 @@
 package uk.ac.standrews.cs.cs3099.risk.network;
 
+import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.*;
 import uk.ac.standrews.cs.cs3099.risk.game.*;
 
@@ -26,7 +27,8 @@ public class NetworkedGame extends AbstractGame {
 	private Semaphore gameStart = new Semaphore(0);
 
 	private Die die;
-	private int firstplayer;
+	private int firstplayer = -1;
+	private int[] deckorder = new int[44];
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -570,10 +572,28 @@ public class NetworkedGame extends AbstractGame {
 				System.exit(-1);
 			}
 
-			int number = (int)(die.nextInt() % getPlayers().size());
-			// Send the computed result of the dice roll to the interface.
-			RollResultCommand rollResult = new RollResultCommand(number);
-			localPlayer.notifyCommand(rollResult);
+			if (firstplayer == -1) {
+				firstplayer = (int) (die.nextInt() % getPlayers().size());
+
+				Logger.print("Player " + firstplayer + " will go first, rolling again to shuffle deck");
+				// Send the computed result of the dice roll to the interface.
+				RollResultCommand rollResult = new RollResultCommand(firstplayer);
+				localPlayer.notifyCommand(rollResult);
+
+				startDieRoll();
+			} else { // Deck order here
+				for (int i = 0; i < 44; i++) {
+					deckorder[i] = (int) (die.nextInt() % 44);
+					localPlayer.notifyCommand(new RollResultCommand(deckorder[i]));
+				}
+
+				for (Player player : getPlayers()) {
+					if (player.getType() == PlayerType.AI)
+						((AIPlayer)player).setDeckOrder(deckorder);
+					else if (player.getType() == PlayerType.LOCAL)
+						((LocalPlayer)player).setDeckOrder(deckorder);
+				}
+			}
 		}
 
 		if (rollsReceived) {

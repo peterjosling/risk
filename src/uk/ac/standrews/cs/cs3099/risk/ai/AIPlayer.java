@@ -598,5 +598,10 @@ public class AIPlayer extends Player {
 		} else {
 			System.out.println("Invalid RollHashCommand.");
 		}	
-	}	
+	}
+
+	public void setDeckOrder(int[] deckOrder)
+	{
+		gameState.setDeckOrder(deckOrder);
+	}
 }
