@@ -203,7 +203,7 @@ class GameView extends View<Game> {
 				(<Messages.AttackMessage>this.message).payload.push(id);
 
 				// Get number of armies to attack with.
-				var maxArmies = Math.min(3, territory.getArmies() - 1);
+				var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
 
 				this.armyCountSelectView.setMin(1);
 				this.armyCountSelectView.setMax(maxArmies);
