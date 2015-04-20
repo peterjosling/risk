@@ -55,11 +55,6 @@ export interface PlayCardsMessage extends Message {
 	player_id : number;
 }
 
-export interface DrawCardMessage extends Message {
-	payload : number;
-	player_id : number;
-}
-
 export interface DeployMessage extends Message {
 	payload : Array<Array<number, number>>;
 	player_id : number;

@@ -19,6 +19,8 @@ class Game extends Model {
 	playerCards : CardList = new CardList();
 	_isHost : boolean;
 	_phase : string = 'setup';
+	cardDrawn : boolean;
+	cardsTradedIn : number = 0;
 
 	attackDetails : {
 		attack: Messages.AttackMessage
@@ -91,6 +93,7 @@ class Game extends Model {
 			}
 		}
 
+		this.cardDrawn = false;
 		this.set('currentPlayer', id);
 	}
 
@@ -117,6 +120,17 @@ class Game extends Model {
 		}
 
 		return armies;
+	}
+
+	// Calculate how many new armies are received for the nth set of cards traded.
+	getCardArmies() : number {
+		var n = ++this.cardsTradedIn;
+
+		if (n < 6) {
+			return 2 * n + 2;
+		}
+
+		return  5 * n - 15;
 	}
 
 	// Connect to a host server on the specified host and port.
@@ -277,6 +291,10 @@ class Game extends Model {
 
 			case 'fortify':
 				this.fortifyMessageReceived(<Messages.FortifyMessage>message);
+				break;
+
+			case 'play_cards':
+				this.playCardsMessageReceived(<Messages.PlayCardsMessage>message);
 				break;
 		}
 	}
@@ -457,7 +475,7 @@ class Game extends Model {
 			var player = this.getCurrentPlayer();
 			this.showToast(player.name + ' to play first');
 		} else if (!this.map.deck.shuffled) {
-			// TODO
+			this.map.deck.shuffleWithNumber(message.payload);
 		} else {
 			this.attackDetails.rolls.push(message);
 			var attackRollCount = this.attackDetails.attack.payload[2];
@@ -506,17 +524,35 @@ class Game extends Model {
 					rollNumber++;
 				}
 
-				// Clear stored attack details.
-				this.attackDetails = null;
-
 				// Update the UI.
 				this.trigger('change:map');
 				this.updateArmyCounts();
 
 				// Let the game view create an attack_capture command if the local player won the attack.
-				if (this.attackDetails.attack.payload[0] === this.self.id) {
-					this.trigger('attackCapture');
+				var defendingTerritory = this.map.territories.get(this.attackDetails.attack[1]);
+				var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
+
+				if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
+					this.trigger('attackCapture', this.attackDetails.attack);
 				}
+
+				// Take a card for this player if they won the attack.
+				if (defendingTerritory.getArmies() === 0 && !this.cardDrawn) {
+					this.cardDrawn = true;
+
+					var card = this.map.deck.first();
+
+					if (card) {
+						this.map.deck.remove(card);
+
+						if (attackingPlayer === this.self) {
+							this.playerCards.add(card);
+						}
+					}
+				}
+
+				// Clear stored attack details.
+				this.attackDetails = null;
 			}
 		}
 	}
@@ -554,6 +590,22 @@ class Game extends Model {
 		// Update the UI.
 		this.trigger('change:map');
 		this.updateArmyCounts()
+	}
+
+	private playCardsMessageReceived(message : Messages.PlayCardsMessage) {
+		var player = this.playerList.get(message.player_id);
+
+		if (message.payload !== null) {
+			this.showToast(player.name + ' traded in ' + message.payload.cards.length + ' sets of cards');
+		}
+
+		this.handlePlayCardsMessage(message);
+	}
+
+	public handlePlayCardsMessage(message : Messages.PlayCardsMessage) {
+		if (message.payload !== null) {
+			this.cardsTradedIn += message.payload.cards.length;
+		}
 	}
 }
 
