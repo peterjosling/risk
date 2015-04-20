@@ -183,8 +183,8 @@ class Game extends Model {
 	}
 
 	// Show a toast-style text message to the user.
-	showToast(message : string) {
-		this.trigger('toast', message);
+	showToast(message : string, persistent? : boolean) {
+		this.trigger('toast', message, persistent);
 	}
 
 	// Read army/territory counts from every territory and update each player's count.
