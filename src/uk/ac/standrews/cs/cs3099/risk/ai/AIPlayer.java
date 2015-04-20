@@ -215,6 +215,7 @@ public class AIPlayer extends Player {
 
 	public Command getPlayCardsCommand() 
 	{
+		gameState.setDeployableArmies();
 		PlayCardsCommand command = null;
 		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
 		
@@ -313,12 +314,12 @@ public class AIPlayer extends Player {
 		
 		int armies = (source.getArmies() - 1) / 2;
 		
+		System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
 		if(armies < gameState.getRemainingArmies()){
 			armies = gameState.getRemainingArmies();
 		}
 
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
-		
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
@@ -588,8 +589,6 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
-		gameState.setDeployableArmies();
-
 		if(command.getCards() == null){
 			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
 			return;

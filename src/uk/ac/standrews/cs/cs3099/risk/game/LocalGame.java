@@ -76,9 +76,8 @@ public class LocalGame extends AbstractGame {
 		assignTerritories();
 		while(!gameState.isGameComplete()){			
 			Player currentPlayer = nextTurn();
-			
+			gameState.setDeployableArmies();
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
-				calcDeployable();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
@@ -93,7 +92,6 @@ public class LocalGame extends AbstractGame {
 	
 				fortify(currentPlayer);
 				checkDeadPlayers();
-				calcDeployable();
 				noOfTurns++;
 			}
 //			printMap();
@@ -149,21 +147,6 @@ public class LocalGame extends AbstractGame {
 		System.out.println(" " + map.findTerritoryById(12).getOwner() + "                     "
 				+ map.findTerritoryById(40).getOwner() + ", "
 				+ map.findTerritoryById(41).getOwner());
-	}
-
-	public void calcDeployable()
-	{
-		for(Player player : this.getPlayers()){
-			switch (player.getType()) {
-			case AI:
-				((AIPlayer)player).getGameState().setDeployableArmies();
-				break;
-			case LOCAL:
-				((LocalPlayer)player).getGameState().setDeployableArmies();
-				break;				
-			}
-		}
-		gameState.setDeployableArmies();
 	}
 	
 	public void checkDeadPlayers()
