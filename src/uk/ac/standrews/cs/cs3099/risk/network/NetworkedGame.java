@@ -159,13 +159,20 @@ public class NetworkedGame extends AbstractGame {
 				initialiseGameCommand((InitialiseGameCommand) command);
 				return;
 
+			// Handle RollHash and RollNumber commands only for the initial turn roll.
 			case ROLL_HASH:
-				rollHashCommand((RollHashCommand) command);
-				return;
+				if (getCurrentTurn() == -1) {
+					rollHashCommand((RollHashCommand) command);
+					return;
+				}
+				break;
 
 			case ROLL_NUMBER:
-				rollNumberCommand((RollNumberCommand) command);
-				return;
+				if (getCurrentTurn() == -1) {
+					rollNumberCommand((RollNumberCommand) command);
+					return;
+				}
+				break;
 
 			case ACKNOWLEDGEMENT:
 				acknowledgementReceived((AcknowledgementCommand) command);
