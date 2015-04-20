@@ -18,8 +18,10 @@ public class Main {
 		System.out.println("How many players? (3-6)");
 		Scanner sc = new Scanner(System.in);
 		int players = sc.nextInt();
-		int armies = 20 + ((6-players)*5);
-		LocalGame localGame = new LocalGame(players);
+		System.out.println("How many AI?");
+		int ai = sc.nextInt();
+
+		LocalGame localGame = new LocalGame(players, ai);
 		localGame.run();
 	}
 }

@@ -108,6 +108,7 @@ public abstract class AbstractGame {
 			notifyPlayers(rollNumber);
 		}
 		
+		getCurrentTurnPlayer().notifyCommand(attackCommand); // THIS WILL NEED FIXED.
 		notifyPlayers(attackCommand);
 
 		if(gameState.getLastAttackSuccessful()){
@@ -219,6 +220,4 @@ public abstract class AbstractGame {
 	{
 
 	}
-
-
 }

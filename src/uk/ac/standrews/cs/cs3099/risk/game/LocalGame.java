@@ -8,30 +8,31 @@ import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 
 public class LocalGame extends AbstractGame {
-	public LocalGame(String jsonMap, int playerCount) throws MapParseException
+
+	public LocalGame(String jsonMap, int playerCount, int aiCount) throws MapParseException
 	{
-		initialise(playerCount);
+		initialise(playerCount, aiCount);
 		this.init();
 	}
 	
-	public LocalGame(int playerCount)
+	public LocalGame(int playerCount, int aiCount)
 	{
-		initialise(playerCount);
+		initialise(playerCount, aiCount);
 		this.init();
 	}
 	
-	
-	public void initialise(int playerCount)
+	public void initialise(int playerCount, int aiCount)
 	{
 		ArrayList<Integer> playerInts = new ArrayList<Integer>();
 		
-//		LocalPlayer localPlayer = new LocalPlayer(0);
-//		playerInts.add(localPlayer.getId());
-//		addPlayer(new LocalPlayer(0));
+		for (int i = 0; i < playerCount; i++){
+			Player player = new LocalPlayer(i);
+			playerInts.add(player.getId());
+			addPlayer(player);
+		}
 
-		
-		for (int i = 0; i < playerCount; i++) {
-			Player player = new AIPlayer(i);
+		for (int i = 0; i < aiCount; i++) {
+			Player player = new AIPlayer(playerInts.size());
 			playerInts.add(player.getId());
 			addPlayer(player);
 		}
@@ -96,14 +97,18 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		int noOfTurns = 0;
+	
+		printMap();
+
 		assignTerritories();
 		boolean firstTurn = true;
 		while(!gameState.isGameComplete()){
-			if(noOfTurns%5 == 0){
+			if(noOfTurns%2 == 0){
 				printMap();
-				System.out.println("Enter anything to continue.");
+				System.out.println("Press enter to continue.");
 				String cont = EasyIn.getString();
 			}
+			
 			Player currentPlayer = nextTurn();
 			
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
@@ -134,7 +139,7 @@ public class LocalGame extends AbstractGame {
 	
 	public void printMap()
 	{
-		Map map = this.gameState.getMap();
+		Map map = gameState.getMap();
 		System.out.println(map.findTerritoryById(0).getOwner() + ", "
 				+ map.findTerritoryById(1).getOwner() + ", "
 				+ map.findTerritoryById(2).getOwner() + "    "
