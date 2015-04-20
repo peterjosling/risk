@@ -154,6 +154,12 @@ class GameView extends View<Game> {
 				(<Messages.DeployMessage>this.message).payload.push([id, armies]);
 				this.deployableArmies -= armies;
 
+				// Update map.
+				var territory = this.model.map.territories.get(id);
+				territory.addArmies(armies);
+				this.model.trigger('change:map');
+				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
+
 				if (this.deployableArmies === 0) {
 					this.model.sendMessage(this.message);
 					this.model.setPhase('attack');
