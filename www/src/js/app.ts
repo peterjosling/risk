@@ -48,8 +48,11 @@ class App extends View<Model> {
 		app.setView(view);
 	}
 
-	showToast(message : string) : void {
-		var toast = new Toast({message: message});
+	showToast(message : string, persistent? : boolean) : void {
+		var toast = new Toast({
+			message: message,
+			persistent: persistent
+		});
 		this.$('.toast-container').append(toast.render().el);
 	}
 }

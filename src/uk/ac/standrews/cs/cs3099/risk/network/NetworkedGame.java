@@ -591,12 +591,7 @@ public class NetworkedGame extends AbstractGame {
 		int totalTurns = armiesPerPlayer * this.getPlayers().size();
 		for(int i = 0; i < totalTurns; i ++){
 			Player player = nextTurn();
-			if(i < gameState.getMap().getTerritories().size()){
-				command = player.getCommand(CommandType.ASSIGN_ARMY);
-			} else {
-				command = player.getCommand(CommandType.DEPLOY);
-			}
-
+			command = player.getCommand(CommandType.ASSIGN_ARMY);
 			notifyPlayers(command);
 		}
 	}
@@ -623,22 +618,23 @@ public class NetworkedGame extends AbstractGame {
 						break;
 				}
 				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
-					playCards(currentPlayer);
+					notifyPlayers(command);
 					phase = 1;
 				}else if(command.getType()==CommandType.DEPLOY && phase < 2) {
-					deploy(currentPlayer);
+					notifyPlayers(command);
 					phase = 2;
 				}else if(command.getType()==CommandType.ATTACK && phase == 2) {
 					while(canPlayerAttack(currentPlayer)){
-						attack(currentPlayer);
+						attack((AttackCommand)command, currentPlayer);
 					}
 					phase = 3;
 				}else if(command.getType()==CommandType.FORTIFY && phase<4){
-					fortify(currentPlayer);
+					notifyPlayers(command);
 					phase = 4;
 				}
 			}
 			if (gameState.getAttackSuccessful()) {
+				// TODO replace this with getting the correct card automatically
 				drawCard(currentPlayer);
 			}
 		}

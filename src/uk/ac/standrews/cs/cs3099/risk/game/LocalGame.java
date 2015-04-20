@@ -1,11 +1,11 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
+import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+
+import java.util.ArrayList;
 
 public class LocalGame extends AbstractGame {
 
@@ -122,7 +122,7 @@ public class LocalGame extends AbstractGame {
 				boolean attackPhase = true;
 				while(canPlayerAttack(currentPlayer) && attackPhase){
 					//TODO fix now attack no longer returns boolean
-					attack(getCurrentTurnPlayer());
+					attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
 				}
 	
 				fortify(currentPlayer);
@@ -180,7 +180,7 @@ public class LocalGame extends AbstractGame {
 						phase = 2;
 					}else if(command.getType()==CommandType.ATTACK && phase == 2) {
 						while(canPlayerAttack(currentPlayer)){
-							attack(currentPlayer);
+							attack((AttackCommand) command, currentPlayer);
 						}
 						phase = 3;
 					}else if(command.getType()==CommandType.FORTIFY && phase<4){

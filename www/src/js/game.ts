@@ -183,8 +183,8 @@ class Game extends Model {
 	}
 
 	// Show a toast-style text message to the user.
-	showToast(message : string) {
-		this.trigger('toast', message);
+	showToast(message : string, persistent? : boolean) {
+		this.trigger('toast', message, persistent);
 	}
 
 	// Read army/territory counts from every territory and update each player's count.
@@ -367,11 +367,13 @@ class Game extends Model {
 		}
 
 		this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
-		this.handleAttackMessage(message);
+		this.handleAttackMessage(message, destPlayer === this.self);
 	}
 
-	public handleAttackMessage(message : Messages.AttackMessage) {
-		// TODO store attack details.
+	public handleAttackMessage(message : Messages.AttackMessage, isLocalPlayer : boolean) {
+		if (isLocalPlayer) {
+			this.trigger('defend', message.payload);
+		}
 	}
 
 	private defendMessageReceived(message : Messages.DefendMessage) {
@@ -402,6 +404,9 @@ class Game extends Model {
 		});
 
 		this.updateArmyCounts();
+
+		// Trigger change to update the map view.
+		this.trigger('change:map');
 	}
 
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {

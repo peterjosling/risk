@@ -57,7 +57,7 @@ class GameView extends View<Game> {
 			this.startTurn()
 		} else {
 			// TODO end turn
-			this.model.showToast(player.name + '\'s turn');
+			this.model.showToast(player.name + '\'s turn', true);
 		}
 	}
 
@@ -77,7 +77,7 @@ class GameView extends View<Game> {
 				toastMessage = 'Select a territory to claim...';
 			}
 
-			this.model.showToast(toastMessage);
+			this.model.showToast(toastMessage, true);
 		} else {
 			this.model.setPhase('cards');
 			this.deployableArmies = this.model.getNewPlayerArmies();
@@ -87,6 +87,7 @@ class GameView extends View<Game> {
 				// TODO add the values of traded in hands to deployableArmies.
 			} else {
 				this.model.setPhase('deploy');
+				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true)
 			}
 		}
 
@@ -153,6 +154,12 @@ class GameView extends View<Game> {
 				(<Messages.DeployMessage>this.message).payload.push([id, armies]);
 				this.deployableArmies -= armies;
 
+				// Update map.
+				var territory = this.model.map.territories.get(id);
+				territory.addArmies(armies);
+				this.model.trigger('change:map');
+				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
+
 				if (this.deployableArmies === 0) {
 					this.model.sendMessage(this.message);
 					this.model.setPhase('attack');
@@ -179,6 +186,9 @@ class GameView extends View<Game> {
 					payload: [id],
 					player_id: this.model.self.id
 				});
+
+				this.model.showToast('Select a territory to attack', true);
+				this.highlightSelectableTerritories();
 			} else {
 				// Check this territory can be selected.
 				if (territory.getOwner() === this.model.self) {
@@ -199,13 +209,14 @@ class GameView extends View<Game> {
 				(<Messages.AttackMessage>this.message).payload.push(id);
 
 				// Get number of armies to attack with.
-				var maxArmies = Math.min(3, territory.getArmies() - 1);
+				var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
 
 				this.armyCountSelectView.setMin(1);
 				this.armyCountSelectView.setMax(maxArmies);
 				this.armyCountSelectView.off('select');
 				this.armyCountSelectView.on('select', armies => {
 					(<Messages.AttackMessage>this.message).payload.push(armies);
+					this.model.handleAttackMessage(<Messages.AttackMessage>this.message, false);
 					this.model.sendMessage(this.message);
 					this.message = null;
 
@@ -224,15 +235,43 @@ class GameView extends View<Game> {
 	startAttackPhase() {
 		this.$('.attack-end-button').removeClass('hidden');
 		this.message = null;
+		this.model.showToast('Select a territory to attack from', true);
 	}
 
 	endAttackPhase() {
 		this.$('.attack-end-button').addClass('hidden');
 		this.$('.no-fortify-button').removeClass('hidden');
 		this.model.setPhase('fortify');
+		this.model.showToast('Select a territory to move armies from, if you wish to fortify', true);
+	}
+
+	startDefend(payload : Array<number>) {
+		var territory = this.model.map.territories.get(payload[0]);
+		var maxArmies = Math.min(2, territory.getArmies());
+
+		this.model.setPhase('defend');
+		this.armyCountSelectView.setMin(1);
+		this.armyCountSelectView.setMax(maxArmies);
+		this.armyCountSelectView.off('select');
+		this.armyCountSelectView.on('select', count => {
+			var message : Messages.DefendMessage = {
+				command: 'defend',
+				payload: count,
+				player_id: this.model.self.id
+			};
+
+			this.model.handleDefendMessage(message);
+			this.model.sendMessage(message);
+		});
+
+		// TODO don't let the user click cancel.
+
+		this.armyCountSelectView.show();
 	}
 
 	highlightSelectableTerritories() {
+		this.clearHighlightedTerritories();
+
 		var invalidTerritories = [];
 		var phase = this.model.getPhase();
 
@@ -273,7 +312,9 @@ class GameView extends View<Game> {
 
 				invalidTerritories = this.model.map.territories.map(territory => territory.id);
 				source.connections.forEach(territory => {
-					invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+					if (territory.getOwner() !== this.model.self) {
+						invalidTerritories.splice(invalidTerritories.indexOf(territory.id), 1);
+					}
 				});
 			}
 		} else if (phase === 'fortify') {
