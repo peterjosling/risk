@@ -607,7 +607,21 @@ public class NetworkedGame extends AbstractGame {
 			Player currentPlayer = nextTurn();
 			int phase = 0;
 			while(phase != 4) {
-				Command command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+				Command command = null;
+				switch (phase){
+					case 0:
+						command = currentPlayer.getCommand(CommandType.PLAY_CARDS);
+						break;
+					case 1:
+						command = currentPlayer.getCommand(CommandType.DEPLOY);
+						break;
+					case 2:
+						command = currentPlayer.getCommand(CommandType.ATTACK);
+						break;
+					case 3:
+						command = currentPlayer.getCommand(CommandType.FORTIFY);
+						break;
+				}
 				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
 					playCards(currentPlayer);
 					phase = 1;
