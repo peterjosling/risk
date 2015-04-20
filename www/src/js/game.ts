@@ -257,12 +257,20 @@ class Game extends Model {
 				this.defendMessageReceived(<Messages.DefendMessage>message);
 				break;
 
+			case 'attack_capture':
+				this.attackCaptureMessageReceived(<Messages.AttackCaptureMessage>message);
+				break;
+
 			case 'deploy':
 				this.deployMessageReceived(<Messages.DeployMessage>message);
 				break;
 
 			case 'roll_result':
 				this.rollResultMessageReceived(<Messages.RollResultMessage>message);
+				break;
+
+			case 'fortify':
+				this.fortifyMessageReceived(<Messages.FortifyMessage>message);
 				break;
 		}
 	}
@@ -387,6 +395,27 @@ class Game extends Model {
 		// TODO store defend details.
 	}
 
+	private attackCaptureMessageReceived(message : Messages.AttackCaptureMessage) {
+		var player = this.playerList.get(message.player_id);
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		this.showToast(player.name + ' captured ' + dest.getName() + ' and moved in ' + armies + ' from ' + source.getName());
+		this.handleAttackCaptureMessage(message);
+	}
+
+	public handleAttackCaptureMessage(message : Messages.AttackCaptureMessage) {
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		source.addArmies(-armies);
+		dest.addArmies(armies);
+
+		this.trigger('change:map');
+	}
+
 	private deployMessageReceived(message : Messages.DeployMessage) {
 		var player = this.playerList.get(message.player_id);
 
@@ -418,7 +447,40 @@ class Game extends Model {
 			this.showToast(player.name + ' to play first');
 		} else {
 			// TODO
+
+	private fortifyMessageReceived(message : Messages.FortifyMessage) {
+		var player = this.playerList.get(message.player_id);
+		var toastMessage;
+
+		if (message.payload) {
+			var source = this.map.territories.get(message.payload[0]);
+			var dest = this.map.territories.get(message.payload[1]);
+			var armies = message.payload[2];
+
+			toastMessage = player.name + ' moved ' + armies + ' armies from ' + source.getName() + ' to ' + dest.getName();
+		} else {
+			toastMessage = player.name + ' has chosen not to fortify';
 		}
+
+		this.showToast(toastMessage);
+		this.handleFortifyMessage(message);
+	}
+
+	public handleFortifyMessage(message : Messages.FortifyMessage) {
+		if (message.payload === null) {
+			return;
+		}
+
+		var source = this.map.territories.get(message.payload[0]);
+		var dest = this.map.territories.get(message.payload[1]);
+		var armies = message.payload[2];
+
+		source.addArmies(armies);
+		dest.addArmies(-armies);
+
+		// Update the UI.
+		this.trigger('change:map');
+		this.updateArmyCounts()
 	}
 }
 
