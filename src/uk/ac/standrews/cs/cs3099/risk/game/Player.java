@@ -15,7 +15,7 @@ public abstract class Player {
 
 	// Unique per-player values
 	private int id;
-	private String name;
+	protected String name;
 	protected int lastAckid = 0;
 
 	protected boolean isNeutral = true;
@@ -92,16 +92,16 @@ public abstract class Player {
 //		gameState = new GameState(playerInts);
 //		gameState.loadDefaultMap();
 //	}
-	
+
 	public Die getDie()
 	{
 		return die;
 	}
-	
+
 	public void setLastRollNumber(byte[] num){
 		this.lastRollNumber = num;
 	}
-	
+
 	public byte[] getLastRollNumber(){
 		return lastRollNumber;
 	}
