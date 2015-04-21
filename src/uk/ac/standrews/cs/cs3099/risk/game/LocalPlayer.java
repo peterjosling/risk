@@ -10,7 +10,7 @@ public class LocalPlayer extends Player {
 	private GameState gameState;
 	private int attackSourceId;
 	private int attackDestId;
-	
+
 	@Override
 	public PlayerType getType()
 	{
@@ -74,7 +74,7 @@ public class LocalPlayer extends Player {
 	 * @return - the newly created command
 	 */
 	@Override
-	public Command getCommand(CommandType type) 
+	public Command getCommand(CommandType type)
 	{
 		switch (type) {
 			case ASSIGN_ARMY:
@@ -245,7 +245,7 @@ public class LocalPlayer extends Player {
 			armies = EasyIn.getInt();
 			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
 		}
-		
+
 		DeployCommand command = new DeployCommand(this.getId(), lastAckid++, deployments);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
@@ -451,7 +451,7 @@ public class LocalPlayer extends Player {
 	{
 		Die die = this.getDie();
 		String number = die.byteToHex(this.getLastRollNumber());
-		
+
 		RollNumberCommand command= new RollNumberCommand(this.getId(), number);
 		notifyCommand(command);
 		return command;
@@ -468,17 +468,17 @@ public class LocalPlayer extends Player {
 		this.setLastRollNumber(num);
 		byte[] numHash = die.hashByteArr(num);
 		String hash = die.byteToHex(numHash);
-		
+
 		RollHashCommand command = new RollHashCommand(this.getId(), hash);
 		notifyCommand(command);
 		return command;
 	}
-	
+
 	/**
 	 * Creates a ping command
 	 * @return the new ping command
 	 */
-	public Command getPingCommand() 
+	public Command getPingCommand()
 	{
 		PingCommand command = new PingCommand(this.getId(), gameState.getNumberOfPlayers());
 		notifyCommand(command);
@@ -489,7 +489,7 @@ public class LocalPlayer extends Player {
 	 * Creates a ready command
 	 * @return the new ReadyCommand
 	 */
-	public Command getReadyCommand() 
+	public Command getReadyCommand()
 	{
 		ReadyCommand command = new ReadyCommand(this.getId(), lastAckid++);
 		notifyCommand(command);
@@ -590,12 +590,12 @@ public class LocalPlayer extends Player {
 		String destName = gameState.getMap().findTerritoryById(command.getDest()).getName();
 		String srcName = gameState.getMap().findTerritoryById(command.getSource()).getName();
 		System.out.println("Player " + command.getPlayerId() + " is attacking " + destName + " from " + srcName + " with " + command.getArmies() + " armies.");
-		
+
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid AttackCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -640,7 +640,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid DeployCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -655,7 +655,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid DefendCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -671,7 +671,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid AttackCaptureCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -685,7 +685,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid TimeOutCommand.");
-		}		
+		}
 	}
 
 	/**
@@ -700,7 +700,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid LeaveGameCommand.");
-		}		
+		}
 	}
 
 	/**
@@ -737,7 +737,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid PlayCardsCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -752,7 +752,7 @@ public class LocalPlayer extends Player {
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid RollNumberCommand.");
-		}	
+		}
 	}
 
 	/**
@@ -760,14 +760,14 @@ public class LocalPlayer extends Player {
 	 * via the command line
 	 * @param command
 	 */
-	public void notifyCommand(RollHashCommand command) 
+	public void notifyCommand(RollHashCommand command)
 	{
 //		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid RollHashCommand.");
-		}	
+		}
 	}
 
 	public void setDeckOrder(int[] deckOrder)

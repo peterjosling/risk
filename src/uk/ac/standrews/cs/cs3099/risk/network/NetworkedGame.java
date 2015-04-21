@@ -20,8 +20,8 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private Date timePingSent;
 	private boolean gameInProgress;
-	private String[] initRollHashes;
-	private String[] initRollNumbers;
+	private String[] initRollHashes = new String[6];
+	private String[] initRollNumbers = new String[6];
 	private boolean deckShuffled = false;
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
@@ -32,6 +32,8 @@ public class NetworkedGame extends AbstractGame {
 	private Die die;
 	private int firstplayer = -1;
 	private int[] deckorder = new int[44];
+	private boolean hasinit = false;
+	/* private boolean senthash = false; */
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -472,9 +474,9 @@ public class NetworkedGame extends AbstractGame {
 	/**
 	 * Called when a new dice roll is expected to reinitialise the die state and send the first hash
 	 */
-	private void startDieRoll()
+	synchronized private void startDieRoll()
 	{
-		if (localPlayer != null) {
+		if (!hasinit && localPlayer != null) {
 			int id = localPlayer.getId();
 
 			die = new Die();
@@ -488,8 +490,12 @@ public class NetworkedGame extends AbstractGame {
 			initRollHashes[id] = hash;
 			initRollNumbers[id] = num;
 
+			Logger.print("---------------------------" + id + " is sending HASH" + hash);
+			Thread.dumpStack();
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
+
+			hasinit = true;
 		}
 	}
 
@@ -520,6 +526,8 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void rollHashCommand(RollHashCommand command)
 	{
+		startDieRoll();
+
 		initRollHashes[command.getPlayerId()] = command.getHash();
 
 		try {
@@ -545,9 +553,14 @@ public class NetworkedGame extends AbstractGame {
 			try {
 				die.addHash(id, initRollHashes[id]);
 			} catch (HashMismatchException e) {
-				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + initRollHashes[id] + ")");
+				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + initRollHashes[id] + ") " + e.getMessage());
 			}
 
+			/* if (!senthash) { */
+			/* 	RollHashCommand rollHashCommand = new RollHashCommand(id, initRollHashes[id]); */
+			/* 	connectionManager.sendCommand(rollHashCommand); */
+			/* 	senthash = true; */
+			/* } */
 			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, initRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
@@ -603,6 +616,8 @@ public class NetworkedGame extends AbstractGame {
 				localPlayer.notifyCommand(rollResult);
 				setCurrentTurn(firstplayer);
 
+				/* senthash = false; */
+				hasinit = false;
 				startDieRoll();
 			} else { // Deck order here
 				for (int i = 0; i < 44; i++) {
@@ -714,10 +729,6 @@ public class NetworkedGame extends AbstractGame {
 				// Send acknowledgement for the local player.
 				int ackId = command.getAckId();
 
-				if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
-					sendAcknowledgement(ackId);
-				}
-
 				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
 					notifyPlayers(command);
 					phase = 1;
@@ -729,6 +740,10 @@ public class NetworkedGame extends AbstractGame {
 				}else if(command.getType()==CommandType.FORTIFY){
 					notifyPlayers(command);
 					phase = 4;
+				}
+
+				if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
+					sendAcknowledgement(ackId);
 				}
 			}
 
