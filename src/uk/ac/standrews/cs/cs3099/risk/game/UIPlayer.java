@@ -55,21 +55,9 @@ public class UIPlayer extends Player {
 	{
 		if (command.getType() == CommandType.ATTACK) {
 			totalarmies = ((AttackCommand) command).getArmies();
-
-			die = new Die();
 		} else if (command.getType() == CommandType.DEFEND) {
 			totalarmies += ((DefendCommand) command).getArmies();
-
-			webSocket.send(command.toJSON());
-
-			int[] resultingRolls = die.rollDiceNetwork(totalarmies);
-			for (int i = 0; i < resultingRolls.length; i++) {
-				RollResultCommand rollResult = new RollResultCommand(resultingRolls[i]);
-				webSocket.send(rollResult.toJSON());
-			}
-
-			die = null;
-			return;
+			die = new Die();
 		} else if (die != null && command.getType() == CommandType.ROLL_HASH) {
 			try {
 				die.addHash(command.getPlayerId(), ((RollHashCommand) command).getHash());
@@ -81,6 +69,25 @@ public class UIPlayer extends Player {
 				die.addNumber(command.getPlayerId(), ((RollNumberCommand) command).getRollNumberHex());
 			} catch (HashMismatchException e) {
 				Logger.print("ERROR - Problem calculating roll number - " + e.getMessage());
+			}
+
+			if (die.getNumberSeedSources() == die.getNumberHashes()) {
+				webSocket.send(command.toJSON());
+
+				try {
+					die.finalise();
+				} catch (HashMismatchException e) {
+					Logger.print("ERROR - Problem finalising: " + e.getMessage());
+				}
+
+				int[] resultingRolls = die.rollDiceNetwork(totalarmies);
+				for (int i = 0; i < resultingRolls.length; i++) {
+					RollResultCommand rollResult = new RollResultCommand(resultingRolls[i]);
+					webSocket.send(rollResult.toJSON());
+				}
+
+				die = null;
+				return;
 			}
 		}
 
