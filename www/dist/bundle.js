@@ -693,7 +693,7 @@
 	    __extends(ConnectionView, _super);
 	    function ConnectionView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(17);
+	        this.template = __webpack_require__(16);
 	    }
 	    Object.defineProperty(ConnectionView.prototype, "className", {
 	        get: function () {
@@ -773,7 +773,7 @@
 	    __extends(LobbyView, _super);
 	    function LobbyView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(16);
+	        this.template = __webpack_require__(17);
 	        this.listenTo(this.model.playerList, 'add', this.render);
 	        this.listenTo(this.model, 'playerJoinRequested', this.playerJoinRequested);
 	        this.requestedPlayers = [];
@@ -1179,6 +1179,7 @@
 	                _this.model.handleFortifyMessage(_this.message);
 	                _this.model.sendMessage(_this.message);
 	                _this.message = null;
+	                _this.$('#no-fortify-button').addClass('hidden');
 	                _this.endTurn();
 	            });
 	            this.armyCountSelectView.show(true);
@@ -1683,14 +1684,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(40);
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+	  return "<form class=\"connect-form\">\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form class=\"host-form\">\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"host-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
+	  },"useData":true});
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(40);
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(depth0,helpers,partials,data) {
 	  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 	  return "	<div>"
 	    + escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"name","hash":{},"data":data}) : helper)))
 	    + "</div>\n";
 	},"3":function(depth0,helpers,partials,data) {
-	  return "	<button class=\"start-game-button\">Start game</button>\n";
-	  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+	  return "";
+	},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
 	  var stack1, buffer = "<h2>Lobby</h2>\n<h4>Awaiting players</h4>\n";
 	  stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.players : depth0), {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
 	  if (stack1 != null) { buffer += stack1; }
@@ -1699,15 +1709,6 @@
 	  if (stack1 != null) { buffer += stack1; }
 	  return buffer;
 	},"useData":true});
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Handlebars = __webpack_require__(40);
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-	  return "<form class=\"connect-form\">\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form class=\"host-form\">\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"host-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
-	  },"useData":true});
 
 /***/ },
 /* 18 */

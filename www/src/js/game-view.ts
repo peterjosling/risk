@@ -379,6 +379,7 @@ class GameView extends View<Game> {
 				this.model.sendMessage(this.message);
 				this.message = null;
 
+				this.$('#no-fortify-button').addClass('hidden');
 				this.endTurn();
 			});
 
