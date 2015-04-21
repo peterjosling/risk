@@ -111,6 +111,8 @@ public abstract class AbstractGame {
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
+		} else {
+			Logger.print("Attack Unsuccessful.");
 		}
 	}
 	
