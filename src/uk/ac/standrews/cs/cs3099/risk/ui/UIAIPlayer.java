@@ -76,8 +76,7 @@ public class UIAIPlayer extends UIPlayer {
 				int[] resultingRolls = die.rollDiceNetwork(totalarmies);
 				for (int i = 0; i < resultingRolls.length; i++) {
 					RollResultCommand rollResult = new RollResultCommand(resultingRolls[i]);
-					webSocket.send(command.toJSON());
-					aiPlayer.notifyCommand(command);
+					webSocket.send(rollResult.toJSON());
 				}
 
 				die = null;
