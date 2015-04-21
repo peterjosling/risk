@@ -91,6 +91,7 @@ public class LocalGame extends AbstractGame {
 				boolean attackPhase = true;
 
 				while(attackPhase){
+					printAttackable(currentPlayer);
 					Command command = currentPlayer.getCommand(CommandType.ATTACK);
 					if(command.getType() == CommandType.FORTIFY){
 						attackPhase = false;
@@ -155,6 +156,22 @@ public class LocalGame extends AbstractGame {
 		System.out.println(" " + map.findTerritoryById(12).getOwner() + "                     "
 				+ map.findTerritoryById(40).getOwner() + ", "
 				+ map.findTerritoryById(41).getOwner());
+	}
+	
+	public void printAttackable(Player player){
+		printMap();
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+		
+		System.out.println("Territory ID | Armies | Attackable Links");
+		for(Territory territory : territories){
+			String attackable = "[";
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if(linkedTerritory.getOwner()!=player.getId()) attackable = attackable + Integer.toString(linkedTerritory.getId()) + ","; 
+			}
+			attackable += "]";
+
+			System.out.println(territory.getId() + "           |  " + territory.getArmies() + "  | " + attackable);
+		}
 	}
 	
 	public void checkDeadPlayers()
