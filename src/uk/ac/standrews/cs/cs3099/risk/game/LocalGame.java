@@ -105,7 +105,9 @@ public class LocalGame extends AbstractGame {
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
-
+				System.out.println("Press enter to continue.");
+				String cont = EasyIn.getString();
+				
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;
