@@ -32,6 +32,7 @@ public class NetworkedGame extends AbstractGame {
 	private Die die;
 	private int firstplayer = -1;
 	private int[] deckorder = new int[44];
+	private boolean senthash = false;
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -480,6 +481,8 @@ public class NetworkedGame extends AbstractGame {
 			Thread.dumpStack();
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
+
+			senthash = false;
 		}
 	}
 
@@ -552,6 +555,11 @@ public class NetworkedGame extends AbstractGame {
 				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + initRollHashes[id] + ") " + e.getMessage());
 			}
 
+			if (!senthash) {
+				RollHashCommand rollHashCommand = new RollHashCommand(id, initRollHashes[id]);
+				connectionManager.sendCommand(rollHashCommand);
+				senthash = true;
+			}
 			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, initRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
@@ -607,6 +615,7 @@ public class NetworkedGame extends AbstractGame {
 				localPlayer.notifyCommand(rollResult);
 				setCurrentTurn(firstplayer);
 
+				senthash = false;
 				startDieRoll();
 			} else { // Deck order here
 				for (int i = 0; i < 44; i++) {
