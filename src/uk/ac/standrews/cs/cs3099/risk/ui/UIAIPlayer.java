@@ -2,15 +2,18 @@ package uk.ac.standrews.cs.cs3099.risk.ui;
 
 import org.java_websocket.WebSocket;
 import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
-import uk.ac.standrews.cs.cs3099.risk.commands.Command;
-import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
-import uk.ac.standrews.cs.cs3099.risk.commands.PingCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.*;
+import uk.ac.standrews.cs.cs3099.risk.game.Die;
+import uk.ac.standrews.cs.cs3099.risk.game.HashMismatchException;
+import uk.ac.standrews.cs.cs3099.risk.game.Logger;
 import uk.ac.standrews.cs.cs3099.risk.game.UIPlayer;
 
 import java.util.ArrayList;
 
 public class UIAIPlayer extends UIPlayer {
 	AIPlayer aiPlayer;
+	int totalarmies;
+	Die die;
 
 	public UIAIPlayer(WebSocket ws, int id, String name, AIPlayer aiPlayer)
 	{
@@ -21,14 +24,66 @@ public class UIAIPlayer extends UIPlayer {
 	@Override
 	public Command getCommand(CommandType type)
 	{
+		if (type == CommandType.ROLL_HASH) {
+			return getRollHashCommand();
+		} else if (type == CommandType.ROLL_NUMBER) {
+			return getRollNumberCommand();
+		}
+
 		Command command = aiPlayer.getCommand(type);
 		webSocket.send(command.toJSON());
+
+		if (command.getType() == CommandType.ATTACK) {
+			totalarmies = ((AttackCommand) command).getArmies();
+		} else if (command.getType() == CommandType.DEFEND) {
+			totalarmies += ((DefendCommand) command).getArmies();
+			die = new Die();
+		}
 		return command;
 	}
 
 	@Override
 	public void notifyCommand(Command command)
 	{
+		if (command.getType() == CommandType.ATTACK) {
+			totalarmies = ((AttackCommand) command).getArmies();
+		} else if (command.getType() == CommandType.DEFEND) {
+			totalarmies += ((DefendCommand) command).getArmies();
+			die = new Die();
+		} else if (die != null && command.getType() == CommandType.ROLL_HASH) {
+			try {
+				die.addHash(command.getPlayerId(), ((RollHashCommand) command).getHash());
+			} catch (HashMismatchException e){
+				Logger.print("ERROR - Problem calculating roll hash - " + e.getMessage());
+			}
+		} else if (die != null && command.getType() == CommandType.ROLL_NUMBER) {
+			try {
+				die.addNumber(command.getPlayerId(), ((RollNumberCommand) command).getRollNumberHex());
+			} catch (HashMismatchException e) {
+				Logger.print("ERROR - Problem calculating roll number - " + e.getMessage());
+			}
+
+			if (die.getNumberSeedSources() == die.getNumberHashes()) {
+				webSocket.send(command.toJSON());
+				aiPlayer.notifyCommand(command);
+
+				try {
+					die.finalise();
+				} catch (HashMismatchException e) {
+					Logger.print("ERROR - Problem finalising: " + e.getMessage());
+				}
+
+				int[] resultingRolls = die.rollDiceNetwork(totalarmies);
+				for (int i = 0; i < resultingRolls.length; i++) {
+					RollResultCommand rollResult = new RollResultCommand(resultingRolls[i]);
+					webSocket.send(command.toJSON());
+					aiPlayer.notifyCommand(command);
+				}
+
+				die = null;
+				return;
+			}
+		}
 		webSocket.send(command.toJSON());
 		aiPlayer.notifyCommand(command);
 

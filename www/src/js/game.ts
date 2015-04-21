@@ -491,10 +491,12 @@ class Game extends Model {
 				var defendRolls = [];
 
 				for (var i = 0; i < rolls.length; i++) {
+					var value = rolls[i].payload;
+
 					if (i < attackRollCount) {
-						attackRolls.push(rolls[i]);
+						attackRolls.push(value);
 					} else {
-						defendRolls.push(rolls[i]);
+						defendRolls.push(value);
 					}
 				}
 
@@ -512,9 +514,9 @@ class Game extends Model {
 
 					// Decide which territory won. Defender always wins in a tie.
 					if (attackMax > defendMax) {
-						losingTerritory = this.attackDetails.attack[1];
+						losingTerritory = this.attackDetails.attack.payload[1];
 					} else {
-						losingTerritory = this.attackDetails.attack[0];
+						losingTerritory = this.attackDetails.attack.payload[0];
 					}
 
 					// Remove one army from the losing territory.
@@ -532,7 +534,7 @@ class Game extends Model {
 				this.updateArmyCounts();
 
 				// Let the game view create an attack_capture command if the local player won the attack.
-				var defendingTerritory = this.map.territories.get(this.attackDetails.attack[1]);
+				var defendingTerritory = this.map.territories.get(this.attackDetails.attack.payload[1]);
 				var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
 
 				if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
