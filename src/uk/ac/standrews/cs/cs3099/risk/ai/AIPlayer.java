@@ -325,7 +325,6 @@ public class AIPlayer extends Player {
 		
 		int armies = (source.getArmies() - 1) / 2;
 		
-		System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
 		if(armies < gameState.getRemainingArmies()){
 			armies = gameState.getRemainingArmies();
 		}
@@ -397,7 +396,6 @@ public class AIPlayer extends Player {
 			command = new FortifyCommand(this.getId(), lastAckid++, details);
 		} else {
 			command = new FortifyCommand(this.getId(), lastAckid++);
-			System.out.println("Source: "+ command.getFortifyDetails()[0] + "Dest: " + command.getFortifyDetails()[1] +"armies: " + command.getFortifyDetails()[2]);
 		}
 		
 		if(gameState.isCommandValid(command)) {
@@ -652,4 +650,5 @@ public class AIPlayer extends Player {
 		}
 		return false;
 	}
+
 }

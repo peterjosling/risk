@@ -118,13 +118,13 @@ public class GameState {
 		return playerIDs.size();
 	}
 
-	public void removeArmiesForTerritory(int id, int armies)
+	public void removeArmiesFromTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.removeArmies(armies);
 	}
 
-	public void addArmiesForTerritory(int id, int armies)
+	public void addArmiesToTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.addArmies(armies);
@@ -132,8 +132,8 @@ public class GameState {
 
 	public void moveArmies(int from, int to, int armies)
 	{
-		removeArmiesForTerritory(from, armies);
-		addArmiesForTerritory(to, armies);
+		removeArmiesFromTerritory(from, armies);
+		addArmiesToTerritory(to, armies);
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class GameState {
 		for(DeployCommand.Deployment deployment : deployments){
 			int id = deployment.getTerritoryId();
 			int armies = deployment.getArmies();
-			addArmiesForTerritory(id, armies);
+			addArmiesToTerritory(id, armies);
 		}
 	}
 
@@ -287,8 +287,8 @@ public class GameState {
 
 				int[] result = calculateResult(resultingRolls, numberOfAttackingDice, numberOfDefendingDice, command.getPlayerId());
 				//apply result to board
-				removeArmiesForTerritory(command.getSource(), result[0]);
-				removeArmiesForTerritory(command.getDest(), result[1]);
+				removeArmiesFromTerritory(command.getSource(), result[0]);
+				removeArmiesFromTerritory(command.getDest(), result[1]);
 				if (map.findTerritoryById(command.getDest()).getArmies() == 0) {
 					attackSuccessful = true;
 					lastAttackSuccessful = true;
