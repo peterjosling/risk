@@ -76,8 +76,11 @@ public class LocalGame extends AbstractGame {
 		assignTerritories();
 		while(!gameState.isGameComplete()){			
 			Player currentPlayer = nextTurn();
-			gameState.setDeployableArmies();
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
+				gameState.setDeployableArmies();
+//				printMap();
+//				System.out.println("Press enter to continue.");
+//				String cont = EasyIn.getString();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);

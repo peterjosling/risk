@@ -216,7 +216,7 @@ public class AIPlayer extends Player {
 	public Command getPlayCardsCommand() 
 	{
 		PlayCardsCommand command = null;
-		if(getCards().size() < 3) return new PlayCardsCommand(this.getId(), lastAckid++);
+		if(getCards().size() < 3) command = new PlayCardsCommand(this.getId(), lastAckid++);
 		
 		ArrayList<ArrayList<Card>> nonWildCards = new ArrayList<ArrayList<Card>>();
 		
