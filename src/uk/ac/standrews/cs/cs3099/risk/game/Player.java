@@ -17,6 +17,7 @@ public abstract class Player {
 	private int id;
 	private String name;
 	protected int lastAckid = 0;
+
 	protected boolean isNeutral = true;
 	private Die die = new Die();
 	private byte[] lastRollNumber;

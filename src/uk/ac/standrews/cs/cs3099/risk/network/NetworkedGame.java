@@ -30,6 +30,7 @@ public class NetworkedGame extends AbstractGame {
 	private Semaphore gameStart = new Semaphore(0);
 
 	private Die die;
+	private boolean hasinit = false;
 	private int firstplayer = -1;
 	private int[] deckorder = new int[44];
 
@@ -478,6 +479,8 @@ public class NetworkedGame extends AbstractGame {
 
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
+
+			hasinit = true;
 		}
 	}
 
@@ -522,6 +525,9 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void rollHashCommand(RollHashCommand command)
 	{
+		if (!hasinit)
+			startDieRoll();
+
 		initRollHashes[command.getPlayerId()] = command.getHash();
 
 		try {
@@ -605,6 +611,7 @@ public class NetworkedGame extends AbstractGame {
 				localPlayer.notifyCommand(rollResult);
 				setCurrentTurn(firstplayer);
 
+				hasinit = false;
 				startDieRoll();
 			} else { // Deck order here
 				for (int i = 0; i < 44; i++) {
