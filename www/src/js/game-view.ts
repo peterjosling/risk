@@ -451,7 +451,6 @@ class GameView extends View<Game> {
 		var territory = this.model.map.territories.get(payload[0]);
 		var maxArmies = Math.min(2, territory.getArmies());
 
-		this.model.setPhase('defend');
 		this.armyCountSelectView.setMin(1);
 		this.armyCountSelectView.setMax(maxArmies);
 		this.armyCountSelectView.off('select');
