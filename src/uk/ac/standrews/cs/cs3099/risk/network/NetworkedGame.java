@@ -97,6 +97,7 @@ public class NetworkedGame extends AbstractGame {
 
 		localPlayer = player;
 		addPlayer(player);
+		player.setNeutral(false);
 	}
 
 	/**
@@ -128,9 +129,9 @@ public class NetworkedGame extends AbstractGame {
 	 *
 	 * @param command The command received from a player or the host.
 	 */
-	protected void messageReceived(Command command, PlayerSocket playerSocket)
+	synchronized protected void messageReceived(Command command, PlayerSocket playerSocket)
 	{
-		// Handle commands which don't come from an individual player.
+		// Handle commands which don't come from an individual player and shouldn't be forwarded.
 		switch (command.getType()) {
 			case JOIN_GAME:
 				playerJoinRequested((JoinGameCommand) command, playerSocket);
@@ -148,16 +149,28 @@ public class NetworkedGame extends AbstractGame {
 				playersJoined((PlayersJoinedCommand) command);
 				return;
 
-			case PING:
-				playerPinged((PingCommand) command);
-				return;
-
 			case READY:
 				readyReceived((ReadyCommand) command);
 				return;
 
 			case INITIALISE_GAME:
 				initialiseGameCommand((InitialiseGameCommand) command);
+				return;
+		}
+
+		// Forward to all players, if host.
+		if (connectionManager.isServer()) {
+			connectionManager.sendCommand(command);
+		}
+
+		// Handle commands which shouldn't go on the player's move queue, but should be forwarded.
+		switch (command.getType()) {
+			case PING:
+				playerPinged((PingCommand) command);
+				return;
+
+			case ACKNOWLEDGEMENT:
+				acknowledgementReceived((AcknowledgementCommand) command);
 				return;
 
 			// Handle RollHash and RollNumber commands only for the initial turn roll.
@@ -174,21 +187,12 @@ public class NetworkedGame extends AbstractGame {
 					return;
 				}
 				break;
-
-			case ACKNOWLEDGEMENT:
-				acknowledgementReceived((AcknowledgementCommand) command);
-				return;
 		}
 
 		// Add to correct player's move queue based on player_id field.
 		NetworkPlayer player = (NetworkPlayer) getPlayerById(command.getPlayerId());
 		BlockingQueue moveQueue = player.getMoveQueue();
 		moveQueue.add(command);
-
-		// forward to all players, if host.
-		if (connectionManager.isServer()) {
-			connectionManager.sendCommand(command);
-		}
 	}
 
 	/**
@@ -249,7 +253,7 @@ public class NetworkedGame extends AbstractGame {
 			}
 
 			// Issue the ping command if we've reached the maximum number of players.
-			if (id == 1 && accepted) {
+			if (id == 2 && accepted) {
 				int playerId = (localPlayer != null) ? localPlayer.getId() : -1;
 				PingCommand pingCommand = new PingCommand(playerId, players.size());
 				timePingSent = new Date();
@@ -257,10 +261,8 @@ public class NetworkedGame extends AbstractGame {
 
 				if (localPlayer != null) {
 					localPlayer.notifyCommand(pingCommand);
-				}
 
-				// If this is a playing host, mark it has having received this ping.
-				if (playerId > -1) {
+					// If this is a playing host, mark it has having received this ping.
 					numberOfPingsReceived++;
 				}
 
@@ -316,6 +318,11 @@ public class NetworkedGame extends AbstractGame {
 
 		for (PlayersJoinedCommand.PlayersNames playerDetails : playerNames) {
 			int playerId = playerDetails.getPlayerId();
+
+			if (playerId == localPlayer.getId()) {
+				return;
+			}
+
 			String name = playerDetails.getPlayerName();
 			// TODO store public key on player.
 			Player player = new NetworkPlayer(connectionManager, playerId, name);
@@ -335,6 +342,11 @@ public class NetworkedGame extends AbstractGame {
 
 		// If this ping is from the host, respond.
 		if (command.getNoOfPlayers() > 0) {
+			// Ignore if we're being notified of our own command.
+			if (connectionManager.isServer()) {
+				return;
+			}
+
 			PingCommand response = new PingCommand(localPlayer.getId());
 			connectionManager.sendCommand(response);
 		}
@@ -634,7 +646,6 @@ public class NetworkedGame extends AbstractGame {
 		if (connectionManager.isServer()) {
 			Acknowledgement ack = acknowledgements.get(command.getAckId());
 			ack.getPlayersAcknowledged()[command.getPlayerId()] = true;
-			connectionManager.sendCommand(command);
 		}
 	}
 
