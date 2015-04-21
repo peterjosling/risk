@@ -167,14 +167,21 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getFortifyCommand()
 	{
-		System.out.println("Choose Territory to Fortify from. Enter Territory ID:");
-		int sourceID = EasyIn.getInt();
-		System.out.println("Choose Territory to Fortify. Enter Territory ID:");
-		int destinationID = EasyIn.getInt();
-		System.out.println("Enter number of armies to fortify with:");
-		int armies = EasyIn.getInt();
-		int[] details = {sourceID, destinationID, armies};
-		FortifyCommand command = new FortifyCommand(this.getId(), lastAckid++, details);
+		FortifyCommand command = null;
+		System.out.println("Do you with to fortify?. (Y/N)");
+		String response = EasyIn.getString();
+		if(response.equals("Y")){
+			System.out.println("Choose Territory to Fortify from. Enter Territory ID:");
+			int sourceID = EasyIn.getInt();
+			System.out.println("Choose Territory to Fortify. Enter Territory ID:");
+			int destinationID = EasyIn.getInt();
+			System.out.println("Enter number of armies to fortify with:");
+			int armies = EasyIn.getInt();
+			int[] details = {sourceID, destinationID, armies};
+			command = new FortifyCommand(this.getId(), lastAckid++, details);
+		} else {
+			command = new FortifyCommand(this.getId(), lastAckid++);
+		}
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
 			return command;
