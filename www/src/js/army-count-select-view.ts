@@ -26,7 +26,12 @@ class ArmyCountSelectView extends View<Model> {
 	}
 
 	selectButtonClick(e : Event) : boolean {
+		if (!(<HTMLFormElement>this.$('form')[0]).checkValidity()) {
+			return true;
+		}
+
 		var value = +this.$('.army-count').val();
+
 		this.trigger('select', value);
 		this.hide();
 		return false;
