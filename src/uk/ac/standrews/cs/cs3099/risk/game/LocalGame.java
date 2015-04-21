@@ -4,6 +4,7 @@ import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
 
 import java.util.ArrayList;
 
@@ -88,18 +89,20 @@ public class LocalGame extends AbstractGame {
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;
-//				while(canPlayerAttack(currentPlayer) && attackPhase){
-					//TODO fix now attack no longer returns boolean
-					attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
-//				}
-	
-				fortify(currentPlayer);
+
+				while(attackPhase){
+					Command command = currentPlayer.getCommand(CommandType.ATTACK);
+					if(command.getType() == CommandType.FORTIFY){
+						attackPhase = false;
+						fortify((FortifyCommand) command);
+					} else {
+						attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
+					}
+				}
+				
 				checkDeadPlayers();
 				noOfTurns++;
 			}
-//			printMap();
-//			System.out.println("Press enter to continue.");
-//			String cont = EasyIn.getString();
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}

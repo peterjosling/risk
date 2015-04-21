@@ -309,29 +309,24 @@ public class AIPlayer extends Player {
 
 	public Command getAttackCaptureCommand() 
 	{	
-		if(canPlayerAttack()){
-			Territory source = gameState.getMap().findTerritoryById(attackSourceId);
-			
-			int armies = (source.getArmies() - 1) / 2;
-			
-			System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
-			if(armies < gameState.getRemainingArmies()){
-				armies = gameState.getRemainingArmies();
-			}
-	
-			int[] captureDetails = {attackSourceId,attackDestId,armies};
-			AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
-			if(gameState.isCommandValid(command)){
-				notifyCommand(command);
-				return command;
-			} else {
-				System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
-			}
-			
-		} else {
-			System.out.println("Unable to make an attack.");
-			return getFortifyCommand();
+		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
+		
+		int armies = (source.getArmies() - 1) / 2;
+		
+		System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
+		if(armies < gameState.getRemainingArmies()){
+			armies = gameState.getRemainingArmies();
 		}
+
+		int[] captureDetails = {attackSourceId,attackDestId,armies};
+		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+		if(gameState.isCommandValid(command)){
+			notifyCommand(command);
+			return command;
+		} else {
+			System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+		}
+			
 		return null;
 	}
 
@@ -402,36 +397,41 @@ public class AIPlayer extends Player {
 	}
 
 	public Command getAttackCommand() 
-	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
-		int sourceId = 0;
-		int destId = 0;
-		int armies = 0;
-		for(Territory territory : territories){
-			if(territory.getArmies() > 1){
-				Set<Territory> linkedTerritories = territory.getLinkedTerritories();
-				for(Territory currentLinkedTerr : linkedTerritories){
-					if(currentLinkedTerr.getOwner() != this.getId()){
-						sourceId = territory.getId();
-						destId = currentLinkedTerr.getId();
-						if(territory.getArmies() > 3){
-							armies = 3;
-						} else {
-							armies = territory.getArmies() - 1;
+	{		
+		if(canPlayerAttack()){
+			Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+			int sourceId = 0;
+			int destId = 0;
+			int armies = 0;
+			for(Territory territory : territories){
+				if(territory.getArmies() > 1){
+					Set<Territory> linkedTerritories = territory.getLinkedTerritories();
+					for(Territory currentLinkedTerr : linkedTerritories){
+						if(currentLinkedTerr.getOwner() != this.getId()){
+							sourceId = territory.getId();
+							destId = currentLinkedTerr.getId();
+							if(territory.getArmies() > 3){
+								armies = 3;
+							} else {
+								armies = territory.getArmies() - 1;
+							}
 						}
 					}
+				} else {
+					continue;
 				}
-			} else {
-				continue;
 			}
-		}
-		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
-		if(gameState.isCommandValid(command)){
-			notifyCommand(command);
-			return command;
+			AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceId, destId, armies);
+			if(gameState.isCommandValid(command)){
+				notifyCommand(command);
+				return command;
+			} else {
+				System.out.println("Player: " + this.getId() + " created an invalid Attack Command");
+			}	
 		} else {
-			System.out.println("Player: " + this.getId() + " created an invalid Attack Command");
-		}	
+			System.out.println("Unable to make an attack.");
+			return getFortifyCommand();
+		}
 		return null;
 	}
 	
