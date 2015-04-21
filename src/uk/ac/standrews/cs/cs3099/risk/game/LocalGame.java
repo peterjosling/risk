@@ -88,10 +88,10 @@ public class LocalGame extends AbstractGame {
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;
-				while(canPlayerAttack(currentPlayer) && attackPhase){
+//				while(canPlayerAttack(currentPlayer) && attackPhase){
 					//TODO fix now attack no longer returns boolean
 					attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
-				}
+//				}
 	
 				fortify(currentPlayer);
 				checkDeadPlayers();

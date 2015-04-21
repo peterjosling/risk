@@ -309,22 +309,28 @@ public class AIPlayer extends Player {
 
 	public Command getAttackCaptureCommand() 
 	{	
-		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
-		
-		int armies = (source.getArmies() - 1) / 2;
-		
-		System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
-		if(armies < gameState.getRemainingArmies()){
-			armies = gameState.getRemainingArmies();
-		}
-
-		int[] captureDetails = {attackSourceId,attackDestId,armies};
-		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
-		if(gameState.isCommandValid(command)){
-			notifyCommand(command);
-			return command;
+		if(canPlayerAttack()){
+			Territory source = gameState.getMap().findTerritoryById(attackSourceId);
+			
+			int armies = (source.getArmies() - 1) / 2;
+			
+			System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
+			if(armies < gameState.getRemainingArmies()){
+				armies = gameState.getRemainingArmies();
+			}
+	
+			int[] captureDetails = {attackSourceId,attackDestId,armies};
+			AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
+			if(gameState.isCommandValid(command)){
+				notifyCommand(command);
+				return command;
+			} else {
+				System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+			}
+			
 		} else {
-			System.out.println("Player: " + this.getId() + " created an invalid Attack Capture Command");
+			System.out.println("Unable to make an attack.");
+			return getFortifyCommand();
 		}
 		return null;
 	}
@@ -630,5 +636,19 @@ public class AIPlayer extends Player {
 	public void setDeckOrder(int[] deckOrder)
 	{
 		gameState.setDeckOrder(deckOrder);
+	}
+	
+	public boolean canPlayerAttack()
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != this.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

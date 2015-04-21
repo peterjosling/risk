@@ -156,4 +156,5 @@ public abstract class Player {
 
 	public abstract boolean isNeutral();
 	public abstract void setNeutral(boolean neutral);
+	
 }

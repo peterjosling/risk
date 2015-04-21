@@ -137,22 +137,27 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCommand()
 	{
-		System.out.println("Do you desire to make an attack? (Y/N)");
-		String response = EasyIn.getString();
-		if(response.equals("N")) return getFortifyCommand();
-		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
-		int sourceID = EasyIn.getInt();
-		System.out.println("Choose Territory to Attack. Enter Territory ID:");
-		int destinationID = EasyIn.getInt();
-		System.out.println("Enter number of armies to attack with:");
-		int armies = EasyIn.getInt();
-		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
+		if(canPlayerAttack()){
+			System.out.println("Do you desire to make an attack? (Y/N)");
+			String response = EasyIn.getString();
+			if(response.equals("N")) return getFortifyCommand();
+			System.out.println("Choose Territory to Attack From. Enter Territory ID:");
+			int sourceID = EasyIn.getInt();
+			System.out.println("Choose Territory to Attack. Enter Territory ID:");
+			int destinationID = EasyIn.getInt();
+			System.out.println("Enter number of armies to attack with:");
+			int armies = EasyIn.getInt();
+			AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+			if(gameState.isCommandValid(command)) {
+				notifyCommand(command);
+				return command;
+			} else {
+				System.out.println("Invalid Command, please try again.");
+				return getAttackCommand();
+			}
 		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getAttackCommand();
+			System.out.println("Unable to make an attack.");
+			return getFortifyCommand();
 		}
 	}
 
@@ -671,4 +676,17 @@ public class LocalPlayer extends Player {
 		gameState.setDeckOrder(deckOrder);
 	}
 
+	public boolean canPlayerAttack()
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != this.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
