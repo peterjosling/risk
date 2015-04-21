@@ -3,6 +3,7 @@ package uk.ac.standrews.cs.cs3099.risk.game;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -111,12 +112,12 @@ public abstract class AbstractGame {
 		if(gameState.getLastAttackSuccessful()){
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
+		} else {
+			Logger.print("Attack Unsuccessful.");
 		}
 	}
 	
-	public void fortify(Player player)
-	{
-		Command command = player.getCommand(CommandType.FORTIFY);
+	public void fortify(FortifyCommand command){
 		if (command.getType() != CommandType.FORTIFY) {
 			return;
 		}
@@ -126,6 +127,7 @@ public abstract class AbstractGame {
 	public void playCards(Player player)
 	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
+		
 		if (command.getType() != CommandType.PLAY_CARDS) {
 			return;
 		}
@@ -207,20 +209,6 @@ public abstract class AbstractGame {
 	public int getArmiesPerPlayer()
 	{
 		return armiesPerPlayer;
-	}
-
-	public boolean canPlayerAttack(Player player)
-	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
-
-		for(Territory territory : territories){
-			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**

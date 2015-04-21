@@ -137,22 +137,27 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCommand()
 	{
-		System.out.println("Do you desire to make an attack? (Y/N)");
-		String response = EasyIn.getString();
-		if(response.equals("N")) return getFortifyCommand();
-		System.out.println("Choose Territory to Attack From. Enter Territory ID:");
-		int sourceID = EasyIn.getInt();
-		System.out.println("Choose Territory to Attack. Enter Territory ID:");
-		int destinationID = EasyIn.getInt();
-		System.out.println("Enter number of armies to attack with:");
-		int armies = EasyIn.getInt();
-		AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
-		if(gameState.isCommandValid(command)) {
-			notifyCommand(command);
-			return command;
+		if(canPlayerAttack()){
+			System.out.println("Do you desire to make an attack? (Y/N)");
+			String response = EasyIn.getString();
+			if(response.equals("N")) return getFortifyCommand();
+			System.out.println("Choose Territory to Attack From. Enter Territory ID:");
+			int sourceID = EasyIn.getInt();
+			System.out.println("Choose Territory to Attack. Enter Territory ID:");
+			int destinationID = EasyIn.getInt();
+			System.out.println("Enter number of armies to attack with:");
+			int armies = EasyIn.getInt();
+			AttackCommand command = new AttackCommand(this.getId(), lastAckid++, sourceID, destinationID, armies);
+			if(gameState.isCommandValid(command)) {
+				notifyCommand(command);
+				return command;
+			} else {
+				System.out.println("Invalid Command, please try again.");
+				return getAttackCommand();
+			}
 		} else {
-			System.out.println("Invalid Command, please try again.");
-			return getAttackCommand();
+			System.out.println("Unable to make an attack.");
+			return getFortifyCommand();
 		}
 	}
 
@@ -198,10 +203,16 @@ public class LocalPlayer extends Player {
 
 		System.out.println("Enter number of deployments:");
 		numberOfDeployments = EasyIn.getInt();
-		System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
-		territoryID = EasyIn.getInt();
+
+		while(numberOfDeployments >= gameState.getDeployableArmies(this.getId())){
+			System.out.println("Invalid number of deployments. Please try again.");
+			numberOfDeployments = EasyIn.getInt();
+		}
+
+		deployments = new DeployCommand.Deployment[numberOfDeployments];
 		for(int i=0; i<numberOfDeployments; i++){
-			deployments = new DeployCommand.Deployment[numberOfDeployments];
+			System.out.println("Choose Territory To Deploy to. Enter Territory ID:");
+			territoryID = EasyIn.getInt();
 			System.out.println("Enter number of armies to deploy here:");
 			armies = EasyIn.getInt();
 			deployments[i] = new DeployCommand.Deployment(territoryID, armies);
@@ -397,8 +408,10 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getRollNumberCommand()
 	{
-		String hash = "";
-		RollNumberCommand command = new RollNumberCommand(this.getId(), hash);
+		Die die = this.getDie();
+		String number = die.byteToHex(this.getLastRollNumber());
+		
+		RollNumberCommand command= new RollNumberCommand(this.getId(), number);
 		notifyCommand(command);
 		return command;
 	}
@@ -409,12 +422,17 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getRollHashCommand()
 	{
-		String hash = "";
+		Die die = this.getDie();
+		byte[] num = die.generateNumber();
+		this.setLastRollNumber(num);
+		byte[] numHash = die.hashByteArr(num);
+		String hash = die.byteToHex(numHash);
+		
 		RollHashCommand command = new RollHashCommand(this.getId(), hash);
 		notifyCommand(command);
 		return command;
 	}
-
+	
 	/**
 	 * Creates a ping command
 	 * @return the new ping command
@@ -614,6 +632,8 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(PlayCardsCommand command)
 	{
+		gameState.setDeployableArmies();
+
 		if(command.getCards() == null){
 			System.out.println("Player: " + command.getPlayerId() + " traded in 0 cards");
 			return;
@@ -633,7 +653,7 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(RollNumberCommand command)
 	{
-		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
+//		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
@@ -643,17 +663,30 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(RollHashCommand command)
 	{
-		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
+//		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
 			System.out.println("Invalid RollHashCommand.");
 		}	
-	}	
+	}
 
 	public void setDeckOrder(int[] deckOrder)
 	{
 		gameState.setDeckOrder(deckOrder);
 	}
 
+	public boolean canPlayerAttack()
+	{
+		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
+
+		for(Territory territory : territories){
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if((linkedTerritory.getOwner() != this.getId()) && (territory.getArmies() > 1)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

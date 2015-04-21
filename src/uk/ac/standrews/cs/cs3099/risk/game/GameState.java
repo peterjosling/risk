@@ -590,7 +590,7 @@ public class GameState {
 		int deployingTroops = 0;
 
 		for (Deployment deployment : command.getDeployments()){
-
+			if(deployment == null) return false;
 			if(deployment.getTerritoryId() > map.getTerritories().size() -1) return false;
 			
 			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
