@@ -289,7 +289,7 @@ public class GameState {
 				//apply result to board
 				removeArmiesFromTerritory(command.getSource(), result[0]);
 				removeArmiesFromTerritory(command.getDest(), result[1]);
-				if (map.findTerritoryById(command.getDest()).getArmies() == 0) {
+				if (map.findTerritoryById(command.getDest()).getArmies() <= 0) {
 					attackSuccessful = true;
 					lastAttackSuccessful = true;
 					remainingArmies = numberOfAttackingDice - result[0];
