@@ -632,10 +632,7 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
-
-		for (Player player : getPlayers()) {
-			player.notifyCommand(ack);
-		}
+		connectionManager.sendCommand(ack);
 
 		// Update value for next acknowledgement
 		this.ackId = ackId + 1;
