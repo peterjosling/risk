@@ -556,7 +556,8 @@ public class GameState {
 		if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
 
 		if ((sourceTerritory.getArmies() <= command.getArmies())
-				|| (sourceTerritory.getArmies() < 2) || (command.getArmies() > 3) || (command.getArmies() < 1))
+				|| (sourceTerritory.getArmies() < 2)
+				|| (command.getArmies() > 3) || (command.getArmies() < 1))
 			return false;
 
 		return true;
@@ -581,7 +582,9 @@ public class GameState {
 		if(fortifyDest.getOwner() != playerId) return false;
 
 		if(fortifySource.getArmies() > 1){
-			if((command.getFortifyDetails()[2]) > fortifySource.getArmies()) return false;
+			if ((command.getFortifyDetails()[2]) > fortifySource.getArmies()
+					|| command.getFortifyDetails()[2] < 1)
+				return false;
 		} else {
 			return false;
 		}
