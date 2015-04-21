@@ -728,9 +728,6 @@ public class NetworkedGame extends AbstractGame {
 
 				// Send acknowledgement for the local player.
 				int ackId = command.getAckId();
-				if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
-					sendAcknowledgement(ackId);
-				}
 
 				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
 					notifyPlayers(command);
@@ -745,6 +742,9 @@ public class NetworkedGame extends AbstractGame {
 					phase = 4;
 				}
 
+				if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
+					sendAcknowledgement(ackId);
+				}
 			}
 
 			nextTurn();
