@@ -591,6 +591,9 @@ class Game extends Model {
 
 	// Apply a fortify message to the map.
 	public handleFortifyMessage(message : Messages.FortifyMessage) {
+		// Fortify indicates end of turn.
+		this.nextTurn();
+
 		if (message.payload === null) {
 			return;
 		}
@@ -604,7 +607,7 @@ class Game extends Model {
 
 		// Update the UI.
 		this.trigger('change:map');
-		this.updateArmyCounts()
+		this.updateArmyCounts();
 	}
 
 	private playCardsMessageReceived(message : Messages.PlayCardsMessage) {
