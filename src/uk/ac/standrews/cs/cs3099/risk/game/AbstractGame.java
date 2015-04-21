@@ -262,26 +262,7 @@ public abstract class AbstractGame {
 	{
 		return armiesPerPlayer;
 	}
-
-	/**
-	 * Checks whether a player has the ability to attack
-	 * @param player the player to check
-	 * @return true if player can attack, false if not
-	 */
-	public boolean canPlayerAttack(Player player)
-	{
-		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
-
-		for(Territory territory : territories){
-			for(Territory linkedTerritory : territory.getLinkedTerritories()){
-				if((linkedTerritory.getOwner() != player.getId()) && (territory.getArmies() > 1)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
+	
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */
