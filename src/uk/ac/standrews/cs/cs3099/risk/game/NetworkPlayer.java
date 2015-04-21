@@ -9,6 +9,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class NetworkPlayer extends Player {
 	private ConnectionManager connectionManager;
+
+	/**
+	 * Queues the commands being sent down the network players socket
+	 */
 	private BlockingQueue<Command> moveQueue = new LinkedBlockingDeque<Command>();
 
 	@Override
@@ -16,24 +20,42 @@ public class NetworkPlayer extends Player {
 	{
 		return PlayerType.NETWORK;
 	}
-	
+
+	/**
+	 * Creates a new network player without a name
+	 * @param connectionManager - the connection manager which manages the connection to the host
+	 * @param id - the id of the player
+	 */
 	public NetworkPlayer(ConnectionManager connectionManager, int id)
 	{
 		super(id);
 		this.connectionManager = connectionManager;
 	}
 
+	/**
+	 * Creates a new network player without a name
+	 * @param connectionManager - the connection manager which manages the connection to the host
+	 * @param id - the id of the player
+	 */
 	public NetworkPlayer(ConnectionManager connectionManager, int id, String name)
 	{
 		super(id, name);
 		this.connectionManager = connectionManager;
 	}
 
+	/**
+	 * @return the queued commands for a NetworkPlayer Instance
+	 */
 	public BlockingQueue getMoveQueue()
 	{
 		return moveQueue;
 	}
 
+	/**
+	 * Takes the fist command off the move queue
+	 * @param type - the type of command expected
+	 * @return the command
+	 */
 	@Override
 	public Command getCommand(CommandType type)
 	{
@@ -47,19 +69,14 @@ public class NetworkPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Sends a command to the host to inform all other players
+	 * @param command the command to send
+	 */
 	@Override
 	public void notifyCommand(Command command)
 	{
 		connectionManager.sendCommand(command);
 	}
 
-	public boolean isNeutral() {
-		return isNeutral;
-	}
-
-	@Override
-	public void setNeutral(boolean neutral)
-	{
-		isNeutral = neutral;
-	}
 }

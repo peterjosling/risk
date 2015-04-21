@@ -166,7 +166,7 @@ public class AIPlayer extends Player {
 			deployments[i] = new Deployment(deployTerritory.getId(), 1);
 		}
 		
-		DeployCommand command = new DeployCommand(getId(), ++lastAckid, deployments);
+		DeployCommand command = new DeployCommand(getId(), lastAckid++, deployments);
 		
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
@@ -192,7 +192,7 @@ public class AIPlayer extends Player {
 			territory = territories[nextRandom];
 		}
 
-		AssignArmyCommand command =  new AssignArmyCommand(getId(), ++lastAckid, territory.getId());
+		AssignArmyCommand command =  new AssignArmyCommand(getId(), lastAckid++, territory.getId());
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
 			return command;

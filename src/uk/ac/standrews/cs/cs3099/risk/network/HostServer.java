@@ -27,6 +27,9 @@ public class HostServer implements Runnable {
 		}
 	}
 
+	/**
+	 * Closes the serverSocket
+	 */
 	public void terminate(){
 		try {
 			serverSocket.close();

@@ -20,16 +20,27 @@ public abstract class AbstractGame {
 	private List<Player> players = new ArrayList<Player>();
 	private int currentTurn = -1;
 
+	/**
+	 * Adds a player to the List of players in the game
+	 * @param player the player instance to add
+	 */
 	public void addPlayer(Player player)
 	{
 		players.add(player);
 	}
 
+	/**
+	 * Loads a map given as a json string
+	 * @param jsonMap - the json representation of a map
+	 */
 	public void loadMap(String jsonMap)
 	{
 		gameState.loadMap(jsonMap);
 	}
 
+	/**
+	 * Loads the default json map for a standard risk game
+	 */
 	public void loadDefaultMap()
 	{
 		String json = "";
@@ -54,6 +65,9 @@ public abstract class AbstractGame {
 		loadMap(json);
 	}
 
+	/**
+	 * Initialises the game state
+	 */
 	public void init()
 	{
 		ArrayList<Integer> playerIds = new ArrayList<Integer>();
@@ -70,7 +84,12 @@ public abstract class AbstractGame {
 	 * Requests one army assignment from each player in order, until all armies have been assigned.
 	 */
 	public abstract void assignTerritories();
-	
+
+	/**
+	 * Plays out the deployment phase of the game, getting a command from a player
+	 * updating the game state and notifying all players
+	 * @param player - the player to get the command from
+	 */
 	public void deploy(Player player)
 	{
 		Command command = player.getCommand(CommandType.DEPLOY);
@@ -80,7 +99,13 @@ public abstract class AbstractGame {
 		}
 		notifyPlayers(command);
 	}
-	
+
+	/**
+	 * Plays out the attack phase of the game, getting the appropriate commands from players
+	 * updating the game state and notifying all players
+	 * @param command - the attack command
+	 * @param player - the player who actioned the command
+	 */
 	public void attack(AttackCommand command, Player player)
 	{
 		Logger.print("Abstract attack");
@@ -117,27 +142,42 @@ public abstract class AbstractGame {
 			Logger.print("Attack Unsuccessful. Remaining Armies: " + gameState.getMap().findTerritoryById(command.getDest()).getArmies());
 		}
 	}
-	
+
+	/**
+	 * Plays out the fortify phase of the game, taking a command
+	 * updating the game state and notifying all players
+	 * @param command
+	 */
 	public void fortify(FortifyCommand command){
 		if (command.getType() != CommandType.FORTIFY) {
 			return;
 		}
 		notifyPlayers(command);
 	}
-	
+
+	/**
+	 * Plays out the playing cards phase of the game, getting a play cards command from a player
+	 * updating the game state and notifying all players
+	 * @param player
+	 */
+
 	public void playCards(Player player)
 	{
 		Command command = player.getCommand(CommandType.PLAY_CARDS);
-		
 		if (command.getType() != CommandType.PLAY_CARDS) {
 			return;
 		}
 		notifyPlayers(command);
 	}
 
+	/**
+	 * Sends a notification to all players in the game so that they can update their game state and
+	 * plays out the command on the games game state
+	 * @param command - the command to notify
+	 */
 	public void notifyPlayers(Command command)
 	{
-		for(Player player: players){
+		for(Player player : players){
 			if (player.getId() != command.getPlayerId()) {
 				player.notifyCommand(command);
 			}
@@ -194,6 +234,11 @@ public abstract class AbstractGame {
 		return getCurrentTurnPlayer();
 	}
 
+	/**
+	 * Get a player instance given an id of that  player
+	 * @param playerId - the player required
+	 * @return the player instance or null if no player is found
+	 */
 	public Player getPlayerById(int playerId)
 	{
 		for(Player player : players){
@@ -201,23 +246,29 @@ public abstract class AbstractGame {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * @return a list of all the players in the game
+	 */
 	public List<Player> getPlayers()
 	{
 		return players;
 	}
-	
+
+	/**
+	 * @return the number of armies each player gets a the start of the game
+	 */
 	public int getArmiesPerPlayer()
 	{
 		return armiesPerPlayer;
 	}
-
+	
 	/**
 	 * Terminate the current game due to an error/cheating.
 	 */
 	public void terminate()
 	{
-
+		//TODO work out if we need to do something here or just delete it
 	}
 
 }

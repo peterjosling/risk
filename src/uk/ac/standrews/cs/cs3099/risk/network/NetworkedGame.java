@@ -685,6 +685,9 @@ public class NetworkedGame extends AbstractGame {
 		}
 	}
 
+	/**
+	 * Runs the game, controlling the game flow, and ending when game is complete
+	 */
 	public void run(){
 		assignTerritories();
 

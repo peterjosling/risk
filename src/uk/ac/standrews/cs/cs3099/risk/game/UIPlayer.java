@@ -20,17 +20,27 @@ public class UIPlayer extends Player {
 		webSocket = ws;
 	}
 
+
 	@Override
 	public PlayerType getType()
 	{
 		return PlayerType.UI;
 	}
-	
+
+	/**
+	 * Adds the specified command to the move queue
+	 * @param command
+	 */
 	public void queueCommand(Command command)
 	{
 		moveQueue.add(command);
 	}
 
+	/**
+	 * Takes a command off of the move queue sent by the UI
+	 * @param type the command type to get
+	 * @return The command form the queue
+	 */
 	@Override
 	public Command getCommand(CommandType type)
 	{
@@ -59,6 +69,11 @@ public class UIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Sends the specified command as Json to through the websocket to notify the player so
+	 * that it can update its game state
+	 * @param command the command to send
+	 */
 	@Override
 	public void notifyCommand(Command command)
 	{
@@ -101,15 +116,6 @@ public class UIPlayer extends Player {
 		}
 
 		webSocket.send(command.toJSON());
-	}
-
-	@Override
-	public boolean isNeutral() {
-		return isNeutral;
-	}
-
-	public void setNeutral(boolean neutral) {
-		isNeutral = neutral;
 	}
 
 	public Command getRollNumberCommand()

@@ -63,7 +63,7 @@ public class RandomNumbers {
 
 	/**
 	 * Seeds the "random" number generator using a variable length seed
-	 * @param	seed	the seed to use (string in hex)
+	 * @param	hexseed	the seed to use (string in hex)
 	 */
 	public RandomNumbers(String hexseed)
 	{
