@@ -602,8 +602,8 @@ class Game extends Model {
 		var dest = this.map.territories.get(message.payload[1]);
 		var armies = message.payload[2];
 
-		source.addArmies(armies);
-		dest.addArmies(-armies);
+		source.addArmies(-armies);
+		dest.addArmies(armies);
 
 		// Update the UI.
 		this.trigger('change:map');
