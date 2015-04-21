@@ -1,4 +1,4 @@
-﻿/******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -177,7 +177,7 @@
 	var PlayerList = __webpack_require__(13);
 	var Map = __webpack_require__(14);
 	var CardList = __webpack_require__(15);
-	var defaultMapJson = __webpack_require__(29);
+	var defaultMapJson = __webpack_require__(25);
 	var HOST = 'ws://localhost:7574';
 	var Game = (function (_super) {
 	    __extends(Game, _super);
@@ -194,6 +194,10 @@
 	    // Whether the game is running as a host or not.
 	    Game.prototype.isHost = function () {
 	        return this._isHost;
+	    };
+	    // Whether the game is being controlled by an AI.
+	    Game.prototype.isAi = function () {
+	        return this._isAi;
 	    };
 	    // Get the Player instance whose turn it currently is.
 	    Game.prototype.getCurrentPlayer = function () {
@@ -271,6 +275,7 @@
 	    Game.prototype.connect = function (name, host, port, ai) {
 	        var _this = this;
 	        this._isHost = false;
+	        this._isAi = ai;
 	        this.self = new Player({
 	            isActive: true,
 	            name: name
@@ -306,9 +311,10 @@
 	        });
 	    };
 	    // Start a host server on the specified port.
-	    Game.prototype.startServer = function (name, port) {
+	    Game.prototype.startServer = function (name, port, ai) {
 	        var _this = this;
 	        this._isHost = true;
+	        this._isAi = ai;
 	        this.self = new Player({
 	            player_id: 0,
 	            isActive: true,
@@ -323,7 +329,8 @@
 	                    command: 'server_start',
 	                    payload: {
 	                        name: name,
-	                        port: port
+	                        port: port,
+	                        ai: ai
 	                    }
 	                });
 	                // TODO check the host could actually listen on that port before resolving.
@@ -506,7 +513,6 @@
 	        this.attackDetails.defend = message;
 	    };
 	    Game.prototype.attackCaptureMessageReceived = function (message) {
-	        console.log('Attack capture received', message);
 	        var player = this.playerList.get(message.player_id);
 	        var source = this.map.territories.get(message.payload[0]);
 	        var dest = this.map.territories.get(message.payload[1]);
@@ -516,17 +522,13 @@
 	    };
 	    // Apply an attack_capture command to the map.
 	    Game.prototype.handleAttackCaptureMessage = function (message) {
-	        console.log('Handling attack capture');
 	        var player = this.playerList.get(message.player_id);
 	        var source = this.map.territories.get(message.payload[0]);
 	        var dest = this.map.territories.get(message.payload[1]);
 	        var armies = message.payload[2];
-	        console.log('armies', armies);
-	        console.log('source', source.getArmies(), 'dest', dest.getArmies());
 	        source.addArmies(-armies);
 	        dest.addArmies(armies);
 	        dest.setOwner(player);
-	        console.log('source', source.id, 'armies', source.getArmies(), 'dest', dest.id, 'armies', dest.getArmies());
 	        this.trigger('change:map');
 	    };
 	    Game.prototype.deployMessageReceived = function (message) {
@@ -691,7 +693,7 @@
 	    __extends(ConnectionView, _super);
 	    function ConnectionView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(16);
+	        this.template = __webpack_require__(17);
 	    }
 	    Object.defineProperty(ConnectionView.prototype, "className", {
 	        get: function () {
@@ -734,10 +736,10 @@
 	        if (!this.$('.host-form')[0].checkValidity()) {
 	            return true;
 	        }
-	        var port = +this.$('#host-port').val(), name = this.$('#host-player-name').val();
+	        var port = +this.$('#host-port').val(), ai = this.$('#host-ai')[0].checked, name = this.$('#host-player-name').val();
 	        this.disableInputs();
 	        this.model.showToast('Starting server...');
-	        this.model.startServer(name, port).catch(function () {
+	        this.model.startServer(name, port, ai).catch(function () {
 	            _this.model.showToast('Failed to start server.');
 	            _this.enableInputs();
 	        });
@@ -771,7 +773,7 @@
 	    __extends(LobbyView, _super);
 	    function LobbyView(options) {
 	        _super.call(this, options);
-	        this.template = __webpack_require__(17);
+	        this.template = __webpack_require__(16);
 	        this.listenTo(this.model.playerList, 'add', this.render);
 	        this.listenTo(this.model, 'playerJoinRequested', this.playerJoinRequested);
 	        this.requestedPlayers = [];
@@ -860,8 +862,8 @@
 	        this.deployableArmies = 0;
 	        var playerListView = new PlayerListView({ model: this.model });
 	        var mapView = new MapView({ model: this.model });
-	        this.cardSelectView = new CardSelectView({ collection: this.model.playerCards });
-	        this.armyCountSelectView = new ArmyCountSelectView();
+	        this.cardSelectView = new CardSelectView({ model: this.model });
+	        this.armyCountSelectView = new ArmyCountSelectView({ model: this.model });
 	        this.listenTo(mapView, 'territorySelect', this.territorySelected);
 	        this.listenTo(this.model, 'change:currentPlayer', this.currentPlayerChange);
 	        this.listenTo(this.model, 'defend', this.startDefend);
@@ -1236,7 +1238,6 @@
 	        var _this = this;
 	        var territory = this.model.map.territories.get(payload[0]);
 	        var maxArmies = Math.min(2, territory.getArmies());
-	        this.model.setPhase('defend');
 	        this.armyCountSelectView.setMin(1);
 	        this.armyCountSelectView.setMax(maxArmies);
 	        this.armyCountSelectView.off('select');
@@ -1407,7 +1408,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(42)();
-	exports.push([module.id, ".game {\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  height: 100%;\n}\n.army-count-select {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.modal {\n  width: 500px;\n  margin: 100px auto;\n  background-color: #FFF;\n  padding: 10px 20px 20px;\n  border-radius: 6px;\n}\n#attack-end-button,\n#no-fortify-button {\n  position: absolute;\n  left: 10px;\n  bottom: 10px;\n}\n.card {\n  float: left;\n  width: 50px;\n  height: 80px;\n  border-radius: 8px;\n  border: 1px solid #999;\n  text-align: center;\n  margin: 11px;\n}\n.card.active {\n  border: 2px solid blue;\n  margin: 10px;\n}\n#player-list {\n  width: 300px;\n  height: 100%;\n  background-color: #E6E6E6;\n  border-right: 1px solid #979797;\n  position: relative;\n}\n#player-list .player-list-item {\n  height: 90px;\n}\n#player-list .armies-badge {\n  width: 55px;\n  height: 55px;\n  float: left;\n  text-align: center;\n  border-radius: 50%;\n  background: red;\n  border: 1px solid #FFF;\n  color: #FFF;\n  font-size: 24px;\n  padding-top: 5px;\n  box-sizing: border-box;\n}\n#player-list .armies-badge .armies-count {\n  font-size: 12px;\n  opacity: 0.79;\n}\n#player-list .current-player-thumb {\n  background: url('/img/current-player-thumb.png') no-repeat center;\n  background-size: 100%;\n  width: 42px;\n  height: 90px;\n  position: absolute;\n  right: -13px;\n  top: 0;\n  -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n          transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n}\n#player-list .current-player-thumb[data-player-id=\"1\"] {\n  -webkit-transform: translateY(90px);\n      -ms-transform: translateY(90px);\n          transform: translateY(90px);\n}\n#player-list .current-player-thumb[data-player-id=\"2\"] {\n  -webkit-transform: translateY(180px);\n      -ms-transform: translateY(180px);\n          transform: translateY(180px);\n}\n#player-list .current-player-thumb[data-player-id=\"3\"] {\n  -webkit-transform: translateY(270px);\n      -ms-transform: translateY(270px);\n          transform: translateY(270px);\n}\n#player-list .current-player-thumb[data-player-id=\"4\"] {\n  -webkit-transform: translateY(360px);\n      -ms-transform: translateY(360px);\n          transform: translateY(360px);\n}\n#player-list .current-player-thumb[data-player-id=\"5\"] {\n  -webkit-transform: translateY(450px);\n      -ms-transform: translateY(450px);\n          transform: translateY(450px);\n}\n#map {\n  width: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #C2DFFF;\n}\n#map svg {\n  width: 100%;\n  height: 100%;\n}\n#map svg .territory {\n  -webkit-transition: opacity 0.5s linear;\n          transition: opacity 0.5s linear;\n  cursor: pointer;\n}\n#map svg .territory.fade {\n  opacity: 0.2;\n  cursor: auto;\n}\n#map svg text {\n  fill: #000;\n}\n.map {\n  width: 100%;\n  margin: auto 0;\n}\n.toast-container {\n  pointer-events: none;\n  position: fixed;\n  top: 0;\n  bottom: 50px;\n  right: 0;\n  left: 0;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n  -webkit-flex-direction: column;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n  -webkit-justify-content: flex-end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.toast-container .toast {\n  width: 500px;\n  text-align: center;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 15px;\n  border-radius: 3px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);\n  background-color: rgba(255, 255, 255, 0.7);\n  margin: 10px 0;\n  -webkit-flex-shrink: 0;\n      -ms-flex-negative: 0;\n          flex-shrink: 0;\n}\n.connection-view {\n  width: 600px;\n  margin: 100px auto;\n  border: 1px solid #CCC;\n  overflow: auto;\n  border-radius: 8px;\n}\n.connection-view form {\n  width: 50%;\n  float: left;\n  padding: 15px;\n}\n.connection-view label,\n.connection-view input:not([type=checkbox]) {\n  display: block;\n}\n.connection-view label {\n  margin-top: 10px;\n}\n* {\n  box-sizing: border-box;\n}\nhtml,\nbody,\n.view-container {\n  height: 100%;\n}\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  margin: 0;\n}\nbody > div {\n  height: 100%;\n}\ninput:not([type=checkbox]) {\n  width: 100%;\n  font-size: 16px;\n  border-radius: 4px;\n  border: 1px solid #CCC;\n  padding: 8px;\n}\nbutton {\n  border-radius: 4px;\n  padding: 8px 16px;\n  font-size: 16px;\n  outline: none;\n  background-color: #FFF;\n  border: 1px solid #CCC;\n  cursor: pointer;\n  margin-top: 10px;\n}\n.hidden {\n  display: none;\n}\n", ""]);
+	exports.push([module.id, ".game {\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  height: 100%;\n}\n.army-count-select,\n.card-select {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.modal {\n  width: 500px;\n  margin: 100px auto;\n  background-color: #FFF;\n  padding: 10px 20px 20px;\n  border-radius: 6px;\n}\n#attack-end-button,\n#no-fortify-button {\n  position: absolute;\n  left: 10px;\n  bottom: 10px;\n}\n.card {\n  float: left;\n  width: 50px;\n  height: 80px;\n  border-radius: 8px;\n  border: 1px solid #999;\n  text-align: center;\n  margin: 11px;\n}\n.card.active {\n  border: 2px solid blue;\n  margin: 10px;\n}\n#player-list {\n  width: 300px;\n  height: 100%;\n  background-color: #E6E6E6;\n  border-right: 1px solid #979797;\n  position: relative;\n}\n#player-list .player-list-item {\n  height: 90px;\n}\n#player-list .armies-badge {\n  width: 55px;\n  height: 55px;\n  float: left;\n  text-align: center;\n  border-radius: 50%;\n  background: red;\n  border: 1px solid #FFF;\n  color: #FFF;\n  font-size: 24px;\n  padding-top: 5px;\n  box-sizing: border-box;\n}\n#player-list .armies-badge .armies-count {\n  font-size: 12px;\n  opacity: 0.79;\n}\n#player-list .current-player-thumb {\n  background: url('/img/current-player-thumb.png') no-repeat center;\n  background-size: 100%;\n  width: 42px;\n  height: 90px;\n  position: absolute;\n  right: -13px;\n  top: 0;\n  -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n          transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n}\n#player-list .current-player-thumb[data-player-id=\"1\"] {\n  -webkit-transform: translateY(90px);\n      -ms-transform: translateY(90px);\n          transform: translateY(90px);\n}\n#player-list .current-player-thumb[data-player-id=\"2\"] {\n  -webkit-transform: translateY(180px);\n      -ms-transform: translateY(180px);\n          transform: translateY(180px);\n}\n#player-list .current-player-thumb[data-player-id=\"3\"] {\n  -webkit-transform: translateY(270px);\n      -ms-transform: translateY(270px);\n          transform: translateY(270px);\n}\n#player-list .current-player-thumb[data-player-id=\"4\"] {\n  -webkit-transform: translateY(360px);\n      -ms-transform: translateY(360px);\n          transform: translateY(360px);\n}\n#player-list .current-player-thumb[data-player-id=\"5\"] {\n  -webkit-transform: translateY(450px);\n      -ms-transform: translateY(450px);\n          transform: translateY(450px);\n}\n#map {\n  width: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #C2DFFF;\n}\n#map svg {\n  width: 100%;\n  height: 100%;\n}\n#map svg .territory {\n  -webkit-transition: opacity 0.5s linear;\n          transition: opacity 0.5s linear;\n  cursor: pointer;\n}\n#map svg .territory.fade {\n  opacity: 0.2;\n  cursor: auto;\n}\n#map svg text {\n  fill: #000;\n}\n.map {\n  width: 100%;\n  margin: auto 0;\n}\n.toast-container {\n  pointer-events: none;\n  position: fixed;\n  top: 0;\n  bottom: 50px;\n  right: 0;\n  left: 0;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n  -webkit-flex-direction: column;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n  -webkit-justify-content: flex-end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.toast-container .toast {\n  width: 500px;\n  text-align: center;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 15px;\n  border-radius: 3px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);\n  background-color: rgba(255, 255, 255, 0.7);\n  margin: 10px 0;\n  -webkit-flex-shrink: 0;\n      -ms-flex-negative: 0;\n          flex-shrink: 0;\n}\n.connection-view {\n  width: 600px;\n  margin: 100px auto;\n  border: 1px solid #CCC;\n  overflow: auto;\n  border-radius: 8px;\n}\n.connection-view form {\n  width: 50%;\n  float: left;\n  padding: 15px;\n}\n.connection-view label,\n.connection-view input:not([type=checkbox]) {\n  display: block;\n}\n.connection-view label {\n  margin-top: 10px;\n}\n* {\n  box-sizing: border-box;\n}\nhtml,\nbody,\n.view-container {\n  height: 100%;\n}\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  margin: 0;\n}\nbody > div {\n  height: 100%;\n}\ninput:not([type=checkbox]) {\n  width: 100%;\n  font-size: 16px;\n  border-radius: 4px;\n  border: 1px solid #CCC;\n  padding: 8px;\n}\nbutton {\n  border-radius: 4px;\n  padding: 8px 16px;\n  font-size: 16px;\n  outline: none;\n  background-color: #FFF;\n  border: 1px solid #CCC;\n  cursor: pointer;\n  margin-top: 10px;\n}\n.hidden {\n  display: none;\n}\n", ""]);
 
 /***/ },
 /* 10 */
@@ -1536,7 +1537,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Collection = __webpack_require__(25);
+	var Collection = __webpack_require__(26);
 	var PlayerList = (function (_super) {
 	    __extends(PlayerList, _super);
 	    function PlayerList() {
@@ -1566,11 +1567,11 @@
 	    d.prototype = new __();
 	};
 	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(25);
-	var Continent = __webpack_require__(26);
-	var Territory = __webpack_require__(27);
+	var Collection = __webpack_require__(26);
+	var Continent = __webpack_require__(27);
+	var Territory = __webpack_require__(28);
 	var CardList = __webpack_require__(15);
-	var Card = __webpack_require__(28);
+	var Card = __webpack_require__(29);
 	var Map = (function (_super) {
 	    __extends(Map, _super);
 	    function Map() {
@@ -1621,6 +1622,7 @@
 	            var territory = this.territories.get(+i);
 	            territory.setCardType(cardType);
 	            var card = new Card({
+	                id: parseInt(i, 10),
 	                type: cardType,
 	                territory: territory
 	            });
@@ -1645,7 +1647,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Collection = __webpack_require__(25);
+	var Collection = __webpack_require__(26);
 	var CardList = (function (_super) {
 	    __extends(CardList, _super);
 	    function CardList() {
@@ -1681,15 +1683,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Handlebars = __webpack_require__(40);
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-	  return "<form class=\"connect-form\">\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form class=\"host-form\">\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
-	  },"useData":true});
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Handlebars = __webpack_require__(40);
 	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(depth0,helpers,partials,data) {
 	  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 	  return "	<div>"
@@ -1706,6 +1699,15 @@
 	  if (stack1 != null) { buffer += stack1; }
 	  return buffer;
 	},"useData":true});
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(40);
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+	  return "<form class=\"connect-form\">\n	<h2>Connect to a host</h2>\n	<label for=\"player-name\">Player name</label>\n	<input type=\"text\" id=\"player-name\" required>\n	<label for=\"connection-host\">Hostname</label>\n	<input type=\"text\" id=\"connection-host\" value=\"localhost\" required>\n	<label for=\"connection-port\">Port</label>\n	<input type=\"number\" id=\"connection-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"connection-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"connect-button\">Connect</button>\n</form>\n<form class=\"host-form\">\n	<h2>Start a server</h2>\n	<label for=\"host-player-name\">Player name</label>\n	<input type=\"text\" id=\"host-player-name\" required>\n	<label for=\"host-port\">Port: </label>\n	<input type=\"number\" id=\"host-port\" value=\"7475\" required>\n	<label><input type=\"checkbox\" id=\"host-ai\"> Use AI</label>\n	<button type=\"submit\" class=\"host-button\">Launch</button>\n</form>\n";
+	  },"useData":true});
 
 /***/ },
 /* 18 */
@@ -1798,7 +1800,6 @@
 	            $territory.attr('fill', colour);
 	            // Show number of armies.
 	            var armies = territory.getArmies();
-	            console.log("id", territory.id, "armies", armies);
 	            this.$('text[data-territory-id=' + territory.id + '] tspan').text(armies);
 	        }, this);
 	    };
@@ -1848,13 +1849,16 @@
 	    });
 	    CardSelectView.prototype.getRenderData = function () {
 	        // The player *must* trade in cards if they have 5 or 6.
-	        var mustTrade = this.collection.length > 4;
+	        var mustTrade = this.model.playerCards.length > 4;
 	        return {
 	            mustTrade: mustTrade,
-	            cards: this.collection.toJSON()
+	            cards: this.model.playerCards.toJSON()
 	        };
 	    };
 	    CardSelectView.prototype.show = function () {
+	        if (this.model.isAi()) {
+	            return;
+	        }
 	        this.render();
 	        this.$el.removeClass('hidden');
 	    };
@@ -1874,7 +1878,7 @@
 	        var _this = this;
 	        var cards = this.$('.card.active').map(function () {
 	            return $(this).data('id');
-	        }).get().map(function (id) { return _this.collection.get(id); });
+	        }).get().map(function (id) { return _this.model.playerCards.get(id); });
 	        if (cards.length !== 3) {
 	            return;
 	        }
@@ -1945,6 +1949,9 @@
 	        };
 	    };
 	    ArmyCountSelectView.prototype.selectButtonClick = function (e) {
+	        if (!this.$('form')[0].checkValidity()) {
+	            return true;
+	        }
 	        var value = +this.$('.army-count').val();
 	        this.trigger('select', value);
 	        this.hide();
@@ -1954,6 +1961,9 @@
 	        this.hide();
 	    };
 	    ArmyCountSelectView.prototype.show = function (force) {
+	        if (this.model.isAi()) {
+	            return;
+	        }
 	        this.render();
 	        this.$el.removeClass('hidden');
 	        this.$('.army-count').focus();
@@ -3798,146 +3808,6 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	/// <reference path="../../lib/backbone/backbone.d.ts" />
-	var Backbone = __webpack_require__(24);
-	var Collection = (function (_super) {
-	    __extends(Collection, _super);
-	    function Collection() {
-	        _super.apply(this, arguments);
-	    }
-	    return Collection;
-	})(Backbone.Collection);
-	module.exports = Collection;
-
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(25);
-	var Continent = (function (_super) {
-	    __extends(Continent, _super);
-	    function Continent() {
-	        _super.apply(this, arguments);
-	    }
-	    Continent.prototype.initialize = function (options) {
-	        this.territories = new Collection();
-	    };
-	    Continent.prototype.setValue = function (value) {
-	        this.set('value', value);
-	    };
-	    Continent.prototype.getValue = function () {
-	        return this.get('value');
-	    };
-	    Continent.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Continent.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    return Continent;
-	})(Model);
-	module.exports = Continent;
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(25);
-	var Territory = (function (_super) {
-	    __extends(Territory, _super);
-	    function Territory() {
-	        _super.apply(this, arguments);
-	        this.owner = null;
-	        this.armies = 0;
-	    }
-	    Territory.prototype.initialize = function (options) {
-	        this.connections = new Collection();
-	    };
-	    Territory.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Territory.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    Territory.prototype.setCardType = function (cardType) {
-	        this.set('cardType', cardType);
-	    };
-	    Territory.prototype.getCardType = function () {
-	        return this.get('cardType');
-	    };
-	    Territory.prototype.setOwner = function (player) {
-	        this.owner = player;
-	    };
-	    Territory.prototype.getOwner = function () {
-	        return this.owner;
-	    };
-	    Territory.prototype.setArmies = function (armies) {
-	        this.armies = armies;
-	    };
-	    Territory.prototype.addArmies = function (armies) {
-	        this.armies += armies;
-	    };
-	    Territory.prototype.getArmies = function () {
-	        return this.armies;
-	    };
-	    return Territory;
-	})(Model);
-	module.exports = Territory;
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Card = (function (_super) {
-	    __extends(Card, _super);
-	    function Card() {
-	        _super.apply(this, arguments);
-	    }
-	    Card.prototype.getType = function () {
-	        return this.get('type');
-	    };
-	    Card.prototype.getCountry = function () {
-	        return this.get('territory');
-	    };
-	    return Card;
-	})(Model);
-	module.exports = Card;
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = {
 		"data": "map",
 		"continents": {
@@ -4436,6 +4306,146 @@
 		},
 		"wildcards": 2
 	}
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	/// <reference path="../../lib/backbone/backbone.d.ts" />
+	var Backbone = __webpack_require__(24);
+	var Collection = (function (_super) {
+	    __extends(Collection, _super);
+	    function Collection() {
+	        _super.apply(this, arguments);
+	    }
+	    return Collection;
+	})(Backbone.Collection);
+	module.exports = Collection;
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(26);
+	var Continent = (function (_super) {
+	    __extends(Continent, _super);
+	    function Continent() {
+	        _super.apply(this, arguments);
+	    }
+	    Continent.prototype.initialize = function (options) {
+	        this.territories = new Collection();
+	    };
+	    Continent.prototype.setValue = function (value) {
+	        this.set('value', value);
+	    };
+	    Continent.prototype.getValue = function () {
+	        return this.get('value');
+	    };
+	    Continent.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Continent.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    return Continent;
+	})(Model);
+	module.exports = Continent;
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(26);
+	var Territory = (function (_super) {
+	    __extends(Territory, _super);
+	    function Territory() {
+	        _super.apply(this, arguments);
+	        this.owner = null;
+	        this.armies = 0;
+	    }
+	    Territory.prototype.initialize = function (options) {
+	        this.connections = new Collection();
+	    };
+	    Territory.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Territory.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    Territory.prototype.setCardType = function (cardType) {
+	        this.set('cardType', cardType);
+	    };
+	    Territory.prototype.getCardType = function () {
+	        return this.get('cardType');
+	    };
+	    Territory.prototype.setOwner = function (player) {
+	        this.owner = player;
+	    };
+	    Territory.prototype.getOwner = function () {
+	        return this.owner;
+	    };
+	    Territory.prototype.setArmies = function (armies) {
+	        this.armies = armies;
+	    };
+	    Territory.prototype.addArmies = function (armies) {
+	        this.armies += armies;
+	    };
+	    Territory.prototype.getArmies = function () {
+	        return this.armies;
+	    };
+	    return Territory;
+	})(Model);
+	module.exports = Territory;
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Card = (function (_super) {
+	    __extends(Card, _super);
+	    function Card() {
+	        _super.apply(this, arguments);
+	    }
+	    Card.prototype.getType = function () {
+	        return this.get('type');
+	    };
+	    Card.prototype.getCountry = function () {
+	        return this.get('territory');
+	    };
+	    return Card;
+	})(Model);
+	module.exports = Card;
+
 
 /***/ },
 /* 30 */
