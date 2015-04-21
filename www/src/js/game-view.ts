@@ -250,7 +250,6 @@ class GameView extends View<Game> {
 			this.deployableArmies -= armies;
 
 			// Update map.
-			var territory = this.model.map.territories.get(territory.id);
 			territory.addArmies(armies);
 			this.model.trigger('change:map');
 			this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
