@@ -322,22 +322,35 @@ public class GameState {
 		for(int roll =0; roll<rolls.length; roll++){
 
 			if(aRoll<numberOfAttackingDice){
+				System.out.println("Adding attackRoll: " + rolls[roll]);
 				attackingRolls[aRoll] = rolls[roll];
 				aRoll++;
 			} else if (dRoll<numberOfDefendingDice){
-				defendingRolls[dRoll] = rolls[roll] - 1;
+				System.out.println("Adding defendRoll: " + rolls[roll]);
+
+				defendingRolls[dRoll] = rolls[roll];
 				dRoll++;
 			}
 		}
 		Arrays.sort(attackingRolls);
 		Arrays.sort(defendingRolls);
-		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
-			if(attackingRolls[i] <= defendingRolls[i]){
+		
+		for(int i = 1; i <= Math.min(numberOfAttackingDice, numberOfDefendingDice); i ++){
+			System.out.println("Roll: " + i + " Attacking Roll: " + attackingRolls[attackingRolls.length - i] + " Defending Roll: " + defendingRolls[defendingRolls.length - i]);
+
+			if(attackingRolls[attackingRolls.length - i] <= defendingRolls[defendingRolls.length - i]){
 				losses[0]++;
 			} else {
 				losses[1]++;
 			}
 		}
+//		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
+//			if(attackingRolls[i] <= defendingRolls[i]){
+//				losses[0]++;
+//			} else {
+//				losses[1]++;
+//			}
+//		}
 		return losses;
 	}
 
@@ -559,7 +572,7 @@ public class GameState {
 
 	public boolean isCommandValid(FortifyCommand command)
 	{
-		if(command.getFortifyDetails() == null) return true;
+		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0) return true;
 		
 		if ((command.getFortifyDetails()[0] > map.getTerritories().size() -1)
 				|| (command.getFortifyDetails()[1] > map.getTerritories().size() -1))

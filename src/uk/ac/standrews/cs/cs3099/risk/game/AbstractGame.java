@@ -113,7 +113,8 @@ public abstract class AbstractGame {
 			Command captureCommand = player.getCommand(CommandType.ATTACK_CAPTURE);
 			notifyPlayers(captureCommand);
 		} else {
-			Logger.print("Attack Unsuccessful.");
+			
+			Logger.print("Attack Unsuccessful. Remaining Armies: " + gameState.getMap().findTerritoryById(command.getDest()).getArmies());
 		}
 	}
 	

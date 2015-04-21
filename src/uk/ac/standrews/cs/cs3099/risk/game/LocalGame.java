@@ -98,6 +98,8 @@ public class LocalGame extends AbstractGame {
 					} else {
 						attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
 					}
+//					System.out.println("Press enter to continue.");
+//					String cont = EasyIn.getString();
 				}
 				
 				checkDeadPlayers();

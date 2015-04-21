@@ -385,6 +385,7 @@ public class AIPlayer extends Player {
 			command = new FortifyCommand(this.getId(), lastAckid++, details);
 		} else {
 			command = new FortifyCommand(this.getId(), lastAckid++);
+			System.out.println("Source: "+ command.getFortifyDetails()[0] + "Dest: " + command.getFortifyDetails()[1] +"armies: " + command.getFortifyDetails()[2]);
 		}
 		
 		if(gameState.isCommandValid(command)) {
@@ -515,7 +516,7 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(FortifyCommand command)
 	{
-		if(command.getFortifyDetails() == null){
+		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
 		} else {
 			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
