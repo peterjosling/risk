@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.google.gson.*;
+
 public class PlayerSocket implements Runnable {
 	private final NetworkedGame game;
 	private final Socket socket;
@@ -22,6 +24,23 @@ public class PlayerSocket implements Runnable {
 		this.socket = socket;
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		writer = new PrintWriter(socket.getOutputStream());
+	}
+
+	/**
+	 * Send the specified command to this player only. Should be used to send player-specific messages from the host.
+	 *
+	 * @param command The command to send.
+	 */
+	public void sendCommandSerial(Command command)
+	{
+		if(command.getType() == CommandType.ACCEPT_JOIN_GAME){
+			playerId = command.getPlayerId();
+		}
+		String commandJSON = command.toJSON();
+		JsonObject obj = new JsonObject();
+		obj.addProperty("message", commandJSON);
+		writer.write(obj.toString() + "\n");
+		writer.flush();
 	}
 
 	/**

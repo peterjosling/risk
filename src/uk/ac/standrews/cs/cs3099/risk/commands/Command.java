@@ -4,6 +4,7 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Command {
 	private static Gson gson;
@@ -105,6 +106,25 @@ public abstract class Command {
 
 	public static Command fromJSON(String json)
 	{
+		JsonParser jp = new JsonParser();
+		JsonElement je;
+		JsonObject jo;
+
+		try {
+			je = jp.parse(json);
+			jo = je.getAsJsonObject();
+
+			if (jo.entrySet().size() == 0)
+				throw new Exception("No entries in JSON");
+
+			for (Map.Entry<String, JsonElement> jee : jo.entrySet()) {
+				if (jee.getKey().equals("message")) {
+					return gson.fromJson(jee.getValue().getAsString(), Command.class);
+				}
+			}
+		} catch (Exception e) {
+			return gson.fromJson(json, Command.class);
+		}
 		return gson.fromJson(json, Command.class);
 	}
 

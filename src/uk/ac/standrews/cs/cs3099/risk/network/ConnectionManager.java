@@ -56,7 +56,10 @@ public class ConnectionManager {
 
 		for (PlayerSocket playerSocket : playerSockets) {
 			if (playerSocket.getPlayerId() != command.getPlayerId()) {
-				playerSocket.sendCommand(command);
+				if (game.getLocalPlayer().getId() != playerSocket.getPlayerId())
+					playerSocket.sendCommandSerial(command);
+				else
+					playerSocket.sendCommand(command);
 			}
 		}
 
