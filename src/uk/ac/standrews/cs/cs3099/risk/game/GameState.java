@@ -344,13 +344,6 @@ public class GameState {
 				losses[1]++;
 			}
 		}
-//		for(int i = Math.min(numberOfAttackingDice, numberOfDefendingDice) -1; i>=0; i--){
-//			if(attackingRolls[i] <= defendingRolls[i]){
-//				losses[0]++;
-//			} else {
-//				losses[1]++;
-//			}
-//		}
 		return losses;
 	}
 
