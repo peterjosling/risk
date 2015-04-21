@@ -20,8 +20,8 @@ public class NetworkedGame extends AbstractGame {
 	private int acknowledgementTimeout;
 	private Date timePingSent;
 	private boolean gameInProgress;
-	private String[] initRollHashes;
-	private String[] initRollNumbers;
+	private String[] initRollHashes = new String[6];
+	private String[] initRollNumbers = new String[6];
 	private boolean deckShuffled = false;
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
@@ -482,7 +482,7 @@ public class NetworkedGame extends AbstractGame {
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
 
-			senthash = false;
+			senthash = true;
 		}
 	}
 
