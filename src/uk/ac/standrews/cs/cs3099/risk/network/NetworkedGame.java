@@ -180,13 +180,6 @@ public class NetworkedGame extends AbstractGame {
 				return;
 		}
 
-		// Send acknowledgement.
-		int ackId = command.getAckId();
-
-		if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
-			sendAcknowledgement(ackId);
-		}
-
 		// Add to correct player's move queue based on player_id field.
 		NetworkPlayer player = (NetworkPlayer) getPlayerById(command.getPlayerId());
 		BlockingQueue moveQueue = player.getMoveQueue();
@@ -641,7 +634,10 @@ public class NetworkedGame extends AbstractGame {
 		}
 
 		AcknowledgementCommand ack = new AcknowledgementCommand(localPlayer.getId(), ackId);
-		connectionManager.sendCommand(ack);
+
+		for (Player player : getPlayers()) {
+			player.notifyCommand(ack);
+		}
 
 		// Update value for next acknowledgement
 		this.ackId = ackId + 1;
@@ -686,6 +682,9 @@ public class NetworkedGame extends AbstractGame {
 			command = player.getCommand(CommandType.ASSIGN_ARMY);
 			notifyPlayers(command);
 			nextTurn();
+
+			// Send acknowledgement for the local player.
+			sendAcknowledgement(command.getAckId());
 		}
 	}
 
@@ -715,6 +714,14 @@ public class NetworkedGame extends AbstractGame {
 						command = currentPlayer.getCommand(CommandType.FORTIFY);
 						break;
 				}
+
+				// Send acknowledgement for the local player.
+				int ackId = command.getAckId();
+
+				if (ackId != -1 && command.getType() != CommandType.ACKNOWLEDGEMENT) {
+					sendAcknowledgement(ackId);
+				}
+
 				if(command.getType()==CommandType.PLAY_CARDS && phase==0){
 					notifyPlayers(command);
 					phase = 1;
