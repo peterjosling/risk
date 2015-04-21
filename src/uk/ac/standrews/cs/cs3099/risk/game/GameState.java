@@ -219,7 +219,7 @@ public class GameState {
 
 	public void playCommand(FortifyCommand command)
 	{
-		if(command.getFortifyDetails()[2] == 0) return;
+		if(command.getFortifyDetails() == null) return;
 		int source = command.getFortifyDetails()[0];
 		int destination = command.getFortifyDetails()[1];
 		int numberOfArmies = command.getFortifyDetails()[2];
@@ -559,7 +559,7 @@ public class GameState {
 
 	public boolean isCommandValid(FortifyCommand command)
 	{
-		if(command.getFortifyDetails()[2] == 0) return true;
+		if(command.getFortifyDetails() == null) return true;
 		
 		if ((command.getFortifyDetails()[0] > map.getTerritories().size() -1)
 				|| (command.getFortifyDetails()[1] > map.getTerritories().size() -1))
