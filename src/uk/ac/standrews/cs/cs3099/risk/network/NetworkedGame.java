@@ -604,6 +604,7 @@ public class NetworkedGame extends AbstractGame {
 				// Send the computed result of the dice roll to the interface.
 				RollResultCommand rollResult = new RollResultCommand(firstplayer);
 				localPlayer.notifyCommand(rollResult);
+				setCurrentTurn(firstplayer);
 
 				startDieRoll();
 			} else { // Deck order here
@@ -677,16 +678,18 @@ public class NetworkedGame extends AbstractGame {
 
 		int totalTurns = armiesPerPlayer * this.getPlayers().size();
 		for(int i = 0; i < totalTurns; i ++){
-			Player player = nextTurn();
+			Player player = getCurrentTurnPlayer();
 			command = player.getCommand(CommandType.ASSIGN_ARMY);
 			notifyPlayers(command);
+			nextTurn();
 		}
 	}
 
 	public void run(){
 		assignTerritories();
+
 		while(!gameState.isGameComplete()) {
-			Player currentPlayer = nextTurn();
+			Player currentPlayer = getCurrentTurnPlayer();
 			int phase = 0;
 			while(phase != 4) {
 				Command command = null;
@@ -713,11 +716,13 @@ public class NetworkedGame extends AbstractGame {
 					phase = 2;
 				}else if(command.getType()==CommandType.ATTACK && phase == 2) {
 					attack((AttackCommand)command, currentPlayer);
-				}else if(command.getType()==CommandType.FORTIFY && phase<4){
+				}else if(command.getType()==CommandType.FORTIFY){
 					notifyPlayers(command);
 					phase = 4;
 				}
 			}
+
+			nextTurn();
 		}
 	}
 }
