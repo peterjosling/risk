@@ -424,6 +424,7 @@ class GameView extends View<Game> {
 
 			this.model.sendMessage(message);
 			this.model.handleAttackCaptureMessage(message);
+			this.startAttackPhase();
 		});
 
 		this.armyCountSelectView.show(true);
