@@ -32,7 +32,8 @@ public class NetworkedGame extends AbstractGame {
 	private Die die;
 	private int firstplayer = -1;
 	private int[] deckorder = new int[44];
-	private boolean senthash = false;
+	private boolean hasinit = false;
+	/* private boolean senthash = false; */
 
 	private final float[] SUPPORTED_VERSIONS = new float[]{1};
 	private final String[] SUPPORTED_FEATURES = new String[]{};
@@ -461,9 +462,9 @@ public class NetworkedGame extends AbstractGame {
 	/**
 	 * Called when a new dice roll is expected to reinitialise the die state and send the first hash
 	 */
-	private void startDieRoll()
+	synchronized private void startDieRoll()
 	{
-		if (localPlayer != null) {
+		if (!hasinit && localPlayer != null) {
 			int id = localPlayer.getId();
 
 			die = new Die();
@@ -482,7 +483,7 @@ public class NetworkedGame extends AbstractGame {
 			RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
 			connectionManager.sendCommand(rollHashCommand);
 
-			senthash = true;
+			hasinit = true;
 		}
 	}
 
@@ -527,6 +528,8 @@ public class NetworkedGame extends AbstractGame {
 	 */
 	private void rollHashCommand(RollHashCommand command)
 	{
+		startDieRoll();
+
 		initRollHashes[command.getPlayerId()] = command.getHash();
 
 		try {
@@ -555,11 +558,11 @@ public class NetworkedGame extends AbstractGame {
 				Logger.print("ERROR - Couldn't add hash from localplayer id " + id + " (" + initRollHashes[id] + ") " + e.getMessage());
 			}
 
-			if (!senthash) {
-				RollHashCommand rollHashCommand = new RollHashCommand(id, initRollHashes[id]);
-				connectionManager.sendCommand(rollHashCommand);
-				senthash = true;
-			}
+			/* if (!senthash) { */
+			/* 	RollHashCommand rollHashCommand = new RollHashCommand(id, initRollHashes[id]); */
+			/* 	connectionManager.sendCommand(rollHashCommand); */
+			/* 	senthash = true; */
+			/* } */
 			RollNumberCommand rollNumberCommand = new RollNumberCommand(id, initRollNumbers[id]);
 			connectionManager.sendCommand(rollNumberCommand);
 		}
@@ -615,7 +618,8 @@ public class NetworkedGame extends AbstractGame {
 				localPlayer.notifyCommand(rollResult);
 				setCurrentTurn(firstplayer);
 
-				senthash = false;
+				/* senthash = false; */
+				hasinit = false;
 				startDieRoll();
 			} else { // Deck order here
 				for (int i = 0; i < 44; i++) {
