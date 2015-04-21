@@ -125,7 +125,7 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 		if (command.useAi()) {
 			player = new UIAIPlayer(ws, 0, name, new AIPlayer(0, name));
 		} else {
-			player = new UIPlayer(ws, 0, "Test player");
+			player = new UIPlayer(ws, 0, name);
 		}
 
 		game.setLocalPlayer(player);
@@ -143,7 +143,15 @@ public class WebSocketServer extends org.java_websocket.server.WebSocketServer {
 	 */
 	private void startServer(WebSocket ws, ServerStartCommand command)
 	{
-		Player player = new UIPlayer(ws, 0, command.getName());
+		Player player;
+		String name = command.getName();
+
+		if (command.useAi()) {
+			player = new UIAIPlayer(ws, 0, name, new AIPlayer(0, name));
+		} else {
+			player = new UIPlayer(ws, 0, name);
+		}
+
 		NetworkedGame game = new NetworkedGame();
 		game.setLocalPlayer(player);
 		games.put(ws.getRemoteSocketAddress(), game);

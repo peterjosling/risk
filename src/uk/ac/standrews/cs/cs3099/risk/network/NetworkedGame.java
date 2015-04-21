@@ -262,6 +262,10 @@ public class NetworkedGame extends AbstractGame {
 				timePingSent = new Date();
 				connectionManager.sendCommand(pingCommand);
 
+				if (localPlayer != null) {
+					localPlayer.notifyCommand(pingCommand);
+				}
+
 				// If this is a playing host, mark it has having received this ping.
 				if (playerId > -1) {
 					numberOfPingsReceived++;

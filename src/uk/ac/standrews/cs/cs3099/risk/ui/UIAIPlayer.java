@@ -39,6 +39,7 @@ public class UIAIPlayer extends UIPlayer {
 			totalarmies += ((DefendCommand) command).getArmies();
 			die = new Die();
 		}
+
 		return command;
 	}
 
@@ -91,15 +92,20 @@ public class UIAIPlayer extends UIPlayer {
 			PingCommand pingCommand = (PingCommand) command;
 
 			if (pingCommand.getNoOfPlayers() > 0) {
-				ArrayList<Integer> playerIds = new ArrayList<Integer>();
-
-				for (int i = 0; i < pingCommand.getNoOfPlayers(); i++) {
-					playerIds.add(i);
-				}
-
-				aiPlayer.initialiseGameState(playerIds);
+				initialiseAI(pingCommand.getNoOfPlayers());
 			}
 		}
+	}
+
+	private void initialiseAI(int numberOfPlayers)
+	{
+		ArrayList<Integer> playerIds = new ArrayList<Integer>();
+
+		for (int i = 0; i < numberOfPlayers; i++) {
+			playerIds.add(i);
+		}
+
+		aiPlayer.initialiseGameState(playerIds);
 	}
 
 	@Override

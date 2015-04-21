@@ -54,11 +54,12 @@ class ConnectionView extends View<Game> {
 		}
 
 		var port : number = +this.$('#host-port').val(),
+			ai = (<HTMLInputElement>this.$('#host-ai')[0]).checked,
 			name = this.$('#host-player-name').val();
 
 		this.disableInputs();
 		this.model.showToast('Starting server...');
-		this.model.startServer(name, port).catch(() => {
+		this.model.startServer(name, port, ai).catch(() => {
 			this.model.showToast('Failed to start server.');
 			this.enableInputs();
 		});

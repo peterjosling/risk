@@ -178,7 +178,7 @@ class Game extends Model {
 	}
 
 	// Start a host server on the specified port.
-	startServer(name : string, port : number) : Promise<Messages.Message> {
+	startServer(name : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = true;
 
 		this.self = new Player({
@@ -197,7 +197,8 @@ class Game extends Model {
 					command: 'server_start',
 					payload: {
 						name: name,
-						port: port
+						port: port,
+						ai: ai
 					}
 				});
 
