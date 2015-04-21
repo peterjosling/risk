@@ -43,6 +43,18 @@ public class AIPlayer extends Player {
 	}
 	
 	@Override
+	public boolean isNeutral() 
+	{
+		return isNeutral;
+	}
+
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
+	}
+
+	@Override
 	public Command getCommand(CommandType type) 
 	{
 		switch (type) {
@@ -474,18 +486,6 @@ public class AIPlayer extends Player {
 			notifyCommand((RollHashCommand) command);
 			break;
 		}
-	}
-
-	@Override
-	public boolean isNeutral() 
-	{
-		return isNeutral;
-	}
-
-	@Override
-	public void setNeutral(boolean neutral)
-	{
-		isNeutral = neutral;
 	}
 
 	public void notifyCommand(AssignArmyCommand command)

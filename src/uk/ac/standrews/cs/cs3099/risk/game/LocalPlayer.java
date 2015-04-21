@@ -553,7 +553,7 @@ public class LocalPlayer extends Player {
 	
 	public void notifyCommand(FortifyCommand command)
 	{
-		if(command.getFortifyDetails()[2] == 0){
+		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
 		} else {
 			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
