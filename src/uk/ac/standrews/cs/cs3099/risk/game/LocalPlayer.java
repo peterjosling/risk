@@ -119,7 +119,11 @@ public class LocalPlayer extends Player {
 			System.out.print(territory.getId() + " ");
 		}
 		System.out.println();
-		System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
+		if(gameState.getUnclaimedTerritories().length == 0){
+			System.out.println("Choose Territory to Reinforce. Enter Territory ID:");
+		} else {
+			System.out.println("Choose Territory to Assign Army. Enter Territory ID:");
+		}
 		int territoryID = EasyIn.getInt();
 		AssignArmyCommand command = new AssignArmyCommand(this.getId(), lastAckid++, territoryID);
 		if(gameState.isCommandValid(command)){
@@ -321,7 +325,9 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getAttackCaptureCommand()
 	{
-		System.out.println("How many armies do you desire to capture with?");
+		int minArmies = gameState.getRemainingArmies();
+		int maxArmies = gameState.getMap().findTerritoryById(attackSourceId).getArmies() - 1;
+		System.out.println("How many armies do you desire to capture with? Between " + minArmies + " and " + maxArmies + ".");
 		int armies = EasyIn.getInt();
 		int[] captureDetails = {attackSourceId,attackDestId,armies};
 		AttackCaptureCommand command = new AttackCaptureCommand(this.getId(), lastAckid++, captureDetails);
@@ -363,36 +369,40 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getPlayCardsCommand()
 	{
+		PlayCardsCommand command = null;
 		gameState.setDeployableArmies();
 		List<Card> playersCards = getCards();
-		
-		PlayCardsCommand command = null;
-		System.out.println("Select number of card sets to trade in:");
-		int numberOfTradeIns = EasyIn.getInt();
-		if(numberOfTradeIns == 0 || playersCards.size() == 0){
-			command = new PlayCardsCommand(this.getId(), lastAckid++);
-		} else {
+		if(playersCards.size() != 0){
 			System.out.println("Your Cards:");
 			for(Card card:playersCards){
-				System.out.println("Card ID: "+ card.getId() + "Territory ID: " +
-						card.getTerritoryId() + "Card Type: " + card.getCardType());
+				System.out.println("Card ID: "+ card.getId() + " Territory ID: " +
+						card.getTerritoryId() + " Card Type: " + card.getCardType());
 			}
-			Card[][] cards = new Card[numberOfTradeIns][3];
-			int cardId;
-			for(int i =0; i<numberOfTradeIns; i++){
-				System.out.println("Select 3 cards to trade in:");
-				for(int j=0; j<cards[i].length; j++) {
-					System.out.println("Enter Card ID:");
-					cardId = EasyIn.getInt();
-					try {
-						cards[i][j] = getCardByID(cardId);
-					} catch (CardNotFoundException e) {
-						System.out.println("Card not found please enter another ID");
-						j--;
+			System.out.println("Select number of card sets to trade in:");
+			int numberOfTradeIns = EasyIn.getInt();
+			if(numberOfTradeIns == 0){
+				command = new PlayCardsCommand(this.getId(), lastAckid++);
+			} else {
+				Card[][] cards = new Card[numberOfTradeIns][3];
+				int cardId;
+				for(int i =0; i<numberOfTradeIns; i++){
+					System.out.println("Select 3 cards to trade in:");
+					for(int j=0; j<cards[i].length; j++) {
+						System.out.println("Enter Card ID:");
+						cardId = EasyIn.getInt();
+						try {
+							cards[i][j] = getCardByID(cardId);
+						} catch (CardNotFoundException e) {
+							System.out.println("Card not found please enter another ID");
+							j--;
+						}
 					}
 				}
+				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
-			command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+		} else {
+			System.out.println("You have no cards. Unable to trade in.");
+			command = new PlayCardsCommand(this.getId(), lastAckid++);
 		}
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
