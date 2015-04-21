@@ -21,22 +21,38 @@ public class AIPlayer extends Player {
 		return PlayerType.AI;
 	}
 	
+	/**
+	 * Create a AIplayer with a name
+	 * @param id the player id
+	 * @param name the name of the player
+	 */
 	public AIPlayer(int id, String name)
 	{
 		super(id, name);
 	}
 	
+	/**
+	 * Create an AIPlayer without a name
+	 * @param id the player id
+	 */
 	public AIPlayer(int id)
 	{
 		super(id);
 	}
 
+	/**
+	 * Initialises the game state with a default map and a list of player ids
+	 * @param playerInts - ArrayList of player ids
+	 */
 	public void initialiseGameState(ArrayList<Integer> playerInts)
 	{
 		gameState = new GameState(playerInts);
 		gameState.loadDefaultMap();
 	}
 	
+	/**
+	 * @return the players copy of the gamestate
+	 */
 	public GameState getGameState()
 	{
 		return gameState;
@@ -54,6 +70,13 @@ public class AIPlayer extends Player {
 		isNeutral = neutral;
 	}
 
+	/**
+	 * Orchestrates the getCommand methods for each command, creating commands
+	 * taking detials from a player via the command line.
+	 * 
+	 * @param type - the type of command
+	 * @return - the newly created command
+	 */
 	@Override
 	public Command getCommand(CommandType type) 
 	{
@@ -76,6 +99,8 @@ public class AIPlayer extends Player {
 				return getRejectJoinGameCommand();
 			case ACKNOWLEDGEMENT:
 				return getAcknowledgementCommand();
+			case TIMEOUT:
+				return getTimeoutCommand();
 			case ATTACK_CAPTURE:
 				return getAttackCaptureCommand();
 			case LEAVE_GAME:
@@ -97,6 +122,10 @@ public class AIPlayer extends Player {
 		}
 	}
 	
+	/**
+	 * Creates a join game command
+	 * @return - the new JoinGameCommand
+	 */
 	public Command getJoinGameCommand()
 	{
 		float[] supportedVersions = {1};
@@ -106,6 +135,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 	
+	/**
+	 * Creates an accept game command
+	 * @return the new AcceptGameCommand
+	 */
 	public Command getAcceptJoinGameCommand()
 	{
 		int ackTimeout = 4; //Check these values
@@ -115,6 +148,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a RejectGame Command
+	 * @return the new RejectGameCommand
+	 */
 	public Command getRejectJoinGameCommand()
 	{
 		String message = "Game in progress";
@@ -123,6 +160,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates an Acknowledgement command
+	 * @return the new AcknowledgementCommand
+	 */
 	public Command getAcknowledgementCommand()
 	{
 		AcknowledgementCommand command = new AcknowledgementCommand(this.getId(), lastAckid++);
@@ -130,6 +171,22 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a TimeoutCommand
+	 * @return the new TimeoutCommand
+	 */
+	public Command getTimeoutCommand()
+	{
+		int timedOutPlayerId = EasyIn.getInt();
+		TimeoutCommand command = new TimeoutCommand(this.getId(), lastAckid++, timedOutPlayerId);
+		notifyCommand(command);
+		return command;
+	}
+	
+	/**
+	 * Creates a ping command
+	 * @return the new ping command
+	 */
 	public Command getPingCommand() 
 	{
 		PingCommand command = new PingCommand(this.getId(), gameState.getNumberOfPlayers());
@@ -137,6 +194,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a ready command
+	 * @return the new ReadyCommand
+	 */
 	public Command getReadyCommand() 
 	{
 		ReadyCommand command = new ReadyCommand(this.getId(), lastAckid++);
@@ -144,6 +205,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates an initialise game command
+	 * @return the new InitialiseGameCommand
+	 */
 	public Command getInitialiseGameCommand()
 	{
 		int version = 1;
@@ -153,6 +218,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a deployment command
+	 * @return the new deployment command
+	 */
 	public DeployCommand getDeployCommand() 
 	{
 		int deployableArmies = gameState.getDeployableArmies(this.getId());
@@ -177,6 +246,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 	
+	/**
+	 * Creates an AssignArmy command
+	 * @return the command
+	 */
 	public AssignArmyCommand getAssignArmyCommand()
 	{
 		Territory[] freeTerritories = gameState.getUnclaimedTerritories();
@@ -202,6 +275,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Creates a new RollNumber command
+	 * @return the new RollNumberCommand
+	 */
 	public Command getRollNumberCommand()
 	{
 		Die die = this.getDie();
@@ -212,6 +289,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a roll hash command
+	 * @return the new RollHashCommand
+	 */
 	public Command getRollHashCommand()
 	{
 		Die die = this.getDie();
@@ -225,6 +306,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates a PlayCardCommand
+	 * @return the new PlayCardsCommand
+	 */
 	public Command getPlayCardsCommand() 
 	{
 		PlayCardsCommand command = null;
@@ -312,6 +397,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Creates a LeaveGameCommand
+	 * @return the new LeaveGameCommand
+	 */
 	public Command getLeaveGameCommand()
 	{
 		LeaveGameCommand command = new LeaveGameCommand(this.getId(), lastAckid++, 100, "", false);
@@ -319,6 +408,10 @@ public class AIPlayer extends Player {
 		return command;
 	}
 
+	/**
+	 * Creates an AttackCaptureCommand
+	 * @return the new AttackCapture Command
+	 */
 	public Command getAttackCaptureCommand() 
 	{	
 		Territory source = gameState.getMap().findTerritoryById(attackSourceId);
@@ -341,6 +434,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Creates a DefendCommand
+	 * @return creates a new defend command
+	 */
 	public Command getDefendCommand() 
 	{
 		Territory dest = gameState.getMap().findTerritoryById(attackDestId);
@@ -360,6 +457,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Creates a new Fortify command
+	 * @return new Fortify Command
+	 */
 	public Command getFortifyCommand() 
 	{
 		Territory[] territories = gameState.getTerritoriesForPlayer(this.getId());
@@ -407,6 +508,10 @@ public class AIPlayer extends Player {
 		return null;
 	}
 
+	/**
+	 * Creates an attack command.
+	 * @return the new AttackCommand
+	 */
 	public Command getAttackCommand() 
 	{		
 		if(canPlayerAttack()){
@@ -446,6 +551,13 @@ public class AIPlayer extends Player {
 		return null;
 	}
 	
+	/**
+	 * Calls appropriate notify method for each command, which updates the
+	 * players game state and informs the user via the command line of commands
+	 * that have been actioned
+	 * 
+	 * @param command - the command to notify
+	 */
 	@Override
 	public void notifyCommand(Command command)
 	{
@@ -490,6 +602,10 @@ public class AIPlayer extends Player {
 		}
 	}
 
+	/**
+	 * Update the players game state for an ArmyCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
@@ -504,7 +620,11 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid AssignArmyCommand.");
 		}
 	}
-	
+
+	/**
+	 * Update the players game state for an AttackCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(AttackCommand command)
 	{
 		this.attackSourceId = command.getSource();
@@ -519,7 +639,11 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid AttackCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for an FortifyCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(FortifyCommand command)
 	{
 		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0){
@@ -542,7 +666,11 @@ public class AIPlayer extends Player {
 			}
 		}
 	}
-	
+
+	/**
+	 * Update the players game state for a Deploy and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(DeployCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " has actioned the following deployments:");
@@ -557,6 +685,10 @@ public class AIPlayer extends Player {
 		}	
 	}
 
+	/**
+	 * Update the players game state for a DefendCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(DefendCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(attackDestId).getName();
@@ -567,7 +699,12 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid DefendCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for an AttackCaptureCommand and inform the user of what has happened via
+	 * the command line
+	 * @param command
+	 */
 	public void notifyCommand(AttackCaptureCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getCaptureDetails()[1]).getName();
@@ -578,7 +715,11 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid AttackCaptureCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for a TimeoutCommand and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(TimeoutCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " timed out.");
@@ -588,7 +729,12 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid TimeOutCommand.");
 		}		
 	}
-	
+
+	/**
+	 * Update the players game state for a LeaveGameCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
 	public void notifyCommand(LeaveGameCommand command)
 	{
 		System.out.println("Player " + command.getPlayerId() + " left the game.");
@@ -598,7 +744,11 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid LeaveGameCommand.");
 		}		
 	}
-	
+
+	/**
+	 * Update the players game state for a PlayCards and inform the user of what has happened via the command line
+	 * @param command
+	 */
 	public void notifyCommand(PlayCardsCommand command)
 	{
 		gameState.setDeployableArmies();
@@ -610,9 +760,17 @@ public class AIPlayer extends Player {
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
 		for(int[] cardSet : command.getCards()){
-			Card card1 = gameState.getCard(cardSet[0]);
-			Card card2 = gameState.getCard(cardSet[1]);
-			Card card3 = gameState.getCard(cardSet[2]);
+			Card card1 = null;
+			Card card2 = null;
+			Card card3 = null;
+
+			try {
+				card1 = getCardByID(cardSet[0]);
+				card2 = getCardByID(cardSet[1]);
+				card3 = getCardByID(cardSet[2]);
+			} catch (CardNotFoundException e) {
+				System.err.println("Card not found");
+			}
 
 			System.out.println("Set " + set + ": " + card1.getCardType() + ", " + card2.getCardType() + " and " + card3.getCardType());
 			set++;
@@ -623,7 +781,12 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid PlayCardsCommand.");
 		}	
 	}
-	
+
+	/**
+	 * Update the players game state for a RollNumberCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
 	public void notifyCommand(RollNumberCommand command)
 	{
 //		System.out.println("Player " + command.getPlayerId() + " sent rollNumberHex");
@@ -633,8 +796,13 @@ public class AIPlayer extends Player {
 			System.out.println("Invalid RollNumberCommand.");
 		}	
 	}
-	
-	public void notifyCommand(RollHashCommand command)
+
+	/**
+	 * Update the players game state for a RollHashCommand and inform the user of what has happened
+	 * via the command line
+	 * @param command
+	 */
+	public void notifyCommand(RollHashCommand command) 
 	{
 //		System.out.println("Player " + command.getPlayerId() + " sent roll Hash");
 		if(gameState.isCommandValid(command)){
