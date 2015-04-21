@@ -153,6 +153,15 @@ public abstract class AbstractGame {
 	}
 
 	/**
+	 * Set the index of the player whose turn it currently is. Should be used after the initial roll is performed.
+	 * @param currentTurn
+	 */
+	public void setCurrentTurn(int currentTurn)
+	{
+		this.currentTurn = currentTurn;
+	}
+
+	/**
 	 * @return the {@link Player} instance whose turn it currently is.
 	 */
 	public Player getCurrentTurnPlayer()
