@@ -836,7 +836,13 @@ public class GameState {
 	public boolean isCommandValid(PlayCardsCommand command)
 	{
 		int[][] cards = command.getCards();
-		if(cards == null) return true;
+		if(cards == null) {
+			if(playerCards.get(command.getPlayerId()).size() > 6){
+				return false;
+			} else {
+				return true;
+			}
+		}
 		for(int[] cardSet : cards){
 			if(cardSet.length != 3) return false;
 
