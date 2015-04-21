@@ -245,10 +245,13 @@ public class LocalPlayer extends Player {
 	 */
 	public Command getDefendCommand()
 	{
-		// Validate... Def territory stored
 		int availableArmies = gameState.getMap().findTerritoryById(this.attackDestId).getArmies();
 		System.out.println(availableArmies + " armies available. Enter number of armies to defend with:");
 		int armies = EasyIn.getInt();
+		while(armies > availableArmies || armies < 1){
+			System.out.println("Invalid number of armies. " +availableArmies + " armies available. Enter number of armies to defend with:");
+			armies = EasyIn.getInt();
+		}
 		DefendCommand command = new DefendCommand(this.getId(), lastAckid++, armies);
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
