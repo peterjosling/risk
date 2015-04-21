@@ -97,7 +97,7 @@ public class LocalGame extends AbstractGame {
 						attackPhase = false;
 						fortify((FortifyCommand) command);
 					} else {
-						attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
+						attack((AttackCommand) command, getCurrentTurnPlayer());
 					}
 //					System.out.println("Press enter to continue.");
 //					String cont = EasyIn.getString();

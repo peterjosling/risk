@@ -211,7 +211,7 @@ public class LocalPlayer extends Player {
 		System.out.println("Enter number of deployments:");
 		numberOfDeployments = EasyIn.getInt();
 
-		while(numberOfDeployments >= gameState.getDeployableArmies(this.getId())){
+		while(numberOfDeployments > gameState.getDeployableArmies(this.getId())){
 			System.out.println("Invalid number of deployments. Please try again.");
 			numberOfDeployments = EasyIn.getInt();
 		}
@@ -364,18 +364,18 @@ public class LocalPlayer extends Player {
 	public Command getPlayCardsCommand()
 	{
 		gameState.setDeployableArmies();
-
+		List<Card> playersCards = getCards();
+		
 		PlayCardsCommand command = null;
 		System.out.println("Select number of card sets to trade in:");
 		int numberOfTradeIns = EasyIn.getInt();
-		if(numberOfTradeIns == 0){
+		if(numberOfTradeIns == 0 || playersCards.size() == 0){
 			command = new PlayCardsCommand(this.getId(), lastAckid++);
 		} else {
-			List<Card> playersCards = getCards();
 			System.out.println("Your Cards:");
 			for(Card card:playersCards){
-				System.out.println("Card ID:"+ card.getId() + "Territory ID:" +
-						card.getTerritoryId() + "Card Type:" + card.getCardType());
+				System.out.println("Card ID: "+ card.getId() + "Territory ID: " +
+						card.getTerritoryId() + "Card Type: " + card.getCardType());
 			}
 			Card[][] cards = new Card[numberOfTradeIns][3];
 			int cardId;
@@ -536,7 +536,11 @@ public class LocalPlayer extends Player {
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
-		System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		if(gameState.getMap().findTerritoryById(command.getTerritoryId()).isClaimed()){
+			System.out.println("Player " + command.getPlayerId() + " reinforced territory: " + name);
+		} else {
+			System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		}
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
@@ -678,6 +682,7 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollHashCommand.");
 		}	
 	}
+
 
 	public void setDeckOrder(int[] deckOrder)
 	{
