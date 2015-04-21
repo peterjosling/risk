@@ -442,12 +442,14 @@ class Game extends Model {
 
 	// Apply an attack_capture command to the map.
 	public handleAttackCaptureMessage(message : Messages.AttackCaptureMessage) {
+		var player = this.playerList.get(message.player_id);
 		var source = this.map.territories.get(message.payload[0]);
 		var dest = this.map.territories.get(message.payload[1]);
 		var armies = message.payload[2];
 
 		source.addArmies(-armies);
 		dest.addArmies(armies);
+		dest.setOwner(player);
 
 		this.trigger('change:map');
 	}
