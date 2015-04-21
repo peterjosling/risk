@@ -36,7 +36,7 @@
       <attribute name="Main-Class"
                  value="uk.ac.standrews.cs.cs3099.risk.ui.WebInterface" />
     </manifest>
-    <jar jarfile="Risk.jar" basedir="${build}" manifest="${build}/MANIFEST.MF">
+    <jar jarfile="Risk.jar" basedir="${build}" manifest="${build}/MANIFEST_WEB.MF">
       <fileset dir="${build}" includes="**/*.class" />
       <zipgroupfileset dir="${lib}" includes="**/*.jar" />
     </jar>
