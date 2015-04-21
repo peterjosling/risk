@@ -249,8 +249,6 @@ public class GameState {
 			if (attackPhaseCommands.size() == (2 + getNumberOfPlayers() * 2)) {
 				Logger.print("Got all attack commands");
 				Die die = new Die();
-				//ArrayList<String> rollHashes = new ArrayList<String>();
-				//ArrayList<String> rollNumbers = new ArrayList<String>();
 
 				int dieFaces = 6;
 				int numberOfAttackingDice = command.getArmies();
@@ -534,7 +532,7 @@ public class GameState {
 	public boolean isCommandValid(AssignArmyCommand command)
 	{
 		int territoryId = command.getTerritoryId();
-		if(territoryId > map.getTerritories().size() -1) return false;
+		if(territoryId > map.getTerritories().size() -1 || territoryId < 0) return false;
 		Territory territory = map.findTerritoryById(territoryId);
 		boolean allClaimed = getUnclaimedTerritories().length == 0;
 
@@ -543,8 +541,9 @@ public class GameState {
 
 	public boolean isCommandValid(AttackCommand command)
 	{
-		if ((command.getSource() > map.getTerritories().size() -1)
-				|| (command.getDest() > map.getTerritories().size() -1))
+		if ((command.getSource() > map.getTerritories().size() - 1)
+				|| (command.getDest() > map.getTerritories().size() - 1)
+				|| (command.getDest() < 0) || (command.getSource() < 0))
 			return false;
 		
 		int playerId = command.getPlayerId();
@@ -557,7 +556,7 @@ public class GameState {
 		if(!sourceTerritory.isLinkedTo(destTerritory)) return false;
 
 		if ((sourceTerritory.getArmies() <= command.getArmies())
-				|| (sourceTerritory.getArmies() < 2) || (command.getArmies() > 3))
+				|| (sourceTerritory.getArmies() < 2) || (command.getArmies() > 3) || (command.getArmies() < 1))
 			return false;
 
 		return true;
@@ -567,8 +566,10 @@ public class GameState {
 	{
 		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0) return true;
 		
-		if ((command.getFortifyDetails()[0] > map.getTerritories().size() -1)
-				|| (command.getFortifyDetails()[1] > map.getTerritories().size() -1))
+		if ((command.getFortifyDetails()[0] > map.getTerritories().size() - 1)
+				|| (command.getFortifyDetails()[1] > map.getTerritories()
+						.size() - 1) || (command.getFortifyDetails()[0] < 0)
+				|| (command.getFortifyDetails()[1] < 0))
 			return false;
 		
 		int playerId = command.getPlayerId();
@@ -597,11 +598,14 @@ public class GameState {
 
 		for (Deployment deployment : command.getDeployments()){
 			if(deployment == null) return false;
-			if(deployment.getTerritoryId() > map.getTerritories().size() -1) return false;
+			if ((deployment.getTerritoryId() > map.getTerritories().size())
+					|| (deployment.getTerritoryId() < 0))
+				return false;
 			
 			Territory deployTerritory = map.findTerritoryById(deployment.getTerritoryId());
 			if(deployTerritory.getOwner() != playerId) return false;
 
+			if(deployment.getArmies() < 1) return false;
 			deployingTroops += deployment.getArmies();
 		}
 		if(deployingTroops != playersDeployableArmies[playerId]) return false;
@@ -611,16 +615,8 @@ public class GameState {
 
 	public boolean isCommandValid(DefendCommand command)
 	{
-		//TODO work out how to check this command without territory id
-//		int playerId = command.getPlayerId();
-//
-//		Territory defendTerritory = map.findTerritoryById(command.getTerritory());
-//		if(defendTerritory.getOwner() != playerId) return false;
-//
-//		if ((defendTerritory.getArmies() < command.getArmies())
-//				|| (command.getArmies() > 2))
-//			return false;
-
+		if ((command.getArmies() < 1) || (command.getArmies() > 2))
+			return false;
 		return true;
 	}
 
@@ -628,8 +624,12 @@ public class GameState {
 	{
 		int playerId = command.getPlayerId();
 
+		if(command.getCaptureDetails() == null) return false;
+
 		if ((command.getCaptureDetails()[0] > map.getTerritories().size() -1)
-				|| (command.getCaptureDetails()[1] > map.getTerritories().size() -1))
+				|| (command.getCaptureDetails()[1] > map.getTerritories()
+						.size() - 1) || (command.getCaptureDetails()[0] < 0)
+				|| (command.getCaptureDetails()[1] < 0))
 			return false;
 		
 		int[] captureDetails = command.getCaptureDetails();
@@ -640,7 +640,10 @@ public class GameState {
 		Territory destTerritory = map.findTerritoryById(captureDetails[1]);
 		if(destTerritory.getOwner() == playerId) return false;
 
-		if((sourceTerritory.getArmies() <= captureDetails[2]) || (captureDetails[2] < remainingArmies)) return false;
+		if ((sourceTerritory.getArmies() <= captureDetails[2])
+				|| (captureDetails[2] < remainingArmies)
+				|| (captureDetails[2] < 1))
+			return false;
 
 		return true;
 	}
