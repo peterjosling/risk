@@ -477,11 +477,13 @@ public class GameState {
 		if(command.getCards() == null){
 			return;
 		}
-		Card[][] cards = command.getCards();
+		int[][] cards = command.getCards();
 		Territory[] playersTerritories = getTerritoriesForPlayer(command.getPlayerId());
 		int armies = calculateArmiesFromTradeIn();
-		for(Card[] cardSet:cards){
-			for(Card card:cardSet) {
+		for(int[] cardSet:cards){
+			for(int id:cardSet) {
+				Card card = getCard(id);
+
 				for (Territory playerTerritory : playersTerritories) {
 					if (card.getTerritoryId() == playerTerritory.getId()) {
 						armies += 2; //this will need to be added to specific territory in future
@@ -818,26 +820,30 @@ public class GameState {
 	 */
 	public boolean isCommandValid(PlayCardsCommand command)
 	{
-		Card[][] cards = command.getCards();
+		int[][] cards = command.getCards();
 		if(cards == null) return true;
-		for(Card[] cardSet : cards){
+		for(int[] cardSet : cards){
 			if(cardSet.length != 3) return false;
 
+			Card card1 = getCard(cardSet[0]);
+			Card card2 = getCard(cardSet[1]);
+			Card card3 = getCard(cardSet[2]);
+
 			// All matching
-			if ((cardSet[0].getCardType() == cardSet[1].getCardType())
-					&& (cardSet[1].getCardType() == cardSet[2].getCardType()))
+			if ((card1.getCardType() == card2.getCardType())
+					&& (card2.getCardType() == card3.getCardType()))
 				return true;
 
 			// All different
-			if ((cardSet[0].getCardType() != cardSet[1].getCardType())
-					&& (cardSet[0].getCardType() != cardSet[2].getCardType())
-					&& (cardSet[1].getCardType() != cardSet[2].getCardType()))
+			if ((card1.getCardType() != card2.getCardType())
+					&& (card1.getCardType() != card3.getCardType())
+					&& (card2.getCardType() != card3.getCardType()))
 				return true;
 
 			// Any 2 Cards & 1 wild card
-			if ((cardSet[0].getCardType() == CardType.WILD)
-					|| (cardSet[1].getCardType() == CardType.WILD)
-					|| (cardSet[2].getCardType() == CardType.WILD))
+			if ((card1.getCardType() == CardType.WILD)
+					|| (card2.getCardType() == CardType.WILD)
+					|| (card3.getCardType() == CardType.WILD))
 				return true;
 		}
 		return false;
@@ -915,5 +921,18 @@ public class GameState {
 	public void setDeckOrder(int[] deckOrder)
 	{
 		deck.setOrder(deckOrder);
+	}
+
+	public Card getCard(int id)
+	{
+		ArrayList<Card> cards = deck.getDeck();
+
+		for (Card card : cards) {
+			if (card.getId() == id) {
+				return card;
+			}
+		}
+
+		return null;
 	}
 }
