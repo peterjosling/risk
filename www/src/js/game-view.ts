@@ -166,6 +166,7 @@ class GameView extends View<Game> {
 
 					bonusTerritory.addArmies(2);
 					this.model.trigger('change:map');
+					this.model.updateArmyCounts();
 				}
 			}
 
@@ -251,6 +252,7 @@ class GameView extends View<Game> {
 
 			// Update map.
 			territory.addArmies(armies);
+			this.model.updateArmyCounts();
 			this.model.trigger('change:map');
 			this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
 
