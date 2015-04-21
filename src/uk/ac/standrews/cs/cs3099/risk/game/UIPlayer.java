@@ -40,14 +40,23 @@ public class UIPlayer extends Player {
 			return getRollNumberCommand();
 		}
 
+		Command command = null;
+
 		try {
-			return moveQueue.take();
+			command = moveQueue.take();
 		} catch (InterruptedException e) {
 			System.err.println("Failed to get move from queue.");
-			e.printStackTrace();
+			System.exit(1);
 		}
 
-		return null;
+		if (command.getType() == CommandType.ATTACK) {
+			totalarmies = ((AttackCommand) command).getArmies();
+		} else if (command.getType() == CommandType.DEFEND) {
+			totalarmies += ((DefendCommand) command).getArmies();
+			die = new Die();
+		}
+
+		return command;
 	}
 
 	@Override
@@ -108,7 +117,7 @@ public class UIPlayer extends Player {
 		Die die = this.getDie();
 		String number = die.byteToHex(this.getLastRollNumber());
 
-		RollNumberCommand command= new RollNumberCommand(this.getId(), number);
+		RollNumberCommand command = new RollNumberCommand(this.getId(), number);
 		notifyCommand(command);
 		return command;
 	}
