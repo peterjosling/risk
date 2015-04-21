@@ -489,7 +489,11 @@ public class AIPlayer extends Player {
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
-		System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		if(gameState.getMap().findTerritoryById(command.getTerritoryId()).isClaimed()){
+			System.out.println("Player " + command.getPlayerId() + " reinforced territory: " + name);
+		} else {
+			System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		}
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
