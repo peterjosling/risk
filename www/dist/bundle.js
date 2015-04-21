@@ -177,7 +177,7 @@
 	var PlayerList = __webpack_require__(13);
 	var Map = __webpack_require__(14);
 	var CardList = __webpack_require__(15);
-	var defaultMapJson = __webpack_require__(25);
+	var defaultMapJson = __webpack_require__(29);
 	var HOST = 'ws://localhost:7574';
 	var Game = (function (_super) {
 	    __extends(Game, _super);
@@ -204,13 +204,13 @@
 	    Game.prototype.getCurrentPlayerId = function () {
 	        return this.get('currentPlayer');
 	    };
-	    // Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
+	    // Get the current game phase. 'setup', 'cards', 'deploy', 'attack', 'defend' or 'fortify'.
 	    Game.prototype.getPhase = function () {
 	        return this._phase;
 	    };
 	    // Set the current game phase.
 	    Game.prototype.setPhase = function (phase) {
-	        var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+	        var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend', 'fortify'];
 	        if (validPhases.indexOf(phase) === -1) {
 	            throw new Error('Invalid phase specified');
 	        }
@@ -485,6 +485,7 @@
 	        this.showToast(sourcePlayer.name + ' is attacking ' + dest.getName() + ' (' + destPlayerName + ') from ' + source.getName() + ' with ' + armyCount + ' armies!');
 	        this.handleAttackMessage(message, destPlayer === this.self);
 	    };
+	    // Store details of an attack message, and ask the player for a defend move if required.
 	    Game.prototype.handleAttackMessage = function (message, isLocalPlayer) {
 	        if (isLocalPlayer) {
 	            this.trigger('defend', message.payload);
@@ -500,10 +501,12 @@
 	        this.showToast(player.name + ' is defending with ' + message.payload + ' armies.');
 	        this.handleDefendMessage(message);
 	    };
+	    // Store details of a defend message.
 	    Game.prototype.handleDefendMessage = function (message) {
 	        this.attackDetails.defend = message;
 	    };
 	    Game.prototype.attackCaptureMessageReceived = function (message) {
+	        console.log('Attack capture received', message);
 	        var player = this.playerList.get(message.player_id);
 	        var source = this.map.territories.get(message.payload[0]);
 	        var dest = this.map.territories.get(message.payload[1]);
@@ -511,12 +514,19 @@
 	        this.showToast(player.name + ' captured ' + dest.getName() + ' and moved in ' + armies + ' from ' + source.getName());
 	        this.handleAttackCaptureMessage(message);
 	    };
+	    // Apply an attack_capture command to the map.
 	    Game.prototype.handleAttackCaptureMessage = function (message) {
+	        console.log('Handling attack capture');
+	        var player = this.playerList.get(message.player_id);
 	        var source = this.map.territories.get(message.payload[0]);
 	        var dest = this.map.territories.get(message.payload[1]);
 	        var armies = message.payload[2];
+	        console.log('armies', armies);
+	        console.log('source', source.getArmies(), 'dest', dest.getArmies());
 	        source.addArmies(-armies);
 	        dest.addArmies(armies);
+	        dest.setOwner(player);
+	        console.log('source', source.id, 'armies', source.getArmies(), 'dest', dest.id, 'armies', dest.getArmies());
 	        this.trigger('change:map');
 	    };
 	    Game.prototype.deployMessageReceived = function (message) {
@@ -528,6 +538,7 @@
 	        });
 	        this.handleDeployMessage(message);
 	    };
+	    // Apply a deploy message to the map.
 	    Game.prototype.handleDeployMessage = function (message) {
 	        var _this = this;
 	        message.payload.forEach(function (deployment) {
@@ -538,17 +549,20 @@
 	        this.trigger('change:map');
 	        this.updateArmyCounts();
 	    };
+	    // Store details of a roll result, and perform an action if required.
 	    Game.prototype.rollResultMessageReceived = function (message) {
-	        // Handle first roll to set initial player as a special case.
 	        if (!this.getCurrentPlayer()) {
+	            // Handle first roll to set initial player as a special case.
 	            this.set('currentPlayer', message.payload);
 	            var player = this.getCurrentPlayer();
 	            this.showToast(player.name + ' to play first');
 	        }
 	        else if (!this.map.deck.shuffled) {
+	            // Handle subsequent rolls as required for shuffling.
 	            this.map.deck.shuffleWithNumber(message.payload);
 	        }
 	        else {
+	            // Rolls for an attack/defend.
 	            this.attackDetails.rolls.push(message);
 	            var attackRollCount = this.attackDetails.attack.payload[2];
 	            var defendRollCount = this.attackDetails.defend.payload;
@@ -593,7 +607,7 @@
 	                this.updateArmyCounts();
 	                // Let the game view create an attack_capture command if the local player won the attack.
 	                var defendingTerritory = this.map.territories.get(this.attackDetails.attack.payload[1]);
-	                var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
+	                var attackingPlayer = this.playerList.get(this.attackDetails.attack.player_id);
 	                if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
 	                    this.trigger('attackCapture', this.attackDetails.attack);
 	                }
@@ -628,7 +642,10 @@
 	        this.showToast(toastMessage);
 	        this.handleFortifyMessage(message);
 	    };
+	    // Apply a fortify message to the map.
 	    Game.prototype.handleFortifyMessage = function (message) {
+	        // Fortify indicates end of turn.
+	        this.nextTurn();
 	        if (message.payload === null) {
 	            return;
 	        }
@@ -648,6 +665,7 @@
 	        }
 	        this.handlePlayCardsMessage(message);
 	    };
+	    // Update the number of sets of cards traded in.
 	    Game.prototype.handlePlayCardsMessage = function (message) {
 	        if (message.payload !== null) {
 	            this.cardsTradedIn += message.payload.cards.length;
@@ -895,8 +913,8 @@
 	            this.model.showToast(player.name + '\'s turn', true);
 	        }
 	    };
+	    // Start the player's turn.
 	    GameView.prototype.startTurn = function () {
-	        var _this = this;
 	        this.model.showToast('Your turn!');
 	        if (this.model.getPhase() === 'setup') {
 	            var allTerritoriesClaimed = this.model.map.territories.every(function (territory) {
@@ -915,55 +933,7 @@
 	            this.model.setPhase('cards');
 	            this.deployableArmies = this.model.getNewPlayerArmies();
 	            if (this.model.playerCards.canTradeInCards()) {
-	                var playCardsMessage = {
-	                    command: 'play_cards',
-	                    payload: {
-	                        cards: [],
-	                        armies: -1
-	                    },
-	                    player_id: this.model.self.id
-	                };
-	                this.cardSelectView.show();
-	                this.cardSelectView.off('trade');
-	                this.cardSelectView.off('close');
-	                // Add each set of cards to the command.
-	                this.cardSelectView.on('trade', function (cards) {
-	                    _this.model.playerCards.remove(cards);
-	                    playCardsMessage.payload.cards.push(cards);
-	                });
-	                this.cardSelectView.on('close', function () {
-	                    var cards = playCardsMessage.payload.cards;
-	                    if (cards.length === 0) {
-	                        playCardsMessage.payload = null;
-	                    }
-	                    else {
-	                        for (var i = 0; i < cards.length; i++) {
-	                            _this.deployableArmies += _this.model.getCardArmies();
-	                        }
-	                        // Check if any of the cards traded in match an owned territory.
-	                        var bonusTerritory = null;
-	                        cards.forEach(function (set) {
-	                            set.forEach(function (card) {
-	                                var territory = card.getTerritory();
-	                                if (territory.getOwner() === _this.model.self) {
-	                                    bonusTerritory = territory;
-	                                }
-	                            });
-	                        });
-	                        // Automatically deploy bonus armies to one of the matched territories.
-	                        if (bonusTerritory) {
-	                            _this.message = ({
-	                                command: 'deploy',
-	                                payload: [[bonusTerritory.id, 2]],
-	                                player_id: _this.model.self.id
-	                            });
-	                            bonusTerritory.addArmies(2);
-	                            _this.model.trigger('change:map');
-	                        }
-	                    }
-	                    _this.model.sendMessage(playCardsMessage);
-	                    _this.startDeployPhase();
-	                });
+	                this.startCardTrade();
 	            }
 	            else {
 	                var playCardsMessage = {
@@ -977,167 +947,239 @@
 	        }
 	        this.highlightSelectableTerritories();
 	    };
-	    GameView.prototype.territorySelected = function (id) {
+	    // Show the player the card trade window.
+	    GameView.prototype.startCardTrade = function () {
 	        var _this = this;
+	        var playCardsMessage = {
+	            command: 'play_cards',
+	            payload: {
+	                cards: [],
+	                armies: -1
+	            },
+	            player_id: this.model.self.id
+	        };
+	        this.cardSelectView.show();
+	        this.cardSelectView.off('trade');
+	        this.cardSelectView.off('close');
+	        // Add each set of cards to the command.
+	        this.cardSelectView.on('trade', function (cards) {
+	            _this.model.playerCards.remove(cards);
+	            playCardsMessage.payload.cards.push(cards);
+	        });
+	        this.cardSelectView.on('close', function () {
+	            var cards = playCardsMessage.payload.cards;
+	            if (cards.length === 0) {
+	                playCardsMessage.payload = null;
+	            }
+	            else {
+	                for (var i = 0; i < cards.length; i++) {
+	                    _this.deployableArmies += _this.model.getCardArmies();
+	                }
+	                // Check if any of the cards traded in match an owned territory.
+	                var bonusTerritory = null;
+	                cards.forEach(function (set) {
+	                    set.forEach(function (card) {
+	                        var territory = card.getTerritory();
+	                        if (territory.getOwner() === _this.model.self) {
+	                            bonusTerritory = territory;
+	                        }
+	                    });
+	                });
+	                // Automatically deploy bonus armies to one of the matched territories.
+	                if (bonusTerritory) {
+	                    _this.message = ({
+	                        command: 'deploy',
+	                        payload: [[bonusTerritory.id, 2]],
+	                        player_id: _this.model.self.id
+	                    });
+	                    bonusTerritory.addArmies(2);
+	                    _this.model.trigger('change:map');
+	                    _this.model.updateArmyCounts();
+	                }
+	            }
+	            _this.model.sendMessage(playCardsMessage);
+	            _this.startDeployPhase();
+	        });
+	    };
+	    // Handle a territory being selected in the interface.
+	    GameView.prototype.territorySelected = function (id) {
 	        var territory = this.model.map.territories.get(id);
 	        // Only perform an action on the correct turn.
-	        // TODO also allow actions to be performed when defending.
 	        if (this.model.getCurrentPlayer() !== this.model.self) {
 	            return;
 	        }
 	        var phase = this.model.getPhase();
 	        if (phase === 'setup') {
-	            // Check this territory can be selected.
-	            var allTerritoriesClaimed = this.model.map.territories.every(function (territory) {
-	                return territory.getOwner() !== null;
-	            });
-	            // Check this territory can be selected.
-	            if (!allTerritoriesClaimed && territory.getOwner() !== null) {
-	                this.model.showToast('This territory has already been claimed.');
-	                return;
-	            }
-	            else if (allTerritoriesClaimed && territory.getOwner() !== this.model.self) {
-	                this.model.showToast('You do not own this territory.');
-	                return;
-	            }
-	            var message = {
-	                command: 'setup',
-	                payload: id,
-	                player_id: this.model.self.id
-	            };
-	            this.model.handleSetupMessage(message);
-	            this.model.sendMessage(message);
-	            // Turn complete.
-	            this.model.nextTurn();
+	            this.territorySelectedSetup(territory);
 	        }
 	        else if (phase === 'deploy') {
-	            // Check this territory can be selected.
-	            if (territory.getOwner() !== this.model.self) {
-	                this.model.showToast('You do not own this territory.');
-	                return;
-	            }
-	            if (!this.message || this.message.command !== 'deploy') {
-	                this.message = ({
-	                    command: 'deploy',
-	                    payload: [],
-	                    player_id: this.model.self.id
-	                });
-	            }
-	            // Get how many armies to deploy, add this deployment to the message payload
-	            this.armyCountSelectView.setMin(1);
-	            this.armyCountSelectView.setMax(this.deployableArmies);
-	            this.armyCountSelectView.off('select');
-	            this.armyCountSelectView.on('select', function (armies) {
-	                _this.message.payload.push([id, armies]);
-	                _this.deployableArmies -= armies;
-	                // Update map.
-	                var territory = _this.model.map.territories.get(id);
-	                territory.addArmies(armies);
-	                _this.model.trigger('change:map');
-	                _this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + _this.deployableArmies + ' armies.', true);
-	                if (_this.deployableArmies === 0) {
-	                    _this.model.sendMessage(_this.message);
-	                    _this.model.setPhase('attack');
-	                    _this.startAttackPhase();
-	                }
-	            });
-	            this.armyCountSelectView.show();
+	            this.territorySelectedDeploy(territory);
 	        }
 	        else if (phase === 'attack') {
-	            if (this.message === null) {
-	                // Check this territory can be selected.
-	                if (territory.getOwner() !== this.model.self) {
-	                    this.model.showToast('You do not own this territory');
-	                    return;
-	                }
-	                if (territory.getArmies() < 2) {
-	                    this.model.showToast('This territory doesn\'t contain enough armies to attack');
-	                    return;
-	                }
-	                this.message = ({
-	                    command: 'attack',
-	                    payload: [id],
-	                    player_id: this.model.self.id
-	                });
-	                this.model.showToast('Select a territory to attack', true);
-	                this.highlightSelectableTerritories();
-	            }
-	            else {
-	                // Check this territory can be selected.
-	                if (territory.getOwner() === this.model.self) {
-	                    this.model.showToast('You cannot attack your own territory');
-	                    return;
-	                }
-	                var sourceId = this.message.payload[0];
-	                var sourceTerritory = this.model.map.territories.get(sourceId);
-	                if (!territory.connections.get(sourceTerritory)) {
-	                    this.model.showToast('This territory is not connected to yours.');
-	                    return;
-	                }
-	                // TODO add deselect button.
-	                this.message.payload.push(id);
-	                // Get number of armies to attack with.
-	                var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
-	                this.armyCountSelectView.setMin(1);
-	                this.armyCountSelectView.setMax(maxArmies);
-	                this.armyCountSelectView.off('select');
-	                this.armyCountSelectView.on('select', function (armies) {
-	                    _this.message.payload.push(armies);
-	                    _this.model.handleAttackMessage(_this.message, false);
-	                    _this.model.sendMessage(_this.message);
-	                    _this.message = null;
-	                    // TODO show roll result view.
-	                });
-	                this.armyCountSelectView.show(true);
-	            }
+	            this.territorySelectedAttack(territory);
 	        }
 	        else if (phase === 'fortify') {
-	            if (!this.message) {
-	                // Check this territory can be selected.
-	                if (territory.getOwner() !== this.model.self) {
-	                    this.model.showToast('You do not own this territory');
-	                    return;
-	                }
-	                if (territory.getArmies() < 2) {
-	                    this.model.showToast('This territory doesn\'t contain enough armies to fortify');
-	                    return;
-	                }
-	                this.message = ({
-	                    command: 'fortify',
-	                    payload: [id],
-	                    player_id: this.model.self.id
-	                });
-	                this.model.showToast('Select a territory to fortify', true);
-	                this.highlightSelectableTerritories();
+	            this.territorySelectedFortify(territory);
+	        }
+	    };
+	    // Handle territory selection in the setup phase.
+	    GameView.prototype.territorySelectedSetup = function (territory) {
+	        // Check this territory can be selected.
+	        var allTerritoriesClaimed = this.model.map.territories.every(function (territory) {
+	            return territory.getOwner() !== null;
+	        });
+	        // Check this territory can be selected.
+	        if (!allTerritoriesClaimed && territory.getOwner() !== null) {
+	            this.model.showToast('This territory has already been claimed.');
+	            return;
+	        }
+	        else if (allTerritoriesClaimed && territory.getOwner() !== this.model.self) {
+	            this.model.showToast('You do not own this territory.');
+	            return;
+	        }
+	        var message = {
+	            command: 'setup',
+	            payload: territory.id,
+	            player_id: this.model.self.id
+	        };
+	        this.model.handleSetupMessage(message);
+	        this.model.sendMessage(message);
+	        // Turn complete.
+	        this.model.nextTurn();
+	    };
+	    // Handle territory selection in the deploy phase.
+	    GameView.prototype.territorySelectedDeploy = function (territory) {
+	        var _this = this;
+	        // Check this territory can be selected.
+	        if (territory.getOwner() !== this.model.self) {
+	            this.model.showToast('You do not own this territory.');
+	            return;
+	        }
+	        if (!this.message || this.message.command !== 'deploy') {
+	            this.message = ({
+	                command: 'deploy',
+	                payload: [],
+	                player_id: this.model.self.id
+	            });
+	        }
+	        // Get how many armies to deploy, add this deployment to the message payload
+	        this.armyCountSelectView.setMin(1);
+	        this.armyCountSelectView.setMax(this.deployableArmies);
+	        this.armyCountSelectView.off('select');
+	        this.armyCountSelectView.on('select', function (armies) {
+	            _this.message.payload.push([territory.id, armies]);
+	            _this.deployableArmies -= armies;
+	            // Update map.
+	            territory.addArmies(armies);
+	            _this.model.updateArmyCounts();
+	            _this.model.trigger('change:map');
+	            _this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + _this.deployableArmies + ' armies.', true);
+	            if (_this.deployableArmies === 0) {
+	                _this.model.sendMessage(_this.message);
+	                _this.model.setPhase('attack');
+	                _this.startAttackPhase();
 	            }
-	            else {
-	                // Check this territory can be selected.
-	                if (territory.getOwner() !== this.model.self) {
-	                    this.model.showToast('You do not own this territory');
-	                    return;
-	                }
-	                var sourceId = this.message.payload[0];
-	                var sourceTerritory = this.model.map.territories.get(sourceId);
-	                if (!territory.connections.get(sourceTerritory)) {
-	                    this.model.showToast('This territory is not connected to the source');
-	                    return;
-	                }
-	                // TODO add deselect button.
-	                this.message.payload.push(id);
-	                // Get number of armies to attack with.
-	                var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
-	                this.armyCountSelectView.setMin(1);
-	                this.armyCountSelectView.setMax(maxArmies);
-	                this.armyCountSelectView.off('select');
-	                this.armyCountSelectView.on('select', function (armies) {
-	                    _this.message.payload.push(armies);
-	                    _this.model.handleFortifyMessage(_this.message);
-	                    _this.model.sendMessage(_this.message);
-	                    _this.message = null;
-	                    _this.endTurn();
-	                });
-	                this.armyCountSelectView.show(true);
+	        });
+	        this.armyCountSelectView.show();
+	    };
+	    // Handle territory selection in the attack phase.
+	    GameView.prototype.territorySelectedAttack = function (territory) {
+	        var _this = this;
+	        if (this.message === null) {
+	            // Check this territory can be selected.
+	            if (territory.getOwner() !== this.model.self) {
+	                this.model.showToast('You do not own this territory');
+	                return;
 	            }
+	            if (territory.getArmies() < 2) {
+	                this.model.showToast('This territory doesn\'t contain enough armies to attack');
+	                return;
+	            }
+	            this.message = ({
+	                command: 'attack',
+	                payload: [territory.id],
+	                player_id: this.model.self.id
+	            });
+	            this.model.showToast('Select a territory to attack', true);
+	            this.highlightSelectableTerritories();
+	        }
+	        else {
+	            // Check this territory can be selected.
+	            if (territory.getOwner() === this.model.self) {
+	                this.model.showToast('You cannot attack your own territory');
+	                return;
+	            }
+	            var sourceId = this.message.payload[0];
+	            var sourceTerritory = this.model.map.territories.get(sourceId);
+	            if (!territory.connections.get(sourceTerritory)) {
+	                this.model.showToast('This territory is not connected to yours.');
+	                return;
+	            }
+	            // TODO add deselect button.
+	            this.message.payload.push(territory.id);
+	            // Get number of armies to attack with.
+	            var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
+	            this.armyCountSelectView.setMin(1);
+	            this.armyCountSelectView.setMax(maxArmies);
+	            this.armyCountSelectView.off('select');
+	            this.armyCountSelectView.on('select', function (armies) {
+	                _this.message.payload.push(armies);
+	                _this.model.handleAttackMessage(_this.message, false);
+	                _this.model.sendMessage(_this.message);
+	                // Reset and get the next attack.
+	                _this.startAttackPhase();
+	            });
+	            this.armyCountSelectView.show(true);
+	        }
+	    };
+	    // Handle territory selection in the fortify phase.
+	    GameView.prototype.territorySelectedFortify = function (territory) {
+	        var _this = this;
+	        if (!this.message) {
+	            // Check this territory can be selected.
+	            if (territory.getOwner() !== this.model.self) {
+	                this.model.showToast('You do not own this territory');
+	                return;
+	            }
+	            if (territory.getArmies() < 2) {
+	                this.model.showToast('This territory doesn\'t contain enough armies to fortify');
+	                return;
+	            }
+	            this.message = ({
+	                command: 'fortify',
+	                payload: [territory.id],
+	                player_id: this.model.self.id
+	            });
+	            this.model.showToast('Select a territory to fortify', true);
+	            this.highlightSelectableTerritories();
+	        }
+	        else {
+	            // Check this territory can be selected.
+	            if (territory.getOwner() !== this.model.self) {
+	                this.model.showToast('You do not own this territory');
+	                return;
+	            }
+	            var sourceId = this.message.payload[0];
+	            var sourceTerritory = this.model.map.territories.get(sourceId);
+	            if (!territory.connections.get(sourceTerritory)) {
+	                this.model.showToast('This territory is not connected to the source');
+	                return;
+	            }
+	            // TODO add deselect button.
+	            this.message.payload.push(territory.id);
+	            // Get number of armies to attack with.
+	            var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
+	            this.armyCountSelectView.setMin(1);
+	            this.armyCountSelectView.setMax(maxArmies);
+	            this.armyCountSelectView.off('select');
+	            this.armyCountSelectView.on('select', function (armies) {
+	                _this.message.payload.push(armies);
+	                _this.model.handleFortifyMessage(_this.message);
+	                _this.model.sendMessage(_this.message);
+	                _this.message = null;
+	                _this.endTurn();
+	            });
+	            this.armyCountSelectView.show(true);
 	        }
 	    };
 	    GameView.prototype.startDeployPhase = function () {
@@ -1173,8 +1215,9 @@
 	            };
 	            _this.model.sendMessage(message);
 	            _this.model.handleAttackCaptureMessage(message);
+	            _this.startAttackPhase();
 	        });
-	        // TODO disable cancel button.
+	        this.armyCountSelectView.show(true);
 	    };
 	    GameView.prototype.noFortifyButtonClick = function () {
 	        this.$('#no-fortify-button').addClass('hidden');
@@ -1364,7 +1407,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(42)();
-	exports.push([module.id, ".game {\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  height: 100%;\n}\n.army-count-select {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.modal {\n  width: 500px;\n  margin: 100px auto;\n  background-color: #FFF;\n  padding: 10px 20px 20px;\n  border-radius: 6px;\n}\n#attack-end-button {\n  position: absolute;\n  left: 10px;\n  bottom: 10px;\n}\n.card {\n  float: left;\n  width: 50px;\n  height: 80px;\n  border-radius: 8px;\n  border: 1px solid #999;\n  text-align: center;\n  margin: 11px;\n}\n.card.active {\n  border: 2px solid blue;\n  margin: 10px;\n}\n#player-list {\n  width: 300px;\n  height: 100%;\n  background-color: #E6E6E6;\n  border-right: 1px solid #979797;\n  position: relative;\n}\n#player-list .player-list-item {\n  height: 90px;\n}\n#player-list .armies-badge {\n  width: 55px;\n  height: 55px;\n  float: left;\n  text-align: center;\n  border-radius: 50%;\n  background: red;\n  border: 1px solid #FFF;\n  color: #FFF;\n  font-size: 24px;\n  padding-top: 5px;\n  box-sizing: border-box;\n}\n#player-list .armies-badge .armies-count {\n  font-size: 12px;\n  opacity: 0.79;\n}\n#player-list .current-player-thumb {\n  background: url('/img/current-player-thumb.png') no-repeat center;\n  background-size: 100%;\n  width: 42px;\n  height: 90px;\n  position: absolute;\n  right: -13px;\n  top: 0;\n  -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n          transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n}\n#player-list .current-player-thumb[data-player-id=\"1\"] {\n  -webkit-transform: translateY(90px);\n      -ms-transform: translateY(90px);\n          transform: translateY(90px);\n}\n#player-list .current-player-thumb[data-player-id=\"2\"] {\n  -webkit-transform: translateY(180px);\n      -ms-transform: translateY(180px);\n          transform: translateY(180px);\n}\n#player-list .current-player-thumb[data-player-id=\"3\"] {\n  -webkit-transform: translateY(270px);\n      -ms-transform: translateY(270px);\n          transform: translateY(270px);\n}\n#player-list .current-player-thumb[data-player-id=\"4\"] {\n  -webkit-transform: translateY(360px);\n      -ms-transform: translateY(360px);\n          transform: translateY(360px);\n}\n#player-list .current-player-thumb[data-player-id=\"5\"] {\n  -webkit-transform: translateY(450px);\n      -ms-transform: translateY(450px);\n          transform: translateY(450px);\n}\n#map {\n  width: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #C2DFFF;\n}\n#map svg {\n  width: 100%;\n  height: 100%;\n}\n#map svg .territory {\n  -webkit-transition: opacity 0.5s linear;\n          transition: opacity 0.5s linear;\n  cursor: pointer;\n}\n#map svg .territory.fade {\n  opacity: 0.2;\n  cursor: auto;\n}\n#map svg text {\n  fill: #000;\n}\n.map {\n  width: 100%;\n  margin: auto 0;\n}\n.toast-container {\n  pointer-events: none;\n  position: fixed;\n  top: 0;\n  bottom: 50px;\n  right: 0;\n  left: 0;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n  -webkit-flex-direction: column;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n  -webkit-justify-content: flex-end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.toast-container .toast {\n  width: 500px;\n  text-align: center;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 15px;\n  border-radius: 3px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);\n  background-color: rgba(255, 255, 255, 0.7);\n  margin: 10px 0;\n  -webkit-flex-shrink: 0;\n      -ms-flex-negative: 0;\n          flex-shrink: 0;\n}\n.connection-view {\n  width: 600px;\n  margin: 100px auto;\n  border: 1px solid #CCC;\n  overflow: auto;\n  border-radius: 8px;\n}\n.connection-view form {\n  width: 50%;\n  float: left;\n  padding: 15px;\n}\n.connection-view label,\n.connection-view input:not([type=checkbox]) {\n  display: block;\n}\n.connection-view label {\n  margin-top: 10px;\n}\n* {\n  box-sizing: border-box;\n}\nhtml,\nbody,\n.view-container {\n  height: 100%;\n}\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  margin: 0;\n}\nbody > div {\n  height: 100%;\n}\ninput:not([type=checkbox]) {\n  width: 100%;\n  font-size: 16px;\n  border-radius: 4px;\n  border: 1px solid #CCC;\n  padding: 8px;\n}\nbutton {\n  border-radius: 4px;\n  padding: 8px 16px;\n  font-size: 16px;\n  outline: none;\n  background-color: #FFF;\n  border: 1px solid #CCC;\n  cursor: pointer;\n  margin-top: 10px;\n}\n.hidden {\n  display: none;\n}\n", ""]);
+	exports.push([module.id, ".game {\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  height: 100%;\n}\n.army-count-select {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.modal {\n  width: 500px;\n  margin: 100px auto;\n  background-color: #FFF;\n  padding: 10px 20px 20px;\n  border-radius: 6px;\n}\n#attack-end-button,\n#no-fortify-button {\n  position: absolute;\n  left: 10px;\n  bottom: 10px;\n}\n.card {\n  float: left;\n  width: 50px;\n  height: 80px;\n  border-radius: 8px;\n  border: 1px solid #999;\n  text-align: center;\n  margin: 11px;\n}\n.card.active {\n  border: 2px solid blue;\n  margin: 10px;\n}\n#player-list {\n  width: 300px;\n  height: 100%;\n  background-color: #E6E6E6;\n  border-right: 1px solid #979797;\n  position: relative;\n}\n#player-list .player-list-item {\n  height: 90px;\n}\n#player-list .armies-badge {\n  width: 55px;\n  height: 55px;\n  float: left;\n  text-align: center;\n  border-radius: 50%;\n  background: red;\n  border: 1px solid #FFF;\n  color: #FFF;\n  font-size: 24px;\n  padding-top: 5px;\n  box-sizing: border-box;\n}\n#player-list .armies-badge .armies-count {\n  font-size: 12px;\n  opacity: 0.79;\n}\n#player-list .current-player-thumb {\n  background: url('/img/current-player-thumb.png') no-repeat center;\n  background-size: 100%;\n  width: 42px;\n  height: 90px;\n  position: absolute;\n  right: -13px;\n  top: 0;\n  -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n          transition: transform 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);\n}\n#player-list .current-player-thumb[data-player-id=\"1\"] {\n  -webkit-transform: translateY(90px);\n      -ms-transform: translateY(90px);\n          transform: translateY(90px);\n}\n#player-list .current-player-thumb[data-player-id=\"2\"] {\n  -webkit-transform: translateY(180px);\n      -ms-transform: translateY(180px);\n          transform: translateY(180px);\n}\n#player-list .current-player-thumb[data-player-id=\"3\"] {\n  -webkit-transform: translateY(270px);\n      -ms-transform: translateY(270px);\n          transform: translateY(270px);\n}\n#player-list .current-player-thumb[data-player-id=\"4\"] {\n  -webkit-transform: translateY(360px);\n      -ms-transform: translateY(360px);\n          transform: translateY(360px);\n}\n#player-list .current-player-thumb[data-player-id=\"5\"] {\n  -webkit-transform: translateY(450px);\n      -ms-transform: translateY(450px);\n          transform: translateY(450px);\n}\n#map {\n  width: 100%;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  background-color: #C2DFFF;\n}\n#map svg {\n  width: 100%;\n  height: 100%;\n}\n#map svg .territory {\n  -webkit-transition: opacity 0.5s linear;\n          transition: opacity 0.5s linear;\n  cursor: pointer;\n}\n#map svg .territory.fade {\n  opacity: 0.2;\n  cursor: auto;\n}\n#map svg text {\n  fill: #000;\n}\n.map {\n  width: 100%;\n  margin: auto 0;\n}\n.toast-container {\n  pointer-events: none;\n  position: fixed;\n  top: 0;\n  bottom: 50px;\n  right: 0;\n  left: 0;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n  -webkit-flex-direction: column;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n  -webkit-justify-content: flex-end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n}\n.toast-container .toast {\n  width: 500px;\n  text-align: center;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  padding: 15px;\n  border-radius: 3px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);\n  background-color: rgba(255, 255, 255, 0.7);\n  margin: 10px 0;\n  -webkit-flex-shrink: 0;\n      -ms-flex-negative: 0;\n          flex-shrink: 0;\n}\n.connection-view {\n  width: 600px;\n  margin: 100px auto;\n  border: 1px solid #CCC;\n  overflow: auto;\n  border-radius: 8px;\n}\n.connection-view form {\n  width: 50%;\n  float: left;\n  padding: 15px;\n}\n.connection-view label,\n.connection-view input:not([type=checkbox]) {\n  display: block;\n}\n.connection-view label {\n  margin-top: 10px;\n}\n* {\n  box-sizing: border-box;\n}\nhtml,\nbody,\n.view-container {\n  height: 100%;\n}\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  margin: 0;\n}\nbody > div {\n  height: 100%;\n}\ninput:not([type=checkbox]) {\n  width: 100%;\n  font-size: 16px;\n  border-radius: 4px;\n  border: 1px solid #CCC;\n  padding: 8px;\n}\nbutton {\n  border-radius: 4px;\n  padding: 8px 16px;\n  font-size: 16px;\n  outline: none;\n  background-color: #FFF;\n  border: 1px solid #CCC;\n  cursor: pointer;\n  margin-top: 10px;\n}\n.hidden {\n  display: none;\n}\n", ""]);
 
 /***/ },
 /* 10 */
@@ -1493,7 +1536,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Collection = __webpack_require__(26);
+	var Collection = __webpack_require__(25);
 	var PlayerList = (function (_super) {
 	    __extends(PlayerList, _super);
 	    function PlayerList() {
@@ -1523,11 +1566,11 @@
 	    d.prototype = new __();
 	};
 	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(26);
-	var Continent = __webpack_require__(27);
-	var Territory = __webpack_require__(28);
+	var Collection = __webpack_require__(25);
+	var Continent = __webpack_require__(26);
+	var Territory = __webpack_require__(27);
 	var CardList = __webpack_require__(15);
-	var Card = __webpack_require__(29);
+	var Card = __webpack_require__(28);
 	var Map = (function (_super) {
 	    __extends(Map, _super);
 	    function Map() {
@@ -1602,7 +1645,7 @@
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var Collection = __webpack_require__(26);
+	var Collection = __webpack_require__(25);
 	var CardList = (function (_super) {
 	    __extends(CardList, _super);
 	    function CardList() {
@@ -1755,6 +1798,7 @@
 	            $territory.attr('fill', colour);
 	            // Show number of armies.
 	            var armies = territory.getArmies();
+	            console.log("id", territory.id, "armies", armies);
 	            this.$('text[data-territory-id=' + territory.id + '] tspan').text(armies);
 	        }, this);
 	    };
@@ -3754,6 +3798,146 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	/// <reference path="../../lib/backbone/backbone.d.ts" />
+	var Backbone = __webpack_require__(24);
+	var Collection = (function (_super) {
+	    __extends(Collection, _super);
+	    function Collection() {
+	        _super.apply(this, arguments);
+	    }
+	    return Collection;
+	})(Backbone.Collection);
+	module.exports = Collection;
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(25);
+	var Continent = (function (_super) {
+	    __extends(Continent, _super);
+	    function Continent() {
+	        _super.apply(this, arguments);
+	    }
+	    Continent.prototype.initialize = function (options) {
+	        this.territories = new Collection();
+	    };
+	    Continent.prototype.setValue = function (value) {
+	        this.set('value', value);
+	    };
+	    Continent.prototype.getValue = function () {
+	        return this.get('value');
+	    };
+	    Continent.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Continent.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    return Continent;
+	})(Model);
+	module.exports = Continent;
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Collection = __webpack_require__(25);
+	var Territory = (function (_super) {
+	    __extends(Territory, _super);
+	    function Territory() {
+	        _super.apply(this, arguments);
+	        this.owner = null;
+	        this.armies = 0;
+	    }
+	    Territory.prototype.initialize = function (options) {
+	        this.connections = new Collection();
+	    };
+	    Territory.prototype.setName = function (name) {
+	        this.set('name', name);
+	    };
+	    Territory.prototype.getName = function () {
+	        return this.get('name');
+	    };
+	    Territory.prototype.setCardType = function (cardType) {
+	        this.set('cardType', cardType);
+	    };
+	    Territory.prototype.getCardType = function () {
+	        return this.get('cardType');
+	    };
+	    Territory.prototype.setOwner = function (player) {
+	        this.owner = player;
+	    };
+	    Territory.prototype.getOwner = function () {
+	        return this.owner;
+	    };
+	    Territory.prototype.setArmies = function (armies) {
+	        this.armies = armies;
+	    };
+	    Territory.prototype.addArmies = function (armies) {
+	        this.armies += armies;
+	    };
+	    Territory.prototype.getArmies = function () {
+	        return this.armies;
+	    };
+	    return Territory;
+	})(Model);
+	module.exports = Territory;
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = this.__extends || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var Model = __webpack_require__(11);
+	var Card = (function (_super) {
+	    __extends(Card, _super);
+	    function Card() {
+	        _super.apply(this, arguments);
+	    }
+	    Card.prototype.getType = function () {
+	        return this.get('type');
+	    };
+	    Card.prototype.getCountry = function () {
+	        return this.get('territory');
+	    };
+	    return Card;
+	})(Model);
+	module.exports = Card;
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
 	module.exports = {
 		"data": "map",
 		"continents": {
@@ -4252,146 +4436,6 @@
 		},
 		"wildcards": 2
 	}
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	/// <reference path="../../lib/backbone/backbone.d.ts" />
-	var Backbone = __webpack_require__(24);
-	var Collection = (function (_super) {
-	    __extends(Collection, _super);
-	    function Collection() {
-	        _super.apply(this, arguments);
-	    }
-	    return Collection;
-	})(Backbone.Collection);
-	module.exports = Collection;
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(26);
-	var Continent = (function (_super) {
-	    __extends(Continent, _super);
-	    function Continent() {
-	        _super.apply(this, arguments);
-	    }
-	    Continent.prototype.initialize = function (options) {
-	        this.territories = new Collection();
-	    };
-	    Continent.prototype.setValue = function (value) {
-	        this.set('value', value);
-	    };
-	    Continent.prototype.getValue = function () {
-	        return this.get('value');
-	    };
-	    Continent.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Continent.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    return Continent;
-	})(Model);
-	module.exports = Continent;
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Collection = __webpack_require__(26);
-	var Territory = (function (_super) {
-	    __extends(Territory, _super);
-	    function Territory() {
-	        _super.apply(this, arguments);
-	        this.owner = null;
-	        this.armies = 0;
-	    }
-	    Territory.prototype.initialize = function (options) {
-	        this.connections = new Collection();
-	    };
-	    Territory.prototype.setName = function (name) {
-	        this.set('name', name);
-	    };
-	    Territory.prototype.getName = function () {
-	        return this.get('name');
-	    };
-	    Territory.prototype.setCardType = function (cardType) {
-	        this.set('cardType', cardType);
-	    };
-	    Territory.prototype.getCardType = function () {
-	        return this.get('cardType');
-	    };
-	    Territory.prototype.setOwner = function (player) {
-	        this.owner = player;
-	    };
-	    Territory.prototype.getOwner = function () {
-	        return this.owner;
-	    };
-	    Territory.prototype.setArmies = function (armies) {
-	        this.armies = armies;
-	    };
-	    Territory.prototype.addArmies = function (armies) {
-	        this.armies += armies;
-	    };
-	    Territory.prototype.getArmies = function () {
-	        return this.armies;
-	    };
-	    return Territory;
-	})(Model);
-	module.exports = Territory;
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = this.__extends || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var Model = __webpack_require__(11);
-	var Card = (function (_super) {
-	    __extends(Card, _super);
-	    function Card() {
-	        _super.apply(this, arguments);
-	    }
-	    Card.prototype.getType = function () {
-	        return this.get('type');
-	    };
-	    Card.prototype.getCountry = function () {
-	        return this.get('territory');
-	    };
-	    return Card;
-	})(Model);
-	module.exports = Card;
-
 
 /***/ },
 /* 30 */
