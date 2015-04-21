@@ -18,6 +18,7 @@ class Game extends Model {
 	map : Map = new Map();
 	playerCards : CardList = new CardList();
 	_isHost : boolean;
+	_isAi : boolean;
 	_phase : string = 'setup';
 	cardDrawn : boolean;
 	cardsTradedIn : number = 0;
@@ -38,6 +39,11 @@ class Game extends Model {
 	// Whether the game is running as a host or not.
 	isHost() : boolean {
 		return this._isHost;
+	}
+
+	// Whether the game is being controlled by an AI.
+	isAi() : boolean {
+		return this._isAi;
 	}
 
 	// Get the Player instance whose turn it currently is.
@@ -136,6 +142,7 @@ class Game extends Model {
 	// Connect to a host server on the specified host and port.
 	connect(name : string, host : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = false;
+		this._isAi = ai;
 
 		this.self = new Player({
 			isActive: true,
@@ -180,6 +187,7 @@ class Game extends Model {
 	// Start a host server on the specified port.
 	startServer(name : string, port : number, ai : boolean) : Promise<Messages.Message> {
 		this._isHost = true;
+		this._isAi = ai;
 
 		this.self = new Player({
 			player_id: 0,

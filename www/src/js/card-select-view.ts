@@ -20,15 +20,19 @@ class CardSelectView extends View<Game> {
 
 	getRenderData() : any {
 		// The player *must* trade in cards if they have 5 or 6.
-		var mustTrade = this.collection.length > 4;
+		var mustTrade = this.model.playerCards.length > 4;
 
 		return {
 			mustTrade: mustTrade,
-			cards: this.collection.toJSON()
+			cards: this.model.playerCards.toJSON()
 		}
 	}
 
 	show() {
+		if (this.model.isAi()) {
+			return;
+		}
+
 		this.render();
 		this.$el.removeClass('hidden');
 	}
@@ -52,7 +56,7 @@ class CardSelectView extends View<Game> {
 	tradeButtonClick() : boolean {
 		var cards = this.$('.card.active').map(function() {
 			return $(this).data('id');
-		}).get().map(id => this.collection.get(id));
+		}).get().map(id => this.model.playerCards.get(id));
 
 		if (cards.length !== 3) {
 			return;

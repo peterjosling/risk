@@ -1,7 +1,7 @@
 import View = require('./view');
-import Model = require('./model');
+import Game = require('./game');
 
-class ArmyCountSelectView extends View<Model> {
+class ArmyCountSelectView extends View<Game> {
 	template = <Function>require('../hbs/army-count-select-view.hbs');
 
 	min : number;
@@ -42,6 +42,10 @@ class ArmyCountSelectView extends View<Model> {
 	}
 
 	show(force? : boolean) {
+		if (this.model.isAi()) {
+			return;
+		}
+
 		this.render();
 		this.$el.removeClass('hidden');
 		this.$('.army-count').focus();
