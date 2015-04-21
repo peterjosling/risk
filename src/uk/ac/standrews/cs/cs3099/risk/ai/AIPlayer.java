@@ -338,11 +338,16 @@ public class AIPlayer extends Player {
 		nonWildCards.add(cavalry);
 		
 		// 3 CARDS OF SAME TYPE
-		if (command == null) {
-			for(ArrayList<Card> currentType : nonWildCards)
-				if(currentType.size() >= 3)
-					for(int i = 0; i < 3; i ++)
+		if(command == null){
+			for(ArrayList<Card> currentType : nonWildCards){
+				if(currentType.size() >= 3){
+					for(int i = 0; i < 3; i ++){
 						cards[0][i] = currentType.get(i).getId();
+					}
+					command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+					break;
+				}
+			}
 		}
 
 		// 3 CARDS OF DIFFERENT TYPE
@@ -372,9 +377,7 @@ public class AIPlayer extends Player {
 							break;
 						}
 					}
-
-					if (command != null)
-						break;
+					if (command != null || count >= 3) break;
 				}
 			}
 		}
@@ -766,9 +769,9 @@ public class AIPlayer extends Player {
 			Card card3 = null;
 
 			try {
-				card1 = getCardByID(cardSet[0]);
-				card2 = getCardByID(cardSet[1]);
-				card3 = getCardByID(cardSet[2]);
+				card1 = gameState.getCardByID(cardSet[0],command.getPlayerId());
+				card2 = gameState.getCardByID(cardSet[1],command.getPlayerId());
+				card3 = gameState.getCardByID(cardSet[2],command.getPlayerId());
 			} catch (CardNotFoundException e) {
 				System.err.println("Card not found");
 			}
