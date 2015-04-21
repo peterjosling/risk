@@ -5,10 +5,17 @@ import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
 import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.RollHashCommand;
+import uk.ac.standrews.cs.cs3099.risk.commands.RollResultCommand;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class LocalGame extends AbstractGame {
+	int firstplayer = -1;
+	Die die;
+	private String[] initRollHashes;
+	private String[] initRollNumbers;
 
 	/**
 	 * Creates a local game with a specific map
@@ -85,6 +92,80 @@ public class LocalGame extends AbstractGame {
 			notifyPlayers(command);
 		}
 	}
+	
+	/**
+	 * Called when a new dice roll is expected to reinitialise the die state and send the first hash
+	 */
+	private void startDieRoll()
+	{
+		die = new Die();
+
+		initRollHashes = new String[this.getPlayers().size()];
+		initRollNumbers = new String[this.getPlayers().size()];
+		
+		for(int i = 0; i < this.getPlayers().size(); i ++){
+			byte[] numb = die.generateNumber();
+			String num = die.byteToHex(numb);
+			String hash = die.byteToHex(die.hashByteArr(numb));
+			initRollHashes[i] = hash;
+			initRollNumbers[i] = num;		
+		}	
+		
+		for(int i = 0; i < this.getPlayers().size(); i ++){
+			try {
+				die.addHash(i, initRollHashes[i]);
+			} catch (HashMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		for(int i = 0; i < this.getPlayers().size(); i ++){
+			try {
+				die.addNumber(i, initRollNumbers[i]);
+			} catch (HashMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			die.finalise();
+		} catch (HashMismatchException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Calculates and randomises the deck order.
+	 */
+	public void calcDeckOrder()
+	{
+		Random r = new Random();
+		int[] deckorder = new int[44];
+		for (int i = 0; i < 44; i++) {
+			deckorder[i] = (int) ((r.nextInt() & 0xFFFFFFFFL) % 44);
+		}
+		
+		for (Player player : getPlayers()) {
+			if (player.getType() == PlayerType.AI)
+				((AIPlayer)player).setDeckOrder(deckorder);
+			else if (player.getType() == PlayerType.LOCAL)
+				((LocalPlayer)player).setDeckOrder(deckorder);
+		}
+
+		gameState.setDeckOrder(deckorder);
+	}
+	
+	/**
+	 * Initialises the Die and rolls it to select which player will go first.
+	 */
+	public void calcFirstPlayer()
+	{
+		startDieRoll();
+		firstplayer = (int) (die.nextInt() % getPlayers().size());
+
+		Logger.print("Player " + firstplayer + " will go first, rolling again to shuffle deck");
+		setCurrentTurn(firstplayer);
+	}
 
 	/**
 	 * Runs the game, controlling the game flow, and ending when game is complete
@@ -92,8 +173,12 @@ public class LocalGame extends AbstractGame {
 	public void run()
 	{
 		int noOfTurns = 0;
-	
+
+		calcFirstPlayer();
+		calcDeckOrder();
+		
 		printMap();
+		
 		assignTerritories();
 		while(!gameState.isGameComplete()){			
 			Player currentPlayer = nextTurn();
@@ -105,7 +190,9 @@ public class LocalGame extends AbstractGame {
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
-
+//				System.out.println("Press enter to continue.");
+//				String cont = EasyIn.getString();
+				
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;

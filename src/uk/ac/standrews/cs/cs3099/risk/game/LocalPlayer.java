@@ -54,9 +54,22 @@ public class LocalPlayer extends Player {
 		return gameState;
 	}
 
+	@Override
+	public boolean isNeutral() 
+	{
+		return isNeutral;
+	}
+
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
+	}
+	
 	/**
-	 * Orchestrates the getCommand methods for each command, creating commands taking deatials from a player
-	 * via the command line.
+	 * Orchestrates the getCommand methods for each command, creating commands
+	 * taking detials from a player via the command line.
+	 * 
 	 * @param type - the type of command
 	 * @return - the newly created command
 	 */
@@ -414,7 +427,7 @@ public class LocalPlayer extends Player {
 						Card card = null;
 
 						try {
-							card = getCardByID(id);
+							card = gameState.getCardByID(id, this.getId());
 						} catch (CardNotFoundException e) {
 							System.err.println("Card not found.");
 						}
@@ -525,12 +538,6 @@ public class LocalPlayer extends Player {
 			break;
 		case INITIALISE_GAME:
 //			notifyCommand((InitialiseGameCommand) command);
-			break;
-		case PLAYERS_JOINED:
-			notifyCommand((PlayersJoinedCommand) command);
-			break;
-		case READY:
-			notifyCommand((ReadyCommand) command);
 			break;
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
@@ -716,9 +723,9 @@ public class LocalPlayer extends Player {
 			Card card3 = null;
 
 			try {
-				card1 = getCardByID(cardSet[0]);
-				card2 = getCardByID(cardSet[1]);
-				card3 = getCardByID(cardSet[2]);
+				card1 = gameState.getCardByID(cardSet[0],command.getPlayerId());
+				card2 = gameState.getCardByID(cardSet[1],command.getPlayerId());
+				card3 = gameState.getCardByID(cardSet[2],command.getPlayerId());
 			} catch (CardNotFoundException e) {
 				System.err.println("Card not found");
 			}
@@ -762,7 +769,6 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollHashCommand.");
 		}
 	}
-
 
 	public void setDeckOrder(int[] deckOrder)
 	{

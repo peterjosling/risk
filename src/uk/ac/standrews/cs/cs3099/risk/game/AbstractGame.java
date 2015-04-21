@@ -152,6 +152,7 @@ public abstract class AbstractGame {
 		if (command.getType() != CommandType.FORTIFY) {
 			return;
 		}
+		gameState.drawCard(command.getPlayerId());
 		notifyPlayers(command);
 	}
 
