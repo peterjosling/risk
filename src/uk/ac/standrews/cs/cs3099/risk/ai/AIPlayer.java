@@ -450,7 +450,7 @@ public class AIPlayer extends Player {
 	public void notifyCommand(Command command)
 	{
 		if (command.getAckId() > -1) {
-			lastAckid = command.getAckId();
+			lastAckid = command.getAckId() + 1;
 		}
 
 		switch(command.getType()) {
