@@ -144,26 +144,15 @@ public abstract class AbstractGame {
 	}
 
 	/**
-	 * Plays out the fortify phase of the game, getting a command from a player
+	 * Plays out the fortify phase of the game, taking a command
 	 * updating the game state and notifying all players
-	 * @param player - the player to get the fortify command from
+	 * @param command
 	 */
-	public void fortify(Player player)
-	{
-		Command command = player.getCommand(CommandType.FORTIFY);
+	public void fortify(FortifyCommand command){
 		if (command.getType() != CommandType.FORTIFY) {
 			return;
 		}
 		notifyPlayers(command);
-	}
-
-	/**
-	 * Deals a card to the specified player when they are required to draw one.
-	 * @param player - the player who is drawing the card
-	 */
-	public void drawCard(Player player)
-	{
-		gameState.drawCard(player.getId());
 	}
 
 	/**

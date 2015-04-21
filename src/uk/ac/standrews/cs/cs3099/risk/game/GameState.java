@@ -152,7 +152,7 @@ public class GameState {
 	 * @param id the id of the territory
 	 * @param armies the number of armies to remove
 	 */
-	public void removeArmiesForTerritory(int id, int armies)
+	public void removeArmiesFromTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.removeArmies(armies);
@@ -163,7 +163,7 @@ public class GameState {
 	 * @param id the id of the territory
 	 * @param armies the number of armies to remove
 	 */
-	public void addArmiesForTerritory(int id, int armies)
+	public void addArmiesToTerritory(int id, int armies)
 	{
 		Territory territory = map.findTerritoryById(id);
 		territory.addArmies(armies);

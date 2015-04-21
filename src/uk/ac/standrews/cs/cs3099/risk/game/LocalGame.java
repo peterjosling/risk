@@ -4,6 +4,7 @@ import uk.ac.standrews.cs.cs3099.risk.ai.AIPlayer;
 import uk.ac.standrews.cs.cs3099.risk.commands.AttackCommand;
 import uk.ac.standrews.cs.cs3099.risk.commands.Command;
 import uk.ac.standrews.cs.cs3099.risk.commands.CommandType;
+import uk.ac.standrews.cs.cs3099.risk.commands.FortifyCommand;
 
 import java.util.ArrayList;
 
@@ -96,8 +97,11 @@ public class LocalGame extends AbstractGame {
 		assignTerritories();
 		while(!gameState.isGameComplete()){			
 			Player currentPlayer = nextTurn();
-			gameState.setDeployableArmies();
 			if(!gameState.isPlayerDead(currentPlayer.getId())){
+				gameState.setDeployableArmies();
+//				printMap();
+//				System.out.println("Press enter to continue.");
+//				String cont = EasyIn.getString();
 				System.out.println("It is player " + currentPlayer.getId() + "'s turn.");
 
 				playCards(currentPlayer);
@@ -105,24 +109,28 @@ public class LocalGame extends AbstractGame {
 				deploy(currentPlayer);
 				
 				boolean attackPhase = true;
-				while(canPlayerAttack(currentPlayer) && attackPhase){
-					attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
+
+				while(attackPhase){
+					printAttackable(currentPlayer);
+					Command command = currentPlayer.getCommand(CommandType.ATTACK);
+					if(command.getType() == CommandType.FORTIFY){
+						attackPhase = false;
+						printFortifyable(currentPlayer);
+						fortify((FortifyCommand) command);
+					} else {
+						attack((AttackCommand) command, getCurrentTurnPlayer());
+					}
+//					System.out.println("Press enter to continue.");
+//					String cont = EasyIn.getString();
 				}
-	
-				fortify(currentPlayer);
+				
 				checkDeadPlayers();
 				noOfTurns++;
 			}
-//			printMap();
-//			System.out.println("Press enter to continue.");
-//			String cont = EasyIn.getString();
 		}
 		System.out.println("Game complete! Congratulations, player " + getWinner() + " wins!!");
 	}
 
-	/**
-	 * Prints a command line representation of the default risk map
-	 */
 	public void printMap()
 	{
 		Map map = gameState.getMap();
@@ -171,7 +179,6 @@ public class LocalGame extends AbstractGame {
 				+ map.findTerritoryById(41).getOwner());
 	}
 	
-
 	public void printAttackable(Player player){
 		printMap();
 		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
