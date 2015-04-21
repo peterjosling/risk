@@ -542,7 +542,7 @@ class Game extends Model {
 
 				// Let the game view create an attack_capture command if the local player won the attack.
 				var defendingTerritory = this.map.territories.get(this.attackDetails.attack.payload[1]);
-				var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
+				var attackingPlayer = this.playerList.get(this.attackDetails.attack.player_id);
 
 				if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
 					this.trigger('attackCapture', this.attackDetails.attack);
