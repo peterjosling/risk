@@ -207,7 +207,7 @@ public abstract class Player {
 	public abstract void notifyCommand(Command command);
 
 	/**
-	 * @return whether the player is is neutral (has left the game)
+	 * @return whether the player is neural
 	 */
 	public boolean isNeutral()
 	{
