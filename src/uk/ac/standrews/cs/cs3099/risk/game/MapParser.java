@@ -268,7 +268,7 @@ public class MapParser {
 						parseKeyVal(value, parsed.country_names, true);
 						break;
 					case 6:
-						parseKeyVal(value, parsed.country_card, true);
+						parseKeyVal(value, parsed.country_card, false);
 						break;
 					case 7:
 						try {

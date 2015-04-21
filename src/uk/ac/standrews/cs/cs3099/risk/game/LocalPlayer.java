@@ -54,9 +54,22 @@ public class LocalPlayer extends Player {
 		return gameState;
 	}
 
+	@Override
+	public boolean isNeutral() 
+	{
+		return isNeutral;
+	}
+
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
+	}
+	
 	/**
-	 * Orchestrates the getCommand methods for each command, creating commands taking deatials from a player
-	 * via the command line.
+	 * Orchestrates the getCommand methods for each command, creating commands
+	 * taking detials from a player via the command line.
+	 * 
 	 * @param type - the type of command
 	 * @return - the newly created command
 	 */
@@ -526,12 +539,6 @@ public class LocalPlayer extends Player {
 		case INITIALISE_GAME:
 //			notifyCommand((InitialiseGameCommand) command);
 			break;
-		case PLAYERS_JOINED:
-			notifyCommand((PlayersJoinedCommand) command);
-			break;
-		case READY:
-			notifyCommand((ReadyCommand) command);
-			break;
 		case TIMEOUT:
 			notifyCommand((TimeoutCommand) command);
 			break;
@@ -762,7 +769,6 @@ public class LocalPlayer extends Player {
 			System.out.println("Invalid RollHashCommand.");
 		}	
 	}
-
 
 	public void setDeckOrder(int[] deckOrder)
 	{
