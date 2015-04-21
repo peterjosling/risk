@@ -24,8 +24,21 @@ public class UIAIPlayer extends UIPlayer {
 	@Override
 	public Command getCommand(CommandType type)
 	{
+		if (type == CommandType.ROLL_HASH) {
+			return getRollHashCommand();
+		} else if (type == CommandType.ROLL_NUMBER) {
+			return getRollNumberCommand();
+		}
+
 		Command command = aiPlayer.getCommand(type);
 		webSocket.send(command.toJSON());
+
+		if (command.getType() == CommandType.ATTACK) {
+			totalarmies = ((AttackCommand) command).getArmies();
+		} else if (command.getType() == CommandType.DEFEND) {
+			totalarmies += ((DefendCommand) command).getArmies();
+			die = new Die();
+		}
 		return command;
 	}
 
