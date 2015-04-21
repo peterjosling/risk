@@ -499,20 +499,6 @@ public class NetworkedGame extends AbstractGame {
 		sendAcknowledgement(command.getAckId());
 	}
 
-	public void sendRollHash(String hash)
-	{
-		int id = localPlayer.getId();
-		RollHashCommand rollHashCommand = new RollHashCommand(id, hash);
-		connectionManager.sendCommand(rollHashCommand);
-	}
-
-	public void sendRollNumber(String num)
-	{
-		int id = localPlayer.getId();
-		RollNumberCommand rollNumberCommand = new RollNumberCommand(id, num);
-		connectionManager.sendCommand(rollNumberCommand);
-	}
-
 	/**
 	 * Store the hash for the initial dice roll to select which player takes the first turn.
 	 *
