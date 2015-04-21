@@ -338,12 +338,15 @@ public class AIPlayer extends Player {
 		nonWildCards.add(cavalry);
 		
 		// 3 CARDS OF SAME TYPE
-		for(ArrayList<Card> currentType : nonWildCards){
-			if(currentType.size() >= 3){
-				for(int i = 0; i < 3; i ++){
-					cards[0][i] = currentType.get(i).getId();
+		if(command == null){
+			for(ArrayList<Card> currentType : nonWildCards){
+				if(currentType.size() >= 3){
+					for(int i = 0; i < 3; i ++){
+						cards[0][i] = currentType.get(i).getId();
+					}
+					command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
+					break;
 				}
-				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
 		}
 
@@ -374,6 +377,7 @@ public class AIPlayer extends Player {
 							break;
 						}
 					}
+					if (command != null || count >= 3) break;
 				}
 			}
 		}
