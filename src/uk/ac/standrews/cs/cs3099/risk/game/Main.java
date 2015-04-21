@@ -1,10 +1,5 @@
 package uk.ac.standrews.cs.cs3099.risk.game;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -19,11 +14,18 @@ public class Main {
 		int players = 0;
 		int ai = 0;
 		while(!acceptablePlayers){
-			System.out.println("How many players? (3-6)");
+			System.out.println("How many human players? (0-6)");
 			Scanner sc = new Scanner(System.in);
 			players = sc.nextInt();
-			System.out.println("How many AI?");
-			ai = sc.nextInt();
+
+			int minAi = Math.max(3 - players, 0);
+			int maxAi = 6 - players;
+
+			System.out.println("How many AI? (" + minAi + "-" + maxAi + ")");
+			if (maxAi > 0) {
+				ai = sc.nextInt();
+			}
+
 			if(ai + players > 2 && ai + players <7) {
 				acceptablePlayers = true;
 			} else {
