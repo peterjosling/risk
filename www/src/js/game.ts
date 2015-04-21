@@ -51,14 +51,14 @@ class Game extends Model {
 		return this.get('currentPlayer');
 	}
 
-	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack' or 'defend'.
+	// Get the current game phase. 'setup', 'cards', 'deploy', 'attack', 'defend' or 'fortify'.
 	getPhase() : string {
 		return this._phase;
 	}
 
 	// Set the current game phase.
 	setPhase(phase : string) {
-		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend'];
+		var validPhases = ['setup', 'cards', 'deploy', 'attack', 'defend', 'fortify'];
 
 		if (validPhases.indexOf(phase) === -1) {
 			throw new Error('Invalid phase specified');
@@ -406,6 +406,7 @@ class Game extends Model {
 		this.handleAttackMessage(message, destPlayer === this.self);
 	}
 
+	// Store details of an attack message, and ask the player for a defend move if required.
 	public handleAttackMessage(message : Messages.AttackMessage, isLocalPlayer : boolean) {
 		if (isLocalPlayer) {
 			this.trigger('defend', message.payload);
@@ -424,6 +425,7 @@ class Game extends Model {
 		this.handleDefendMessage(message);
 	}
 
+	// Store details of a defend message.
 	public handleDefendMessage(message : Messages.DefendMessage) {
 		this.attackDetails.defend = message;
 	}
@@ -438,13 +440,16 @@ class Game extends Model {
 		this.handleAttackCaptureMessage(message);
 	}
 
+	// Apply an attack_capture command to the map.
 	public handleAttackCaptureMessage(message : Messages.AttackCaptureMessage) {
+		var player = this.playerList.get(message.player_id);
 		var source = this.map.territories.get(message.payload[0]);
 		var dest = this.map.territories.get(message.payload[1]);
 		var armies = message.payload[2];
 
 		source.addArmies(-armies);
 		dest.addArmies(armies);
+		dest.setOwner(player);
 
 		this.trigger('change:map');
 	}
@@ -460,6 +465,7 @@ class Game extends Model {
 		this.handleDeployMessage(message);
 	}
 
+	// Apply a deploy message to the map.
 	public handleDeployMessage(message : Messages.DeployMessage) {
 		message.payload.forEach(deployment => {
 			var territory = this.map.territories.get(deployment[0]);
@@ -471,15 +477,18 @@ class Game extends Model {
 		this.updateArmyCounts()
 	}
 
+	// Store details of a roll result, and perform an action if required.
 	private rollResultMessageReceived(message : Messages.RollResultMessage) {
-		// Handle first roll to set initial player as a special case.
 		if (!this.getCurrentPlayer()) {
+			// Handle first roll to set initial player as a special case.
 			this.set('currentPlayer', message.payload);
 			var player = this.getCurrentPlayer();
 			this.showToast(player.name + ' to play first');
 		} else if (!this.map.deck.shuffled) {
+			// Handle subsequent rolls as required for shuffling.
 			this.map.deck.shuffleWithNumber(message.payload);
 		} else {
+			// Rolls for an attack/defend.
 			this.attackDetails.rolls.push(message);
 			var attackRollCount = this.attackDetails.attack.payload[2];
 			var defendRollCount = this.attackDetails.defend.payload;
@@ -535,7 +544,7 @@ class Game extends Model {
 
 				// Let the game view create an attack_capture command if the local player won the attack.
 				var defendingTerritory = this.map.territories.get(this.attackDetails.attack.payload[1]);
-				var attackingPlayer = this.playerList.get(this.attackDetails.attack.payload[0]);
+				var attackingPlayer = this.playerList.get(this.attackDetails.attack.player_id);
 
 				if (attackingPlayer === this.self && defendingTerritory.getArmies() === 0) {
 					this.trigger('attackCapture', this.attackDetails.attack);
@@ -580,7 +589,11 @@ class Game extends Model {
 		this.handleFortifyMessage(message);
 	}
 
+	// Apply a fortify message to the map.
 	public handleFortifyMessage(message : Messages.FortifyMessage) {
+		// Fortify indicates end of turn.
+		this.nextTurn();
+
 		if (message.payload === null) {
 			return;
 		}
@@ -594,7 +607,7 @@ class Game extends Model {
 
 		// Update the UI.
 		this.trigger('change:map');
-		this.updateArmyCounts()
+		this.updateArmyCounts();
 	}
 
 	private playCardsMessageReceived(message : Messages.PlayCardsMessage) {
@@ -607,6 +620,7 @@ class Game extends Model {
 		this.handlePlayCardsMessage(message);
 	}
 
+	// Update the number of sets of cards traded in.
 	public handlePlayCardsMessage(message : Messages.PlayCardsMessage) {
 		if (message.payload !== null) {
 			this.cardsTradedIn += message.payload.cards.length;

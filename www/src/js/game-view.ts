@@ -5,6 +5,7 @@ import MapView = require('./map-view');
 import Messages = require('./messages');
 import CardSelectView = require('./card-select-view');
 import ArmyCountSelectView = require('./army-count-select-view');
+import Territory = require('./territory');
 
 class GameView extends View<Game> {
 	template = <Function>require('../hbs/game-view.hbs');
@@ -71,6 +72,7 @@ class GameView extends View<Game> {
 		}
 	}
 
+	// Start the player's turn.
 	startTurn() {
 		this.model.showToast('Your turn!');
 
@@ -93,65 +95,7 @@ class GameView extends View<Game> {
 			this.deployableArmies = this.model.getNewPlayerArmies();
 
 			if (this.model.playerCards.canTradeInCards()) {
-				var playCardsMessage : Messages.PlayCardsMessage = {
-					command: 'play_cards',
-					payload: {
-						cards: [],
-						armies: -1
-					},
-					player_id: this.model.self.id
-				};
-
-				this.cardSelectView.show();
-				this.cardSelectView.off('trade');
-				this.cardSelectView.off('close');
-
-				// Add each set of cards to the command.
-				this.cardSelectView.on('trade', cards => {
-					this.model.playerCards.remove(cards);
-					playCardsMessage.payload.cards.push(cards);
-				});
-
-				this.cardSelectView.on('close', () => {
-					var cards = playCardsMessage.payload.cards;
-
-					if (cards.length === 0) {
-						playCardsMessage.payload = null;
-					} else {
-						// Get the value of the cards traded in.
-						for (var i = 0; i < cards.length; i++) {
-							this.deployableArmies += this.model.getCardArmies();
-						}
-
-						// Check if any of the cards traded in match an owned territory.
-						var bonusTerritory = null;
-
-						cards.forEach(set => {
-							set.forEach(card => {
-								var territory = card.getTerritory();
-
-								if (territory.getOwner() === this.model.self) {
-									bonusTerritory = territory;
-								}
-							});
-						});
-
-						// Automatically deploy bonus armies to one of the matched territories.
-						if (bonusTerritory) {
-							this.message = <Messages.DeployMessage>({
-								command: 'deploy',
-								payload: [[bonusTerritory.id, 2]],
-								player_id: this.model.self.id
-							});
-
-							bonusTerritory.addArmies(2);
-							this.model.trigger('change:map');
-						}
-					}
-
-					this.model.sendMessage(playCardsMessage);
-					this.startDeployPhase();
-				});
+				this.startCardTrade();
 			} else {
 				var playCardsMessage : Messages.PlayCardsMessage = {
 					command: 'play_cards',
@@ -167,11 +111,75 @@ class GameView extends View<Game> {
 		this.highlightSelectableTerritories();
 	}
 
+	// Show the player the card trade window.
+	startCardTrade() {
+		var playCardsMessage : Messages.PlayCardsMessage = {
+			command: 'play_cards',
+			payload: {
+				cards: [],
+				armies: -1
+			},
+			player_id: this.model.self.id
+		};
+
+		this.cardSelectView.show();
+		this.cardSelectView.off('trade');
+		this.cardSelectView.off('close');
+
+		// Add each set of cards to the command.
+		this.cardSelectView.on('trade', cards => {
+			this.model.playerCards.remove(cards);
+			playCardsMessage.payload.cards.push(cards);
+		});
+
+		this.cardSelectView.on('close', () => {
+			var cards = playCardsMessage.payload.cards;
+
+			if (cards.length === 0) {
+				playCardsMessage.payload = null;
+			} else {
+				// Get the value of the cards traded in.
+				for (var i = 0; i < cards.length; i++) {
+					this.deployableArmies += this.model.getCardArmies();
+				}
+
+				// Check if any of the cards traded in match an owned territory.
+				var bonusTerritory = null;
+
+				cards.forEach(set => {
+					set.forEach(card => {
+						var territory = card.getTerritory();
+
+						if (territory.getOwner() === this.model.self) {
+							bonusTerritory = territory;
+						}
+					});
+				});
+
+				// Automatically deploy bonus armies to one of the matched territories.
+				if (bonusTerritory) {
+					this.message = <Messages.DeployMessage>({
+						command: 'deploy',
+						payload: [[bonusTerritory.id, 2]],
+						player_id: this.model.self.id
+					});
+
+					bonusTerritory.addArmies(2);
+					this.model.trigger('change:map');
+					this.model.updateArmyCounts();
+				}
+			}
+
+			this.model.sendMessage(playCardsMessage);
+			this.startDeployPhase();
+		});
+	}
+
+	// Handle a territory being selected in the interface.
 	territorySelected(id : number) {
 		var territory = this.model.map.territories.get(id);
 
 		// Only perform an action on the correct turn.
-		// TODO also allow actions to be performed when defending.
 		if (this.model.getCurrentPlayer() !== this.model.self) {
 			return;
 		}
@@ -179,182 +187,202 @@ class GameView extends View<Game> {
 		var phase = this.model.getPhase();
 
 		if (phase === 'setup') {
-			// Check this territory can be selected.
-			var allTerritoriesClaimed = this.model.map.territories.every(territory => {
-				return territory.getOwner() !== null;
-			});
-
-			// Check this territory can be selected.
-			if (!allTerritoriesClaimed && territory.getOwner() !== null) {
-				this.model.showToast('This territory has already been claimed.');
-				return;
-			} else if (allTerritoriesClaimed && territory.getOwner() !== this.model.self) {
-				this.model.showToast('You do not own this territory.');
-				return;
-			}
-
-			var message : Messages.SetupMessage = {
-				command: 'setup',
-				payload: id,
-				player_id: <number>this.model.self.id
-			};
-
-			this.model.handleSetupMessage(message);
-			this.model.sendMessage(message);
-
-			// Turn complete.
-			this.model.nextTurn();
+			this.territorySelectedSetup(territory)
 		} else if (phase === 'deploy') {
+			this.territorySelectedDeploy(territory);
+		} else if (phase === 'attack') {
+			this.territorySelectedAttack(territory);
+		} else if (phase === 'fortify') {
+			this.territorySelectedFortify(territory);
+		}
+	}
+
+	// Handle territory selection in the setup phase.
+	territorySelectedSetup(territory : Territory) {
+		// Check this territory can be selected.
+		var allTerritoriesClaimed = this.model.map.territories.every(territory => {
+			return territory.getOwner() !== null;
+		});
+
+		// Check this territory can be selected.
+		if (!allTerritoriesClaimed && territory.getOwner() !== null) {
+			this.model.showToast('This territory has already been claimed.');
+			return;
+		} else if (allTerritoriesClaimed && territory.getOwner() !== this.model.self) {
+			this.model.showToast('You do not own this territory.');
+			return;
+		}
+
+		var message : Messages.SetupMessage = {
+			command: 'setup',
+			payload: territory.id,
+			player_id: <number>this.model.self.id
+		};
+
+		this.model.handleSetupMessage(message);
+		this.model.sendMessage(message);
+
+		// Turn complete.
+		this.model.nextTurn();
+	}
+
+	// Handle territory selection in the deploy phase.
+	territorySelectedDeploy(territory : Territory) {
+		// Check this territory can be selected.
+		if (territory.getOwner() !== this.model.self) {
+			this.model.showToast('You do not own this territory.');
+			return;
+		}
+
+		if (!this.message || this.message.command !== 'deploy') {
+			this.message = <Messages.DeployMessage>({
+				command: 'deploy',
+				payload: [],
+				player_id: this.model.self.id
+			});
+		}
+
+		// Get how many armies to deploy, add this deployment to the message payload
+		this.armyCountSelectView.setMin(1);
+		this.armyCountSelectView.setMax(this.deployableArmies);
+		this.armyCountSelectView.off('select');
+		this.armyCountSelectView.on('select', armies => {
+			(<Messages.DeployMessage>this.message).payload.push([territory.id, armies]);
+			this.deployableArmies -= armies;
+
+			// Update map.
+			territory.addArmies(armies);
+			this.model.updateArmyCounts();
+			this.model.trigger('change:map');
+			this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
+
+			if (this.deployableArmies === 0) {
+				this.model.sendMessage(this.message);
+				this.model.setPhase('attack');
+				this.startAttackPhase();
+			}
+		});
+
+		this.armyCountSelectView.show();
+	}
+
+	// Handle territory selection in the attack phase.
+	territorySelectedAttack(territory : Territory) {
+		if (this.message === null) {
 			// Check this territory can be selected.
 			if (territory.getOwner() !== this.model.self) {
-				this.model.showToast('You do not own this territory.');
+				this.model.showToast('You do not own this territory');
 				return;
 			}
 
-			if (!this.message || this.message.command !== 'deploy') {
-				this.message = <Messages.DeployMessage>({
-					command: 'deploy',
-					payload: [],
-					player_id: this.model.self.id
-				});
+			if (territory.getArmies() < 2) {
+				this.model.showToast('This territory doesn\'t contain enough armies to attack');
+				return;
 			}
 
-			// Get how many armies to deploy, add this deployment to the message payload
-			this.armyCountSelectView.setMin(1);
-			this.armyCountSelectView.setMax(this.deployableArmies);
-			this.armyCountSelectView.off('select');
-			this.armyCountSelectView.on('select', armies => {
-				(<Messages.DeployMessage>this.message).payload.push([id, armies]);
-				this.deployableArmies -= armies;
-
-				// Update map.
-				var territory = this.model.map.territories.get(id);
-				territory.addArmies(armies);
-				this.model.trigger('change:map');
-				this.model.showToast('Select one or more territories to deploy your new armies to. You have ' + this.deployableArmies + ' armies.', true);
-
-				if (this.deployableArmies === 0) {
-					this.model.sendMessage(this.message);
-					this.model.setPhase('attack');
-					this.startAttackPhase();
-				}
+			this.message = <Messages.AttackMessage>({
+				command: 'attack',
+				payload: [territory.id],
+				player_id: this.model.self.id
 			});
 
-			this.armyCountSelectView.show();
-		} else if (phase === 'attack') {
-			if (this.message === null) {
-				// Check this territory can be selected.
-				if (territory.getOwner() !== this.model.self) {
-					this.model.showToast('You do not own this territory');
-					return;
-				}
-
-				if (territory.getArmies() < 2) {
-					this.model.showToast('This territory doesn\'t contain enough armies to attack');
-					return;
-				}
-
-				this.message = <Messages.AttackMessage>({
-					command: 'attack',
-					payload: [id],
-					player_id: this.model.self.id
-				});
-
-				this.model.showToast('Select a territory to attack', true);
-				this.highlightSelectableTerritories();
-			} else {
-				// Check this territory can be selected.
-				if (territory.getOwner() === this.model.self) {
-					this.model.showToast('You cannot attack your own territory');
-					return;
-				}
-
-				var sourceId = (<Messages.AttackMessage>this.message).payload[0];
-				var sourceTerritory = this.model.map.territories.get(sourceId);
-
-				if (!territory.connections.get(sourceTerritory)) {
-					this.model.showToast('This territory is not connected to yours.');
-					return;
-				}
-
-				// TODO add deselect button.
-
-				(<Messages.AttackMessage>this.message).payload.push(id);
-
-				// Get number of armies to attack with.
-				var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
-
-				this.armyCountSelectView.setMin(1);
-				this.armyCountSelectView.setMax(maxArmies);
-				this.armyCountSelectView.off('select');
-				this.armyCountSelectView.on('select', armies => {
-					(<Messages.AttackMessage>this.message).payload.push(armies);
-					this.model.handleAttackMessage(<Messages.AttackMessage>this.message, false);
-					this.model.sendMessage(this.message);
-					this.message = null;
-
-					// TODO show roll result view.
-				});
-
-				this.armyCountSelectView.show(true);
+			this.model.showToast('Select a territory to attack', true);
+			this.highlightSelectableTerritories();
+		} else {
+			// Check this territory can be selected.
+			if (territory.getOwner() === this.model.self) {
+				this.model.showToast('You cannot attack your own territory');
+				return;
 			}
-		} else if (phase === 'fortify') {
-			if (!this.message) {
-				// Check this territory can be selected.
-				if (territory.getOwner() !== this.model.self) {
-					this.model.showToast('You do not own this territory');
-					return;
-				}
 
-				if (territory.getArmies() < 2) {
-					this.model.showToast('This territory doesn\'t contain enough armies to fortify');
-					return;
-				}
+			var sourceId = (<Messages.AttackMessage>this.message).payload[0];
+			var sourceTerritory = this.model.map.territories.get(sourceId);
 
-				this.message = <Messages.FortifyMessage>({
-					command: 'fortify',
-					payload: [id],
-					player_id: this.model.self.id
-				});
-
-				this.model.showToast('Select a territory to fortify', true);
-				this.highlightSelectableTerritories();
-			} else {
-				// Check this territory can be selected.
-				if (territory.getOwner() !== this.model.self) {
-					this.model.showToast('You do not own this territory');
-					return;
-				}
-
-				var sourceId = (<Messages.FortifyMessage>this.message).payload[0];
-				var sourceTerritory = this.model.map.territories.get(sourceId);
-
-				if (!territory.connections.get(sourceTerritory)) {
-					this.model.showToast('This territory is not connected to the source');
-					return;
-				}
-
-				// TODO add deselect button.
-
-				(<Messages.FortifyMessage>this.message).payload.push(id);
-
-				// Get number of armies to attack with.
-				var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
-
-				this.armyCountSelectView.setMin(1);
-				this.armyCountSelectView.setMax(maxArmies);
-				this.armyCountSelectView.off('select');
-				this.armyCountSelectView.on('select', armies => {
-					(<Messages.FortifyMessage>this.message).payload.push(armies);
-					this.model.handleFortifyMessage(<Messages.FortifyMessage>this.message);
-					this.model.sendMessage(this.message);
-					this.message = null;
-
-					this.endTurn();
-				});
-
-				this.armyCountSelectView.show(true);
+			if (!territory.connections.get(sourceTerritory)) {
+				this.model.showToast('This territory is not connected to yours.');
+				return;
 			}
+
+			// TODO add deselect button.
+
+			(<Messages.AttackMessage>this.message).payload.push(territory.id);
+
+			// Get number of armies to attack with.
+			var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
+
+			this.armyCountSelectView.setMin(1);
+			this.armyCountSelectView.setMax(maxArmies);
+			this.armyCountSelectView.off('select');
+			this.armyCountSelectView.on('select', armies => {
+				(<Messages.AttackMessage>this.message).payload.push(armies);
+				this.model.handleAttackMessage(<Messages.AttackMessage>this.message, false);
+				this.model.sendMessage(this.message);
+
+				// Reset and get the next attack.
+				this.startAttackPhase();
+			});
+
+			this.armyCountSelectView.show(true);
+		}
+	}
+
+	// Handle territory selection in the fortify phase.
+	territorySelectedFortify(territory : Territory) {
+		if (!this.message) {
+			// Check this territory can be selected.
+			if (territory.getOwner() !== this.model.self) {
+				this.model.showToast('You do not own this territory');
+				return;
+			}
+
+			if (territory.getArmies() < 2) {
+				this.model.showToast('This territory doesn\'t contain enough armies to fortify');
+				return;
+			}
+
+			this.message = <Messages.FortifyMessage>({
+				command: 'fortify',
+				payload: [territory.id],
+				player_id: this.model.self.id
+			});
+
+			this.model.showToast('Select a territory to fortify', true);
+			this.highlightSelectableTerritories();
+		} else {
+			// Check this territory can be selected.
+			if (territory.getOwner() !== this.model.self) {
+				this.model.showToast('You do not own this territory');
+				return;
+			}
+
+			var sourceId = (<Messages.FortifyMessage>this.message).payload[0];
+			var sourceTerritory = this.model.map.territories.get(sourceId);
+
+			if (!territory.connections.get(sourceTerritory)) {
+				this.model.showToast('This territory is not connected to the source');
+				return;
+			}
+
+			// TODO add deselect button.
+
+			(<Messages.FortifyMessage>this.message).payload.push(territory.id);
+
+			// Get number of armies to attack with.
+			var maxArmies = Math.min(3, sourceTerritory.getArmies() - 1);
+
+			this.armyCountSelectView.setMin(1);
+			this.armyCountSelectView.setMax(maxArmies);
+			this.armyCountSelectView.off('select');
+			this.armyCountSelectView.on('select', armies => {
+				(<Messages.FortifyMessage>this.message).payload.push(armies);
+				this.model.handleFortifyMessage(<Messages.FortifyMessage>this.message);
+				this.model.sendMessage(this.message);
+				this.message = null;
+
+				this.endTurn();
+			});
+
+			this.armyCountSelectView.show(true);
 		}
 	}
 
@@ -396,9 +424,10 @@ class GameView extends View<Game> {
 
 			this.model.sendMessage(message);
 			this.model.handleAttackCaptureMessage(message);
+			this.startAttackPhase();
 		});
 
-		// TODO disable cancel button.
+		this.armyCountSelectView.show(true);
 	}
 
 	noFortifyButtonClick() {
