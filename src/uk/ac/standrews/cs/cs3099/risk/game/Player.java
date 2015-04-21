@@ -183,21 +183,6 @@ public abstract class Player {
 	}
 
 	/**
-	 * Given an id of a card in the hidden cards list return the instance of that card, if it exits
-	 * @param id the id of the card
-	 * @return the matching card
-	 * @throws CardNotFoundException
-	 */
-	public Card getCardByID(int id) throws CardNotFoundException{
-		for(Card card:hiddenCards){
-			if(card.getId()==id){
-				return card;
-			}
-		}
-		throw new CardNotFoundException("Card Not Found");
-	}
-
-	/**
 	 * Checks if the player owen a given territory
 	 * @param t - the territory
 	 * @return true if player owns it, false if not

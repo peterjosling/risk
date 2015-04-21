@@ -427,7 +427,7 @@ public class LocalPlayer extends Player {
 						Card card = null;
 
 						try {
-							card = getCardByID(id);
+							card = gameState.getCardByID(id, this.getId());
 						} catch (CardNotFoundException e) {
 							System.err.println("Card not found.");
 						}
@@ -723,9 +723,9 @@ public class LocalPlayer extends Player {
 			Card card3 = null;
 
 			try {
-				card1 = getCardByID(cardSet[0]);
-				card2 = getCardByID(cardSet[1]);
-				card3 = getCardByID(cardSet[2]);
+				card1 = gameState.getCardByID(cardSet[0],command.getPlayerId());
+				card2 = gameState.getCardByID(cardSet[1],command.getPlayerId());
+				card3 = gameState.getCardByID(cardSet[2],command.getPlayerId());
 			} catch (CardNotFoundException e) {
 				System.err.println("Card not found");
 			}

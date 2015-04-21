@@ -37,6 +37,21 @@ public class GameState {
 	private int defDice;
 
 	/**
+	 * Given an id of a card in the hidden cards list return the instance of that card, if it exits
+	 * @param id the id of the card
+	 * @return the matching card
+	 * @throws CardNotFoundException
+	 */
+	public Card getCardByID(int id, int playerId) throws CardNotFoundException{
+		for(Card card: playerCards.get(playerId)){
+			if(card.getId()==id){
+				return card;
+			}
+		}
+		throw new CardNotFoundException("Card Not Found");
+	}
+	
+	/**
 	 * Creates a game state with the provided list of players and start values for variables
 	 * @param players - an array list of players who are in the game
 	 */
