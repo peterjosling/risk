@@ -390,19 +390,14 @@ public class LocalPlayer extends Player {
 			if(numberOfTradeIns == 0){
 				command = new PlayCardsCommand(this.getId(), lastAckid++);
 			} else {
-				Card[][] cards = new Card[numberOfTradeIns][3];
+				int[][] cards = new int[numberOfTradeIns][3];
 				int cardId;
 				for(int i =0; i<numberOfTradeIns; i++){
 					System.out.println("Select 3 cards to trade in:");
 					for(int j=0; j<cards[i].length; j++) {
 						System.out.println("Enter Card ID:");
 						cardId = EasyIn.getInt();
-						try {
-							cards[i][j] = getCardByID(cardId);
-						} catch (CardNotFoundException e) {
-							System.out.println("Card not found please enter another ID");
-							j--;
-						}
+						cards[i][j] = cardId;
 					}
 				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
@@ -414,8 +409,16 @@ public class LocalPlayer extends Player {
 		if(gameState.isCommandValid(command)) {
 			notifyCommand(command);
 			if(command.getCards() != null){
-				for(Card[] cardSet : command.getCards()){
-					for(Card card : cardSet){
+				for(int[] cardSet : command.getCards()){
+					for(int id : cardSet){
+						Card card = null;
+
+						try {
+							card = getCardByID(id);
+						} catch (CardNotFoundException e) {
+							System.err.println("Card not found.");
+						}
+
 						this.playCard(card);
 					}
 				}
@@ -707,8 +710,20 @@ public class LocalPlayer extends Player {
 		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
-		for(Card[] cardSet : command.getCards()){
-			System.out.println("Set " + set + ": " + cardSet[0].getCardType() + ", " + cardSet[1].getCardType() + " and " + cardSet[2].getCardType());
+		for(int[] cardSet : command.getCards()){
+			Card card1 = null;
+			Card card2 = null;
+			Card card3 = null;
+
+			try {
+				card1 = getCardByID(cardSet[0]);
+				card2 = getCardByID(cardSet[1]);
+				card3 = getCardByID(cardSet[2]);
+			} catch (CardNotFoundException e) {
+				System.err.println("Card not found");
+			}
+
+			System.out.println("Set " + set + ": " + card1.getCardType() + ", " + card2.getCardType() + " and " + card3.getCardType());
 			set++;
 		}
 		if(gameState.isCommandValid(command)){

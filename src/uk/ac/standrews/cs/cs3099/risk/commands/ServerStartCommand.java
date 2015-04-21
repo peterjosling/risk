@@ -21,6 +21,11 @@ public class ServerStartCommand extends Command {
 		return payload.name;
 	}
 
+	public boolean useAi()
+	{
+		return payload.ai;
+	}
+
 	@Override
 	public CommandType getType()
 	{
@@ -30,5 +35,6 @@ public class ServerStartCommand extends Command {
 	private class ServerStartPayload {
 		String name;
 		int port;
+		boolean ai;
 	}
 }

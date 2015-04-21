@@ -237,7 +237,7 @@ public class AIPlayer extends Player {
 		ArrayList<Card> cavalry = new ArrayList<Card>();
 		ArrayList<Card> wild = new ArrayList<Card>();
 
-		Card[][] cards = new Card[1][3];
+		int[][] cards = new int[1][3];
 
 		List<Card> playersCards = getCards();
 
@@ -256,7 +256,7 @@ public class AIPlayer extends Player {
 		for(ArrayList<Card> currentType : nonWildCards){
 			if(currentType.size() >= 3){
 				for(int i = 0; i < 3; i ++){
-					cards[0][i] = currentType.get(i);
+					cards[0][i] = currentType.get(i).getId();
 				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
@@ -266,7 +266,7 @@ public class AIPlayer extends Player {
 		if(command == null){
 			if(artillery.size() > 0 && infantry.size() > 0 && cavalry.size() > 0){
 				for(int i = 0; i < 3; i++){
-					cards[0][i] = nonWildCards.get(i).get(0);
+					cards[0][i] = nonWildCards.get(i).get(0).getId();
 				}
 				command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
 			}
@@ -278,11 +278,11 @@ public class AIPlayer extends Player {
 		if(command == null){
 			if((wild.size() > 0) && (total > 1)){
 				int count = 1;
-				cards[0][0] = wild.get(0);
+				cards[0][0] = wild.get(0).getId();
 				for(ArrayList<Card> currentType : nonWildCards){
 					for(Card currentCard : currentType){
 						if(count >= 3) break;
-						cards[0][count] = currentCard;
+						cards[0][count] = currentCard.getId();
 						count ++;
 						if(count == 3){
 							command = new PlayCardsCommand(this.getId(), lastAckid++, cards);
@@ -299,9 +299,9 @@ public class AIPlayer extends Player {
 		if(gameState.isCommandValid(command)){
 			notifyCommand(command);
 			if(command.getCards() != null){
-				for(Card[] cardSet : command.getCards()){
-					for(Card card : cardSet){
-						this.playCard(card);
+				for(int[] cardSet : command.getCards()){
+					for(int id : cardSet){
+						this.playCard(gameState.getCard(id));
 					}
 				}
 			}
@@ -450,7 +450,7 @@ public class AIPlayer extends Player {
 	public void notifyCommand(Command command)
 	{
 		if (command.getAckId() > -1) {
-			lastAckid = command.getAckId();
+			lastAckid = command.getAckId() + 1;
 		}
 
 		switch(command.getType()) {
@@ -609,8 +609,12 @@ public class AIPlayer extends Player {
 		}
 		System.out.println("Player " + command.getPlayerId() + " played the following cards:");
 		int set = 1;
-		for(Card[] cardSet : command.getCards()){
-			System.out.println("Set " + set + ": " + cardSet[0].getCardType() + ", " + cardSet[1].getCardType() + " and " + cardSet[2].getCardType());
+		for(int[] cardSet : command.getCards()){
+			Card card1 = gameState.getCard(cardSet[0]);
+			Card card2 = gameState.getCard(cardSet[1]);
+			Card card3 = gameState.getCard(cardSet[2]);
+
+			System.out.println("Set " + set + ": " + card1.getCardType() + ", " + card2.getCardType() + " and " + card3.getCardType());
 			set++;
 		}
 		if(gameState.isCommandValid(command)){

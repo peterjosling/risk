@@ -70,6 +70,7 @@ class Map extends Model {
 			territory.setCardType(cardType);
 
 			var card = new Card({
+				id: parseInt(i, 10),
 				type: cardType,
 				territory: territory
 			});

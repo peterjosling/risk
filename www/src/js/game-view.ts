@@ -31,8 +31,8 @@ class GameView extends View<Game> {
 
 		var playerListView = new PlayerListView({ model: this.model });
 		var mapView = new MapView({model: this.model});
-		this.cardSelectView = new CardSelectView({collection: this.model.playerCards});
-		this.armyCountSelectView = new ArmyCountSelectView();
+		this.cardSelectView = new CardSelectView({model: this.model});
+		this.armyCountSelectView = new ArmyCountSelectView({model: this.model});
 
 		this.listenTo(mapView, 'territorySelect', this.territorySelected);
 		this.listenTo(this.model, 'change:currentPlayer', this.currentPlayerChange);
@@ -451,7 +451,6 @@ class GameView extends View<Game> {
 		var territory = this.model.map.territories.get(payload[0]);
 		var maxArmies = Math.min(2, territory.getArmies());
 
-		this.model.setPhase('defend');
 		this.armyCountSelectView.setMin(1);
 		this.armyCountSelectView.setMax(maxArmies);
 		this.armyCountSelectView.off('select');
