@@ -449,6 +449,10 @@ public class AIPlayer extends Player {
 	@Override
 	public void notifyCommand(Command command)
 	{
+		if (command.getAckId() > -1) {
+			lastAckid = command.getAckId();
+		}
+
 		switch(command.getType()) {
 		case ASSIGN_ARMY:
 			notifyCommand((AssignArmyCommand) command);
