@@ -315,9 +315,9 @@ class GameView extends View<Game> {
 				(<Messages.AttackMessage>this.message).payload.push(armies);
 				this.model.handleAttackMessage(<Messages.AttackMessage>this.message, false);
 				this.model.sendMessage(this.message);
-				this.message = null;
 
-				// TODO show roll result view.
+				// Reset and get the next attack.
+				this.startAttackPhase();
 			});
 
 			this.armyCountSelectView.show(true);
