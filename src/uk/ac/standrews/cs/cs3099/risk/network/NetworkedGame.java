@@ -7,6 +7,8 @@ import uk.ac.standrews.cs.cs3099.risk.game.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -23,7 +25,7 @@ public class NetworkedGame extends AbstractGame {
 	private boolean deckShuffled = false;
 	private int numberOfPingsReceived = 0;
 	private int ackId = 0;
-	private ArrayList<Acknowledgement> acknowledgements = new ArrayList<Acknowledgement>();
+	private Map<Integer, Acknowledgement> acknowledgements = new HashMap<Integer, Acknowledgement>();
 	private float highestMutuallySupportedVersion;
 	private Semaphore gameStart = new Semaphore(0);
 
@@ -425,7 +427,7 @@ public class NetworkedGame extends AbstractGame {
 		int ackId = command.getAckId();
 
 		Acknowledgement acknowledgement = new Acknowledgement(ackId);
-		acknowledgements.add(acknowledgement);
+		acknowledgements.put(ackId, acknowledgement);
 //		if(acknowledgements.get(ackId)!=)
 
 		// Mark the sending player as having already acknowledged.
