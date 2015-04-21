@@ -91,13 +91,17 @@ public class LocalGame extends AbstractGame {
 				boolean attackPhase = true;
 
 				while(attackPhase){
+					printAttackable(currentPlayer);
 					Command command = currentPlayer.getCommand(CommandType.ATTACK);
 					if(command.getType() == CommandType.FORTIFY){
 						attackPhase = false;
+						printFortifyable(currentPlayer);
 						fortify((FortifyCommand) command);
 					} else {
-						attack((AttackCommand) currentPlayer.getCommand(CommandType.ATTACK), getCurrentTurnPlayer());
+						attack((AttackCommand) command, getCurrentTurnPlayer());
 					}
+//					System.out.println("Press enter to continue.");
+//					String cont = EasyIn.getString();
 				}
 				
 				checkDeadPlayers();
@@ -153,6 +157,38 @@ public class LocalGame extends AbstractGame {
 		System.out.println(" " + map.findTerritoryById(12).getOwner() + "                     "
 				+ map.findTerritoryById(40).getOwner() + ", "
 				+ map.findTerritoryById(41).getOwner());
+	}
+	
+	public void printAttackable(Player player){
+		printMap();
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+		
+		System.out.println("Territory ID | Armies | Attackable Links");
+		for(Territory territory : territories){
+			String attackable = "[";
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if(linkedTerritory.getOwner()!=player.getId()) attackable = attackable + Integer.toString(linkedTerritory.getId()) + ","; 
+			}
+			attackable += "]";
+
+			System.out.println(territory.getId() + "           |  " + territory.getArmies() + "  | " + attackable);
+		}
+	}
+	
+	public void printFortifyable(Player player){
+		printMap();
+		Territory[] territories = gameState.getTerritoriesForPlayer(player.getId());
+		
+		System.out.println("Territory ID | Armies | Fortifyable Links");
+		for(Territory territory : territories){
+			String fortifyable = "[";
+			for(Territory linkedTerritory : territory.getLinkedTerritories()){
+				if(linkedTerritory.getOwner()==player.getId()) fortifyable = fortifyable + Integer.toString(linkedTerritory.getId()) + ","; 
+			}
+			fortifyable += "]";
+
+			System.out.println(territory.getId() + "           |  " + territory.getArmies() + "  | " + fortifyable);
+		}
 	}
 	
 	public void checkDeadPlayers()

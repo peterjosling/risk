@@ -43,6 +43,18 @@ public class AIPlayer extends Player {
 	}
 	
 	@Override
+	public boolean isNeutral() 
+	{
+		return isNeutral;
+	}
+
+	@Override
+	public void setNeutral(boolean neutral)
+	{
+		isNeutral = neutral;
+	}
+
+	@Override
 	public Command getCommand(CommandType type) 
 	{
 		switch (type) {
@@ -313,7 +325,6 @@ public class AIPlayer extends Player {
 		
 		int armies = (source.getArmies() - 1) / 2;
 		
-		System.out.println("SOURCE ARMIES " + armies + ", " + source.getArmies() );
 		if(armies < gameState.getRemainingArmies()){
 			armies = gameState.getRemainingArmies();
 		}
@@ -475,22 +486,14 @@ public class AIPlayer extends Player {
 		}
 	}
 
-	@Override
-	public boolean isNeutral() 
-	{
-		return isNeutral;
-	}
-
-	@Override
-	public void setNeutral(boolean neutral)
-	{
-		isNeutral = neutral;
-	}
-
 	public void notifyCommand(AssignArmyCommand command)
 	{
 		String name = gameState.getMap().findTerritoryById(command.getTerritoryId()).getName();
-		System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		if(gameState.getMap().findTerritoryById(command.getTerritoryId()).isClaimed()){
+			System.out.println("Player " + command.getPlayerId() + " reinforced territory: " + name);
+		} else {
+			System.out.println("Player " + command.getPlayerId() + " claimed territory: " + name);
+		}
 		if(gameState.isCommandValid(command)){
 			gameState.playCommand(command);
 		} else {
@@ -515,7 +518,7 @@ public class AIPlayer extends Player {
 	
 	public void notifyCommand(FortifyCommand command)
 	{
-		if(command.getFortifyDetails() == null){
+		if(command.getFortifyDetails() == null || command.getFortifyDetails()[2] == 0){
 			System.out.println("Player: " + command.getPlayerId() + " did not fortify");
 		} else {
 			String srcName = gameState.getMap().findTerritoryById(command.getFortifyDetails()[0]).getName();
@@ -651,4 +654,5 @@ public class AIPlayer extends Player {
 		}
 		return false;
 	}
+
 }

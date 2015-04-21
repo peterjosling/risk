@@ -15,12 +15,21 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-		System.out.println("How many players? (3-6)");
-		Scanner sc = new Scanner(System.in);
-		int players = sc.nextInt();
-		System.out.println("How many AI?");
-		int ai = sc.nextInt();
-
+		boolean acceptablePlayers = false;
+		int players = 0;
+		int ai = 0;
+		while(!acceptablePlayers){
+			System.out.println("How many players? (3-6)");
+			Scanner sc = new Scanner(System.in);
+			players = sc.nextInt();
+			System.out.println("How many AI?");
+			ai = sc.nextInt();
+			if(ai + players > 2 && ai + players <7) {
+				acceptablePlayers = true;
+			} else {
+				System.out.println("Please enter a total number of players between 3 and 6 (inclusive).");
+			}
+		}
 		LocalGame localGame = new LocalGame(players, ai);
 		localGame.run();
 	}
